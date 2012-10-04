@@ -1,4 +1,8 @@
-package databaseLayer;
+/**
+ * @author Team RamRod
+ */
+
+package shared;
 
 // temporary until the real entities are defined
 class Model {}
@@ -9,11 +13,11 @@ class ConnectedClient {}
 class DecisionLineEvent {}
 
 
-public class DatabaseSubSystem {
+public class DatabaseSubsystem {
 	private static final String databaseConnectStr = "";
 	//local variable to hold database connection here
 	
-	DatabaseSubSystem() {
+	DatabaseSubsystem() {
 		//do initialization stuff here
 	}
 	

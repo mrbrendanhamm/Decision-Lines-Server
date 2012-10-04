@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+
+<xs:element name='message'>       <!-- Each Message is a request or response -->
+  <xs:complexType>
+    <xs:choice>
+      <xs:element ref='response'/>
+      <xs:element ref='request'/>
+    </xs:choice>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='response'>      <!-- All response sub-types are declared here -->
+  <xs:complexType>
+    <xs:choice>
+      <xs:element ref='connectResponse'/>
+      <xs:element ref='lockResponse'/>
+      <xs:element ref='lockStatusResponse'/>
+      <xs:element ref='modelResponse'/>
+    </xs:choice>
+    <xs:attribute name="id"      type="xs:string"  use="required"/>
+    <xs:attribute name='success' type='xs:boolean' use='required'/>
+    <xs:attribute name='reason'  type='xs:string'  use='optional'/>  <!-- Only on failure -->
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='request'>       <!-- All request sub-types are declared here -->
+  <xs:complexType>
+    <xs:choice>
+      <xs:element ref='connectRequest'/>
+      <xs:element ref='lockRequest'/>
+      <xs:element ref='lockStatusRequest'/>   <!-- query whether locked --> 
+      <xs:element ref='updateRequest'/>
+      <xs:element ref='modelRequest'/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='connectRequest'/>    <!-- Connect to server -->
+
+<xs:element name='connectResponse'>   <!-- Response to connectRequest -->
+  <xs:complexType>
+    <xs:attribute name='id' type='xs:string' use='required'/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='lockRequest'>    <!-- Request the lock -->
+ <xs:complexType>
+    <xs:attribute name='grab' type='xs:boolean' use='required'/>   <!-- TRUE if requesting lock. FALSE if releasing. -->
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='lockStatusRequest'/>    <!-- See if locked -->
+
+<xs:element name='lockResponse'>   <!-- Lock response -->
+ <xs:complexType>
+    <xs:attribute name='secured' type='xs:boolean' use='required'/>   <!-- TRUE if receiving client has lock -->
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='lockStatusResponse'>   <!-- Lock response -->
+ <xs:complexType>
+    <xs:attribute name='secured' type='xs:boolean' use='required'/>   <!-- TRUE if model is locked. -->
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='updateRequest'>   <!-- update to the model request -->
+  <xs:complexType>
+    <xs:attribute name='height' type='xs:integer' use='required'/>
+    <xs:attribute name='width'  type='xs:integer' use='required'/>
+    <xs:attribute name='color'  type='xs:integer' use='required'/>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='modelResponse'>   <!-- update to the model response -->
+  <xs:complexType>
+    <xs:attribute name='height' type='xs:integer' use='required'/>
+    <xs:attribute name='width'  type='xs:integer' use='required'/>
+    <xs:attribute name='color'  type='xs:integer' use='required'/>    
+  </xs:complexType>
+</xs:element>
+
+<xs:element name='modelRequest'/>    <!-- Request server to send model -->
+</xs:schema>
