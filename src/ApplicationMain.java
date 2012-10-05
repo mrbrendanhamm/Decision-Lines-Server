@@ -20,7 +20,8 @@ public class ApplicationMain {
 		DatabaseSubsystem.readDecisionLineEvent(null);
 
 		/**
-		 *  Code taken directly from Professor Heineman's Project: ClientServerEBC, Class: ServerLauncher  
+		 *  Code taken directly and nearly completely from Professor Heineman's Project: ClientServerEBC, 
+		 *  Class: ServerLauncher  
 		 */
 		// FIRST thing to do is register the protocol being used. There will be a single class protocol
 		// that will be defined and which everyone will use. For now, demonstrate with skeleton protocol.

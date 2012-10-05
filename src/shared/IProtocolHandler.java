@@ -1,8 +1,11 @@
-package shared;
 /**
- * Taken directly from Professor Heineman's fusion project Draw2Choose, from java project ClientServer 
+ * Taken directly and completely from Professor Heineman's fusion project Draw2Choose, 
+ * from the java project ClientServer 
  */
 
+package shared;
+/**
+ */
 
 import shared.ClientState;
 import xml.*;
