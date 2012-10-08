@@ -14,12 +14,7 @@ class DecisionLineEvent {}
 
 
 public class DatabaseSubsystem {
-	private static final String databaseConnectStr = "";
-	//local variable to hold database connection here
-	
-	DatabaseSubsystem() {
-		//do initialization stuff here
-	}
+	private static final String databaseConnectStr = ""; //local variable to hold database connection here
 	
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
 		return true;
@@ -45,11 +40,15 @@ public class DatabaseSubsystem {
 		return true;
 	}
 	
-	public static boolean readDecisionLineEvent(DecisionLineEvent readEvent) { 
-		return true;
+	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) { 
+		return null;
 	}
 	
 	public static boolean writeDecisionLineEvent(DecisionLineEvent writeEvent) {
+		return true;
+	}
+	
+	public static boolean verifyAdminCredentials(String adminId, String credentials) {
 		return true;
 	}
 }
