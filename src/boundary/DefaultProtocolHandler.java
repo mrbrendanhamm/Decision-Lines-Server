@@ -8,7 +8,6 @@ package boundary;
 import org.w3c.dom.Node;
 
 import controller.*;
-import server.*;
 import xml.*;
 import shared.*;
 
@@ -33,18 +32,8 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		
 		System.out.println (request);
 		
-		/* To be replaced by our controllers once we write them
-		// send back our model
-		if (type.equals ("modelRequest")) {
-			return new SendModelController().process(st, request);
-		} else if (type.equals ("updateRequest")) {
-			return new UpdateModelController().process(st, request);
-		} else if (type.equals ("lockRequest")) {
-			return new LockRequestController().process(st, request);
-		} else if (type.equals ("lockStatusRequest")) {
-			return new LockStatusRequestController().process(st, request);
-		}
-		*/
+		if (type.equals("connectRequest")) //TODO Rewrite with the proper name for the ConnectToDLE message type
+			return new ConnectToDLEController().process(st, request);
 
 		// unknown? no idea what to do
 		System.err.println("Unable to handle message:" + request);
@@ -53,7 +42,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 
 	@Override
 	public void logout(ClientState st) {
-		//to be replace by our customer disconnect controller
+		//TODO to be replace by our customer disconnect controller
 		//new ClientDisconnectController().process(st);		
 	} 
 }

@@ -5,11 +5,9 @@
 package shared;
 
 // temporary until the real entities are defined
-class Model {}
 class Edge {}
 class User {}
 class Choice {}
-class ConnectedClient {}
 class DecisionLineEvent {}
 
 

@@ -5,11 +5,11 @@ import shared.IProtocolHandler;
 import xml.Message;
 
 public class ConnectToDLEController implements IProtocolHandler {
-	ConnectToDLEController() {
+	public ConnectToDLEController() {
 	}
 
 	@Override
-	public Message process(ClientState state, Message request) {
+	public synchronized Message process(ClientState state, Message request) {
 		// Initialize local variables
 		Message response = null;
 		String eventId = new String();

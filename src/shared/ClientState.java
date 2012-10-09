@@ -9,6 +9,7 @@ import xml.Message;
 
 /** Server-side interface to per-client state. Exposes only the methods of ServerThread that are safe. */
 public interface ClientState {
+	public String myAssociatedEvent = new String();
 	
 	/** 
 	 * Send the given message to the client on whose behalf this thread is executing and return true
