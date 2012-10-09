@@ -7,6 +7,7 @@ package xml;
 
 import java.io.*;
 
+
 public class Parser {
 
 	/** Common id across request/responses. */

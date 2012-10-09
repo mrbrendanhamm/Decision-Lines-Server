@@ -17,6 +17,7 @@ import javax.xml.validation.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
+
 /** Support class for XML parsing of requests and responses. */
 public class Message {
 	static DocumentBuilder builder = null;              // builder for parsing XML strings

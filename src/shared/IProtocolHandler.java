@@ -8,7 +8,7 @@ package shared;
  */
 
 import shared.ClientState;
-import xml.*;
+import xml.Message;
 
 /** 
  * ServerThread out-sources processing of protocol to implementors 

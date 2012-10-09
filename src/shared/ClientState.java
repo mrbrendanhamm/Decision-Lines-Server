@@ -7,6 +7,7 @@ package shared;
 
 import xml.Message;
 
+
 /** Server-side interface to per-client state. Exposes only the methods of ServerThread that are safe. */
 public interface ClientState {
 	public String myAssociatedEvent = new String();
