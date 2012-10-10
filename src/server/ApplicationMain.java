@@ -26,7 +26,7 @@ public class ApplicationMain {
 		 */
 		// FIRST thing to do is register the protocol being used. There will be a single class protocol
 		// that will be defined and which everyone will use. For now, demonstrate with skeleton protocol.
-		if (!Message.configure("XMLMessageStructure.xsd")) { //TODO: replace this with the new message structure once finalized
+		if (!Message.configure("draw2choose.xsd")) { 
 			System.exit(0);
 		}
 		

@@ -32,8 +32,26 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		
 		System.out.println (request);
 		
-		if (type.equals("connectRequest")) //TODO Rewrite with the proper name for the ConnectToDLE message type
+		if (type.equals("connectRequest")) 
 			return new ConnectToDLEController().process(st, request);
+		else if (type.equals("addChoiceRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("addEdgeRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("adminRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("closeRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("createRequest")) 
+			return new CreateDLEController().process(st,  request);
+		else if (type.equals("forceRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("removeRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("reportRequest")) 
+			return null; //TODO write the appropriate controller link here
+		else if (type.equals("signInRequest")) 
+			return null; //TODO write the appropriate controller link here
 
 		// unknown? no idea what to do
 		System.err.println("Unable to handle message:" + request);
