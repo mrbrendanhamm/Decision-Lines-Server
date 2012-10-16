@@ -43,7 +43,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		else if (type.equals("closeRequest")) 
 			return null; //TODO write the appropriate controller link here
 		else if (type.equals("createRequest")) 
-			return new CreateDLEController().process(st,  request);
+			return new CreateDLEController().process(st, request);
 		else if (type.equals("forceRequest")) 
 			return null; //TODO write the appropriate controller link here
 		else if (type.equals("removeRequest")) 

@@ -15,7 +15,7 @@ public class TestCreateDLEController extends TestCase {
 		
 		//a sample, fully formed create message XML string
 		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='111' id='abcdef'>" +
+				"<request version='1.0' id='abcdef'>" +
 				"  <createRequest type='closed' question='Test Question' numChoices='3' numRounds='3' behavior='roundRobin'>" +
 				"    <choice value='Choice1' index='0'/>" +
 				"    <choice value='Choice2' index='1'/>" +

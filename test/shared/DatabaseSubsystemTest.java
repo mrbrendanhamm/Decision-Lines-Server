@@ -59,7 +59,7 @@ public class DatabaseSubsystemTest extends TestCase {
 		
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
 		
-		assertTrue(retval != null);
+		assertTrue(retval == null);
 	}
 	
 	public void testWriteDecisionLineEvent() {
@@ -71,11 +71,15 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testVerifyAdminCredentials() {
-		String adminId = new String();
-		String credentials = new String();
+		String adminId = new String("andrew");
+		String credentials = new String("andrew");
 		
-		boolean retval = DatabaseSubsystem.verifyAdminCredentials(adminId, credentials);
+		try {
+			boolean retval = DatabaseSubsystem.verifyAdminCredentials(adminId, credentials);
 		
-		assertTrue(retval);
+			assertTrue(retval);
+		} catch (IllegalArgumentException e) {
+			fail("invalid login");
+		}
 	}
 }

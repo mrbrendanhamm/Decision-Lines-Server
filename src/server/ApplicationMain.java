@@ -30,6 +30,11 @@ public class ApplicationMain {
 			System.exit(0);
 		}
 		
+		if (!DatabaseSubsystem.connect()) {
+			System.out.println("Error, cannot connect to the database");
+			System.exit(0);
+		}
+		
 		// Start server and have ProtocolHandler be responsible for all XML messages.
 		Server server = new Server(new DefaultProtocolHandler(), 9371);
 	

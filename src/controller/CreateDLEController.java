@@ -91,7 +91,10 @@ public class CreateDLEController implements IProtocolHandler {
 		
 		// Write message Response.  This might change if the response for an Open DLE is different from the
 		// response for a closed DLE
-		return writeSuccessResponse();
+		
+		//send a message to all other connected clients
+		
+		return writeSuccessResponse(); //this specific message is sent back to the requesting client
 	}
 	
 	/**
