@@ -9,9 +9,8 @@ import org.w3c.dom.NodeList;
 import shared.ClientState;
 import shared.IProtocolHandler;
 import xml.Message;
-
-enum EventType { OPEN, CLOSED }; //TODO move to entity or constant definition area
-enum Behavior { ASYNCHRONOUS, ROUNDROBIN }; //TODO move to entity or constant definition area
+import entity.DecisionLineEvent.Behavior;
+import entity.DecisionLineEvent.EventType;
 
 //TODO change once entity defined
 class Choice { 

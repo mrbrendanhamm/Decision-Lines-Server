@@ -4,35 +4,43 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DecisionLineEvent {
+	public static enum EventType { OPEN, CLOSED, FINISHED }; 
+	public static enum Behavior { ASYNCHRONOUS, ROUNDROBIN }; 
+	
 	private String uniqueId;
 	private String question;
 	private int numberOfChoice;
 	private int numberOfEdge;
 	private HashMap<User,ArrayList<Edge>> usersAndEdges;
 	private User currentTurn;
-	private boolean isAsynchronous;
+	private EventType myType;
+	private Behavior myBehavior;
+//	private boolean isAsynchronous;
 	private ArrayList<Choice> choices;
-	private User moderator;
-	private boolean isClosed;
+	private String moderator;
+	//private User moderator;
+	//private boolean isClosed;
 	private Choice decision;
-	private boolean isFinished;
+	//private boolean isFinished;
 	
 	public DecisionLineEvent()
 	{
 		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
 		this.choices = new ArrayList<Choice>();
 	}
-	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, boolean isAsynchronous)
+	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
 	{
 		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
 		this.choices = new ArrayList<Choice>();
 		this.question = question;
-		this.isClosed = false;
-		this.isFinished = false;
+		//this.isClosed = false;
+		//this.isFinished = false;
 		this.uniqueId = uniqueId;
 		this.numberOfChoice = numberOfChoice;
 		this.numberOfEdge = numberOfEdge;
-		this.isAsynchronous = isAsynchronous;
+//		this.isAsynchronous = isAsynchronous;
+		this.myType = newType;
+		this.myBehavior = newBehavior;
 	}
 	public void setChoices(Choice choice)
 	{
@@ -42,7 +50,7 @@ public class DecisionLineEvent {
 	{
 		this.decision = decision;
 	}
-	public void setModerator(User moderator)
+	public void setModerator(String moderator)
 	{
 		this.moderator = moderator;
 	}
@@ -54,6 +62,10 @@ public class DecisionLineEvent {
 	{
 		return this.uniqueId;
 	}
+
+	public void setBehavior(Behavior newBehavior) { myBehavior = newBehavior; }
+	public Behavior getBehavior() { return myBehavior; }
+		
 	public String getQuestion()
 	{
 		return this.question;
@@ -74,21 +86,30 @@ public class DecisionLineEvent {
 	{
 		return this.currentTurn;
 	}
+	/*
 	public boolean getIsAsynchronous()
 	{
 		return this.isAsynchronous;
+	}
+	*/
+	public EventType getEventType() {
+		return myType;
 	}
 	public ArrayList<Choice> getChoices()
 	{
 		return this.choices;
 	}
-	public User getModerator()
+	public String getModerator()
 	{
 		return this.moderator;
 	}
 	public boolean getIsClosed()
 	{
-		return this.isClosed;
+		if (myType == EventType.CLOSED || myType == EventType.FINISHED)
+			return true;
+		else
+			return false;
+		//return this.isClosed;
 	}
 	public Choice getDecision()
 	{
@@ -96,6 +117,10 @@ public class DecisionLineEvent {
 	}
 	public boolean getIsFinished()
 	{
-		return this.isFinished;
+		if (myType == EventType.FINISHED) 
+			return true;
+		else 
+			return false;
+		//return this.isFinished;
 	}
 }

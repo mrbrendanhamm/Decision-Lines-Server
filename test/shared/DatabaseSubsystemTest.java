@@ -2,6 +2,8 @@ package shared;
 
 import junit.framework.TestCase;
 
+import entity.*;
+
 public class DatabaseSubsystemTest extends TestCase {
 	public void testReadEdges() {
 		DecisionLineEvent myDLE = new DecisionLineEvent();
@@ -55,11 +57,11 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
-		String myDLEId = new String();
+		String myDLEId = new String("12345");
 		
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
 		
-		assertTrue(retval == null);
+		assertTrue(retval != null);
 	}
 	
 	public void testWriteDecisionLineEvent() {

@@ -10,12 +10,9 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-// temporary until the real entities are defined
-class Edge {}
-class User {}
-class Choice {}
-class DecisionLineEvent {}
-
+import entity.*;
+import entity.DecisionLineEvent.Behavior;
+import entity.DecisionLineEvent.EventType;
 
 public class DatabaseSubsystem {
 	/** Hard-coded database access information */
@@ -142,7 +139,52 @@ public class DatabaseSubsystem {
 		return true;
 	}
 	
-	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) { 
+	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) {
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from event where id=(?)");
+			pstmt.setString(1, decisionLineId);
+
+			ResultSet myRS = pstmt.executeQuery();
+			
+			if (!myRS.next()) { // error while executing the query, no results returned
+				return null;
+			}
+			
+			String uniqueId = new String(myRS.getString("id"));
+			String question = new String(myRS.getString("question"));
+			int numberOfChoices = myRS.getInt("numberOfChoices");
+			int numberOfEdges = myRS.getInt("numberOfEdges");
+			EventType newType = EventType.OPEN;
+			if (myRS.getInt("playStatus") == 0) // is Open
+				newType = EventType.OPEN;
+			else if (myRS.getInt("playStatus") == 1)  // is Closed
+				newType = EventType.CLOSED;
+			else if (myRS.getInt("playStatus") == 2)  // is Finished
+				newType = EventType.FINISHED;
+
+			Behavior newBehavior = Behavior.ROUNDROBIN;
+			if (myRS.getBoolean("isAsynchronous")) // is Open
+				newBehavior = Behavior.ASYNCHRONOUS;
+			else 
+				newBehavior = Behavior.ROUNDROBIN;
+
+			DecisionLineEvent newDLE = new DecisionLineEvent(uniqueId, question, numberOfChoices, numberOfEdges, newType, newBehavior);
+			newDLE.setModerator(myRS.getString("moderator"));
+
+			if (!readChoices(newDLE)) 
+				return null;
+
+			if (!readEdges(newDLE)) 
+				return null;
+
+			if (!readUsers(newDLE)) 
+				return null;
+
+			return newDLE;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
 		return null;
 	}
 	
