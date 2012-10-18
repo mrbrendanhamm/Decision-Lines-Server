@@ -123,4 +123,8 @@ public class DecisionLineEvent {
 			return false;
 		//return this.isFinished;
 	}
+	public boolean canAddChoice()
+	{
+		return (this.choices.size() <  this.numberOfChoice);
+	}
 }
