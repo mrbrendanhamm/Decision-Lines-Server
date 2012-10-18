@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.UUID;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -13,12 +15,12 @@ import xml.Message;
 import entity.*;
 
 public class ConnectToDLEController implements IProtocolHandler {
-	String myEventId;
+	String clientIdToServer;
 	String myVersion;
-	DecisionLineEvent myDLE;
+	UUID serverIdForClient;
 	
 	public ConnectToDLEController() {
-		myEventId = new String("");
+		clientIdToServer = new String("");
 		myVersion = new String("");
 	}
 
@@ -32,48 +34,33 @@ public class ConnectToDLEController implements IProtocolHandler {
 			return null;
 		}
 		
-		//is it already in the model?
-		
-		//if not, then load from DB
-		myDLE = DatabaseSubsystem.readDecisionLineEvent(myEventId);
-		if (myDLE == null)
-			return null;
-		
-		//associate ClientState with this event id, or some other mechanism to link the two
+		serverIdForClient = UUID.randomUUID();
 
+		//stored the ClientState object somewhere along with it's uniqueId
 		
-		return generateResponse();
+		return writeSuccessResponse();
 	}
 
 	boolean parseMessage(Message request) {
-		NamedNodeMap myAttributes = request.contents.getAttributes();
+		myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
+		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 
-		for (int i = 0; i < myAttributes.getLength(); i++) {
-			if (myAttributes.item(i).getLocalName().equals("version")) {
-				myVersion = new String(myAttributes.item(i).getNodeValue());
-			}
-			else if (myAttributes.item(i).getLocalName().equals("id")) {
-				myEventId = new String(myAttributes.item(i).getNodeValue());
-			}
-		}
 		return true;
 	}	
 
-	//doh, error here, the only response should be success or failure.  data pull is later
-	Message generateResponse() {
+	Message writeSuccessResponse() {
 		String xmlString = new String ("<?xml version='1.0' encoding='UTF-8'?><response ");
-		xmlString = xmlString + "id='" + myEventId + "' ";
-		xmlString = xmlString + "version='" + myVersion + "' ";
-		xmlString = xmlString + "success='true' ";
-		//failure event?
-		xmlString = xmlString + ">";
-		
-		xmlString = xmlString + "<connectReponse>";
-		
-		
-		xmlString = xmlString + "</connectResponse></response>";
+		xmlString = xmlString + "id='" + clientIdToServer + "' version='" + myVersion + "' ";
+		xmlString = xmlString + "success='true'>";
+		xmlString = xmlString + "<connectResponse id='" + serverIdForClient.toString() + "' />";
+		xmlString = xmlString + "</response>";
+		System.out.println(xmlString);
 		Message myMsg = new Message(xmlString);
 		
 		return myMsg;
+	}
+	
+	Message writeFailureResponse() {
+		return null;
 	}
 }

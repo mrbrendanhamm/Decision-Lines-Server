@@ -22,7 +22,7 @@ public class DeleteChoiceController implements IProtocolHandler {
 		ArrayList<Choice> choices = DLE.getChoices();
 		for(int i = 0; i < choices.size(); i++)
 		{
-			if(choices.get(i).equal(choice))
+			if(choices.get(i).equals(choice))
 			{
 				choices.remove(i);
 				return true;

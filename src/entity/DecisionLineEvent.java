@@ -28,6 +28,15 @@ public class DecisionLineEvent {
 		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
 		this.choices = new ArrayList<Choice>();
 	}
+	
+	/**
+	 * This constructor is only used when attempting to locate a DecisionLineEvent within an ArrayList
+	 * @param uniqueId
+	 */
+	public DecisionLineEvent(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
+	
 	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
 	{
 		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
@@ -126,5 +135,25 @@ public class DecisionLineEvent {
 	public boolean canAddChoice()
 	{
 		return (this.choices.size() <  this.numberOfChoice);
+	}
+	
+	/**
+	 * This is required for this object to exist in an ArrayList.  Essentially I am stating
+	 * that the uniqueId field the way to uniquely identify this object.  
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) 
+			return false;
+		
+		if (!(o instanceof DecisionLineEvent))
+			return false;
+
+		DecisionLineEvent tmp = (DecisionLineEvent) o;
+		
+		if (tmp.uniqueId.equals(this.uniqueId)) 
+			return true;
+		
+		return false;
 	}
 }

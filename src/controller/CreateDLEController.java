@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -13,43 +14,6 @@ import entity.Choice;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
-/*
-//TODO change once entity defined
-class Choice { 
-	public String value;
-	public int index;
-	
-	Choice(String value, int index) {
-		this.value = value;
-		this.index = index;
-	}
-	*/
-	/**
-	 * This is required for the ArrayList object to function properly.  Essentially I am enforcing
-	 * that the index number is unique.  If an index number is already used then future
-	 * additions are ignored.  The actual code in here is a very technical requirement of java, and it
-	 * is probably best if I explain it in person rather than have you review it here and research it
-	 * online.
-	 */
-/*
-	@Override
-	public boolean equals(Object o) {
-		if (o == null) 
-			return false;
-		
-		if (!(o instanceof Choice))
-			return false;
-
-		Choice tmp = (Choice) o;
-		
-		if (tmp.index == this.index) 
-			return true;
-		
-		return false;
-	}
-}
-*/
-
 public class CreateDLEController implements IProtocolHandler {
 	ArrayList<Choice> myChoices; 
 	EventType myType;
@@ -61,6 +25,7 @@ public class CreateDLEController implements IProtocolHandler {
 	String moderatorPassword;
 	String myEventId;
 	String myVersion;
+	String clientIdToServer;
 	
 	public CreateDLEController() {
 		myChoices = new ArrayList<Choice>();
@@ -73,15 +38,18 @@ public class CreateDLEController implements IProtocolHandler {
 	public synchronized Message process(ClientState state, Message request) {
 		// Read in the Request
 		if (!parseMessage(request)) {
-			//do error message
+			//return failure
 			return null;
 		}
 		
 		//Check for missing parameters
 		if (myQuestion.equals("")) /* test all parameters here */ { 
 			//debug message for a mal-formed message
-			return null;
+			return writeFailureResponse();
 		}
+		
+		//I generate the event Id and return it to the client.  probably something better than this massive string however
+		myEventId = UUID.randomUUID().toString();
 		
 		//Both open and closed DLEs are handled through this request, so we must branch the program logic
 		// to handle each type differently 
@@ -97,7 +65,7 @@ public class CreateDLEController implements IProtocolHandler {
 		// Write message Response.  This might change if the response for an Open DLE is different from the
 		// response for a closed DLE
 		
-		//send a message to all other connected clients
+		//send a message to all other connected clients.  The question is how is this mechanism determined?
 		
 		return writeSuccessResponse(); //this specific message is sent back to the requesting client
 	}
@@ -143,48 +111,25 @@ public class CreateDLEController implements IProtocolHandler {
 	 * @return true if successfully parsed
 	 */
 	boolean parseMessage(Message request) {
-		NamedNodeMap myAttributes = request.contents.getAttributes();
-		/*
-		 * Parse through the node list.  I don't necessarily know the order that they appear in, so 
-		 * I have to examine each node to determine the type.  And just be warned, there are additional nodes
-		 * which serve an unknown purpose (at least as far as I know).
-		 */
-		for (int i = 0; i < myAttributes.getLength(); i++) {
-			if (myAttributes.item(i).getLocalName().equals("version")) {
-				myVersion = new String(myAttributes.item(i).getNodeValue());
-			}
-			else if (myAttributes.item(i).getLocalName().equals("id")) {
-				myEventId = new String(myAttributes.item(i).getNodeValue());
-			}
-		}
+		myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
+		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 
 		Node child = request.contents.getFirstChild();
 		child = child.getNextSibling();
-		myAttributes = child.getAttributes(); //grab the XML attributes for this node
 		
-		for (int i = 0; i < myAttributes.getLength(); i++) { 
-			if (myAttributes.item(i).getLocalName().equals("type")) {
-				if (myAttributes.item(i).getNodeValue().equals("open"))
-					myType = EventType.OPEN;
-				else
-					myType = EventType.CLOSED;
-			}
-			else if (myAttributes.item(i).getLocalName().equals("behavior")) {
-				if (myAttributes.item(i).getNodeValue().equals("roundRobin"))
-					myBehavior = Behavior.ROUNDROBIN;
-				else
-					myBehavior = Behavior.ASYNCHRONOUS;
-			}
-			else if (myAttributes.item(i).getLocalName().equals("question")) {
-				myQuestion = new String(myAttributes.item(i).getNodeValue());
-			}
-			else if (myAttributes.item(i).getLocalName().equals("numChoices")) {
-				numOfChoices = Integer.parseInt(myAttributes.item(i).getNodeValue());
-			}
-			else if (myAttributes.item(i).getLocalName().equals("numRounds")) {
-				numOfRounds = Integer.parseInt(myAttributes.item(i).getNodeValue());
-			}
-		}
+		if (child.getAttributes().getNamedItem("type").getNodeValue().equals("open"))
+			myType = EventType.OPEN;
+		else
+			myType = EventType.CLOSED;
+			
+		if (child.getAttributes().getNamedItem("behavior").getNodeValue().equals("roundRobin"))
+			myBehavior = Behavior.ROUNDROBIN;
+		else
+			myBehavior = Behavior.ASYNCHRONOUS;
+			
+		myQuestion = new String(child.getAttributes().getNamedItem("question").getNodeValue());
+		numOfChoices = Integer.parseInt(child.getAttributes().getNamedItem("numChoices").getNodeValue());
+		numOfRounds = Integer.parseInt(child.getAttributes().getNamedItem("numRounds").getNodeValue());
 		
 		//one layer deep are the nodes that hold information for the Choices and the Moderator.
 		//unfortunately children nodes are accessed through a separate entity called a 'NodeList'
@@ -198,39 +143,19 @@ public class CreateDLEController implements IProtocolHandler {
 				String choiceName = new String("");
 				int indexOf = -1;
 				
-				myAttributes = myList.item(i).getAttributes();
+				choiceName = myList.item(i).getAttributes().getNamedItem("value").getNodeValue();
+				indexOf = Integer.parseInt(myList.item(i).getAttributes().getNamedItem("index").getNodeValue());
 				
-				for (int x = 0; x < myAttributes.getLength(); x++) {
-					if (myAttributes.item(x).getNodeName().equals("value"))
-						choiceName = new String(myAttributes.item(x).getNodeValue());
-					else if (myAttributes.item(x).getNodeName().equals("index"))
-						indexOf = Integer.parseInt(myAttributes.item(x).getNodeValue());
-				}
-				
-				//combine these two pieces of information into the choice, and add it to our choice array
 				Choice newChoice = new Choice(choiceName, indexOf);
 				myChoices.add(newChoice);
 			}
 			else if (myList.item(i).getNodeName().equals("user")) {  //A Moderator has been found
-				//similar deal for users.  these classes have two parts, user name and password, that must be
-				// parsed from the attributes
-				String userName = new String("");
-				String password = new String("");
+				moderator = myList.item(i).getAttributes().getNamedItem("name").getNodeValue();
 				
-				myAttributes = myList.item(i).getAttributes();
-				
-				for (int x = 0; x < myAttributes.getLength(); x++) {
-					if (myAttributes.item(x).getNodeName().equals("name"))
-						userName = new String(myAttributes.item(x).getNodeValue());
-					else if (myAttributes.item(x).getNodeName().equals("password"))
-						password = new String(myAttributes.item(x).getNodeValue());
-				}
-				
-				//In reality, I would create a User entity here and assign it these values.  since
-				// one doesn't exist right now, I'll store it in the String variables listed in the controller's
-				// definition
-				moderator = new String(userName);
-				moderatorPassword = new String(password);
+				if (myList.item(i).getAttributes().getNamedItem("password") != null)
+					moderatorPassword = myList.item(i).getAttributes().getNamedItem("password").getNodeValue();
+				else
+					moderatorPassword = new String("");
 			}
 		}
 		
@@ -245,6 +170,12 @@ public class CreateDLEController implements IProtocolHandler {
 	 * @return A properly formatted Success method, or null if a message cannot be properly formed
 	 */
 	Message writeSuccessResponse() {
+		//TODO implement
+		return null;
+	}
+	
+	Message writeFailureResponse() {
+		//TODO implement
 		return null;
 	}
 }

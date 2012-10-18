@@ -125,8 +125,27 @@ public class DatabaseSubsystem {
 	}
 	
 	public static boolean readChoices(DecisionLineEvent readEvent) { 
-		//TODO implement
-		return true;
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from choice where eventId=(?) ORDER BY orderValue asc");
+			pstmt.setString(1, readEvent.getUniqueId());
+
+			ResultSet myRS = pstmt.executeQuery();
+			Choice newChoice;
+			String name;
+			int order;
+			while (myRS.next()) { // error while executing the query, no results returned
+				name = new String(myRS.getString("name"));
+				order = myRS.getInt("orderValue");
+				newChoice = new Choice(name, order);
+				readEvent.getChoices().add(newChoice);
+			}
+
+			return true;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return false;
 	}
 	
 	public static boolean writeChoice(Choice writeChoice, String decisionLineId) {

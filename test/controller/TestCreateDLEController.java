@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.UUID;
+
 import xml.Message;
 import junit.framework.TestCase;
 
@@ -15,12 +17,12 @@ public class TestCreateDLEController extends TestCase {
 		
 		//a sample, fully formed create message XML string
 		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='abcdef'>" +
+				"<request version='1.0' id='" + UUID.randomUUID().toString() + "'>" +
 				"  <createRequest type='closed' question='Test Question' numChoices='3' numRounds='3' behavior='roundRobin'>" +
 				"    <choice value='Choice1' index='0'/>" +
 				"    <choice value='Choice2' index='1'/>" +
 				"    <choice value='Choice3' index='2'/>" +
-				"    <user name='User1' password=''/>" +
+				"    <user name='User1' />" +
 				"  </createRequest>" +
 				"</request>");
 		

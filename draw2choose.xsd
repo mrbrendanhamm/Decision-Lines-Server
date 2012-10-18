@@ -170,12 +170,13 @@
       <xs:element ref='choice' minOccurs='0' maxOccurs='unbounded'/>
     </xs:sequence>
 
-    <xs:attribute name='id'         type='xs:string' use='required'/>   
-    <xs:attribute name='type'       type='eventType' use='required'/>
-    <xs:attribute name='question'   type='xs:string' use='required'/>
-    <xs:attribute name='numChoices' type='xs:int'    use='required'/>
-    <xs:attribute name='numRounds'  type='xs:int'    use='required'/>
-    <xs:attribute name='position'   type='xs:int'    use='required'/>
+    <xs:attribute name='id'         type='xs:string'    use='required'/>   
+    <xs:attribute name='type'       type='eventType'    use='required'/>
+    <xs:attribute name='behavior'   type='behaviorType' use='required'/>
+    <xs:attribute name='question'   type='xs:string'    use='required'/>
+    <xs:attribute name='numChoices' type='xs:int'       use='required'/>
+    <xs:attribute name='numRounds'  type='xs:int'       use='required'/>
+    <xs:attribute name='position'   type='xs:int'       use='required'/>
   </xs:complexType>
 </xs:element>
 

@@ -30,7 +30,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		Node child = request.contents.getFirstChild();
 		String type = child.getLocalName();
 		
-		System.out.println (request);
+		System.out.println ("Receiving: " + request);
 		
 		if (type.equals("connectRequest")) 
 			return new ConnectToDLEController().process(st, request);
