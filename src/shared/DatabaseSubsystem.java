@@ -115,27 +115,32 @@ public class DatabaseSubsystem {
 
 	
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
-		
+		//TODO implement
 		return true;
 	}
 	
 	public static boolean writeEdge(Edge writeEdge, String decisionLineId) {
+		//TODO implement
 		return true;
 	}
 	
 	public static boolean readChoices(DecisionLineEvent readEvent) { 
+		//TODO implement
 		return true;
 	}
 	
 	public static boolean writeChoice(Choice writeChoice, String decisionLineId) {
+		//TODO implement
 		return true;
 	}
 	
 	public static boolean readUsers(DecisionLineEvent readEvent) { 
+		//TODO implement
 		return true;
 	}
 	
 	public static boolean writeUser(User writeUser, String decisionLineId) {
+		//TODO implement
 		return true;
 	}
 	
@@ -145,7 +150,6 @@ public class DatabaseSubsystem {
 			pstmt.setString(1, decisionLineId);
 
 			ResultSet myRS = pstmt.executeQuery();
-			
 			if (!myRS.next()) { // error while executing the query, no results returned
 				return null;
 			}
@@ -189,6 +193,7 @@ public class DatabaseSubsystem {
 	}
 	
 	public static boolean writeDecisionLineEvent(DecisionLineEvent writeEvent) {
+		//TODO implement
 		return true;
 	}
 	

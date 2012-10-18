@@ -55,6 +55,8 @@ public class CreateDLEController implements IProtocolHandler {
 	int numOfRounds;
 	String moderator;
 	String moderatorPassword;
+	String myEventId;
+	String myVersion;
 	
 	public CreateDLEController() {
 		myChoices = new ArrayList<Choice>();
@@ -137,15 +139,25 @@ public class CreateDLEController implements IProtocolHandler {
 	 * @return true if successfully parsed
 	 */
 	boolean parseMessage(Message request) {
-		Node child = request.contents.getFirstChild();
-		child = child.getNextSibling();
-		NamedNodeMap myAttributes = child.getAttributes(); //grab the XML attributes for this node
-		
+		NamedNodeMap myAttributes = request.contents.getAttributes();
 		/*
 		 * Parse through the node list.  I don't necessarily know the order that they appear in, so 
 		 * I have to examine each node to determine the type.  And just be warned, there are additional nodes
 		 * which serve an unknown purpose (at least as far as I know).
 		 */
+		for (int i = 0; i < myAttributes.getLength(); i++) {
+			if (myAttributes.item(i).getLocalName().equals("version")) {
+				myVersion = new String(myAttributes.item(i).getNodeValue());
+			}
+			else if (myAttributes.item(i).getLocalName().equals("id")) {
+				myEventId = new String(myAttributes.item(i).getNodeValue());
+			}
+		}
+
+		Node child = request.contents.getFirstChild();
+		child = child.getNextSibling();
+		myAttributes = child.getAttributes(); //grab the XML attributes for this node
+		
 		for (int i = 0; i < myAttributes.getLength(); i++) { 
 			if (myAttributes.item(i).getLocalName().equals("type")) {
 				if (myAttributes.item(i).getNodeValue().equals("open"))

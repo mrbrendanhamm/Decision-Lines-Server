@@ -6,6 +6,7 @@ import entity.*;
 
 public class DatabaseSubsystemTest extends TestCase {
 	public void testReadEdges() {
+		//TODO implement
 		DecisionLineEvent myDLE = new DecisionLineEvent();
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
@@ -14,6 +15,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteEdge() {
+		//TODO implement
 		Edge myEdge = new Edge();
 		String myDLEId = new String();
 		
@@ -23,6 +25,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadChoices() {
+		//TODO implement
 		DecisionLineEvent myDLE = new DecisionLineEvent();
 		
 		boolean retval = DatabaseSubsystem.readChoices(myDLE);
@@ -31,6 +34,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteChoice() {
+		//TODO implement
 		Choice myChoice = new Choice();
 		String myDLEId = new String();
 		
@@ -40,6 +44,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadUsers() {
+		//TODO implement
 		DecisionLineEvent myDLE = new DecisionLineEvent();
 		
 		boolean retval = DatabaseSubsystem.readUsers(myDLE);
@@ -48,6 +53,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteUser() {
+		//TODO implement
 		User myUser = new User();
 		String myDLEId = new String();
 		
@@ -57,6 +63,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
+		// This test case only works immediately after running the dls_up.sql code as it is as of 10/16
 		String myDLEId = new String("12345");
 		
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
@@ -65,6 +72,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteDecisionLineEvent() {
+		//TODO implement
 		DecisionLineEvent myEvent = new DecisionLineEvent();
 		
 		boolean retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
