@@ -6,33 +6,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import shared.ClientState;
+import shared.IProtocolHandler;
+import xml.Message;
+
 
 import entity.DecisionLineEvent;
 import entity.Edge;
 import entity.Model;
 import entity.User;
 
-public class RemoveUserController {
-	private Model myModel;
+public class RemoveUserController implements IProtocolHandler {
 	public RemoveUserController()
 	{
 		
 	}
-	public RemoveUserController(Model myModel)
-	{
-		this.myModel = myModel;
-	}
-	public void setMyModel(Model myModel)
-	{
-		this.myModel = myModel;
-	}
-	public Model getMyModel()
-	{
-		return this.myModel;
-	}
+
 	public synchronized boolean removeUser(User user, String uniqueId)
 	{
-		DecisionLineEvent DLE = this.myModel.getDecisionLineEvent(uniqueId);
+		DecisionLineEvent DLE = Model.getModel().getDecisionLineEvent(uniqueId);
 		HashMap<User,ArrayList<Edge>> usersAndEdges = DLE.getUsersAndEdges();
 		Iterator<Entry<User, ArrayList<Edge>>> it = usersAndEdges.entrySet().iterator();
 		while(it.hasNext())
@@ -45,5 +37,10 @@ public class RemoveUserController {
 			}
 		}
 		return false;
+	}
+	@Override
+	public synchronized Message process(ClientState state, Message request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

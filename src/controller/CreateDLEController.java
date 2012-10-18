@@ -9,9 +9,11 @@ import org.w3c.dom.NodeList;
 import shared.ClientState;
 import shared.IProtocolHandler;
 import xml.Message;
+import entity.Choice;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
+/*
 //TODO change once entity defined
 class Choice { 
 	public String value;
@@ -21,7 +23,7 @@ class Choice {
 		this.value = value;
 		this.index = index;
 	}
-	
+	*/
 	/**
 	 * This is required for the ArrayList object to function properly.  Essentially I am enforcing
 	 * that the index number is unique.  If an index number is already used then future
@@ -29,6 +31,7 @@ class Choice {
 	 * is probably best if I explain it in person rather than have you review it here and research it
 	 * online.
 	 */
+/*
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) 
@@ -45,6 +48,7 @@ class Choice {
 		return false;
 	}
 }
+*/
 
 public class CreateDLEController implements IProtocolHandler {
 	ArrayList<Choice> myChoices; 

@@ -4,11 +4,21 @@ import java.util.ArrayList;
 
 public class Model {
 	private ArrayList<DecisionLineEvent> decisionLineEvents;
+	private static Model thisModel = null;
 	
-	public Model()
-	{
+	Model() {
 		this.decisionLineEvents = new ArrayList<DecisionLineEvent>();
 	}
+
+	// Changed access method to a singleton so controllers can always directly reference the model
+	public static Model getModel() {
+		if (thisModel == null) {
+			thisModel = new Model();
+		}
+		
+		return thisModel;
+	}
+	
 	public void setDecisionLineEvents(DecisionLineEvent DLE)
 	{
 		this.decisionLineEvents.add(DLE);

@@ -35,7 +35,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		if (type.equals("connectRequest")) 
 			return new ConnectToDLEController().process(st, request);
 		else if (type.equals("addChoiceRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new AddChoiceController().process(st,  request);
 		else if (type.equals("addEdgeRequest")) 
 			return null; //TODO write the appropriate controller link here
 		else if (type.equals("adminRequest")) 
@@ -51,8 +51,9 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		else if (type.equals("reportRequest")) 
 			return null; //TODO write the appropriate controller link here
 		else if (type.equals("signInRequest")) 
-			return null; //TODO write the appropriate controller link here
-
+			return new SignIntoDLEController().process(st, request);
+		//there does not appear to be a DeleteChoice option.  
+		
 		// unknown? no idea what to do
 		System.err.println("Unable to handle message:" + request);
 		return null;

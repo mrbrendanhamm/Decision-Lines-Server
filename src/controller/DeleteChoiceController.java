@@ -2,31 +2,23 @@ package controller;
 
 import java.util.ArrayList;
 
+import shared.ClientState;
+import shared.IProtocolHandler;
+import xml.Message;
+
 import entity.Choice;
 import entity.DecisionLineEvent;
 import entity.Model;
 
-public class DeleteChoiceController {
-	private Model myModel;
+public class DeleteChoiceController implements IProtocolHandler {
 	public DeleteChoiceController()
 	{
 		
 	}
-	public DeleteChoiceController(Model myModel)
+
+	public boolean deleteChoice(entity.Choice choice, String uniqueId)
 	{
-		this.myModel = myModel;
-	}
-	public void setMyModel(Model myModel)
-	{
-		this.myModel = myModel;
-	}
-	public Model getMyModel()
-	{
-		return this.myModel;
-	}
-	public synchronized boolean deleteChoice(entity.Choice choice, String uniqueId)
-	{
-		DecisionLineEvent DLE = this.myModel.getDecisionLineEvent(uniqueId);
+		DecisionLineEvent DLE = Model.getModel().getDecisionLineEvent(uniqueId);
 		ArrayList<Choice> choices = DLE.getChoices();
 		for(int i = 0; i < choices.size(); i++)
 		{
@@ -37,5 +29,10 @@ public class DeleteChoiceController {
 			}
 		}
 		return false;
+	}
+	@Override
+	public synchronized Message process(ClientState state, Message request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
