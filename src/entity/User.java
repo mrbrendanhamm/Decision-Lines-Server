@@ -29,4 +29,12 @@ public class User {
 	{
 		this.password = password;
 	}
+	public boolean equal(Object o)
+	{
+		if(this.userid.equals(((User) o).getUser()) && this.password == ((User) o).getPassword())
+		{
+			return true;
+		}
+		return false;		
+	}
 }

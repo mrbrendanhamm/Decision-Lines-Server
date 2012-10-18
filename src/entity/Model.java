@@ -17,4 +17,15 @@ public class Model {
 	{
 		return this.decisionLineEvents;
 	}
+	public DecisionLineEvent getDecisionLineEvent(String uniqueId)
+	{
+		for(DecisionLineEvent DLE : this.decisionLineEvents)
+		{
+			if(DLE.getUniqueId().equals(uniqueId))
+			{
+				return DLE;
+			}
+		}
+		return null;
+	}
 }

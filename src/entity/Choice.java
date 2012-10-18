@@ -31,4 +31,12 @@ private int order;
 	{
 		this.name = name;
 	}
+	public boolean equal(Object o)
+	{
+		if(this.name.equals(((Choice) o).getName()) && this.order == ((Choice) o).getOrder())
+		{
+			return true;
+		}
+		return false;		
+	}
 }
