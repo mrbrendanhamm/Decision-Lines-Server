@@ -24,7 +24,7 @@ public class RemoveUserController implements IProtocolHandler {
 
 	public synchronized boolean removeUser(User user, String uniqueId)
 	{
-		DecisionLineEvent DLE = Model.getModel().getDecisionLineEvent(uniqueId);
+		DecisionLineEvent DLE = Model.getInstance().getDecisionLineEvent(uniqueId);
 		HashMap<User,ArrayList<Edge>> usersAndEdges = DLE.getUsersAndEdges();
 		Iterator<Entry<User, ArrayList<Edge>>> it = usersAndEdges.entrySet().iterator();
 		while(it.hasNext())

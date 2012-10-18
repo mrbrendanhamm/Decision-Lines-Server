@@ -115,8 +115,33 @@ public class DatabaseSubsystem {
 
 	
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
-		//TODO implement
-		return true;
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from edge where eventId=(?)");
+			pstmt.setString(1, readEvent.getUniqueId());
+
+			ResultSet myRS = pstmt.executeQuery();
+			Edge newEdge;
+			Choice tmpChoice;
+			int height, choiceId;
+			while (myRS.next()) { // error while executing the query, no results returned
+				height = myRS.getInt("height");
+				choiceId = myRS.getInt("choiceId");
+				
+				tmpChoice = readEvent.getChoices().get(choiceId);
+				
+				if (tmpChoice == null) //error, choice dictated is not valid
+					return false;
+				
+				newEdge = new Edge(tmpChoice, height, null);
+				//TODO add edge here
+			}
+
+			return true;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return false;
 	}
 	
 	public static boolean writeEdge(Edge writeEdge, String decisionLineId) {
@@ -154,8 +179,26 @@ public class DatabaseSubsystem {
 	}
 	
 	public static boolean readUsers(DecisionLineEvent readEvent) { 
-		//TODO implement
-		return true;
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from user where eventId=(?)");
+			pstmt.setString(1, readEvent.getUniqueId());
+
+			ResultSet myRS = pstmt.executeQuery();
+			User newUser;
+			String name, password;
+			while (myRS.next()) { // error while executing the query, no results returned
+				name = new String(myRS.getString("userName"));
+				password = new String(myRS.getString("userPassword"));
+				newUser = new User(name, password);
+				//TODO add to user list here
+			}
+
+			return true;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return false;
 	}
 	
 	public static boolean writeUser(User writeUser, String decisionLineId) {

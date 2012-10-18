@@ -1,12 +1,11 @@
 package controller;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import entity.Choice;
 import entity.DecisionLineEvent;
 import entity.DecisionLineEvent.Behavior;
-import entity.DecisionLineEvent.EventType;
+import entity.Model;
 import shared.ClientState;
 import shared.DatabaseSubsystem;
 import shared.IProtocolHandler;
@@ -34,13 +33,18 @@ public class SignIntoDLEController implements IProtocolHandler {
 		}
 		
 		//is it already in the model?
-		//TODO find using the new Equals operator I just added.
-		
-		//if not, then load from DB
-		myDLE = DatabaseSubsystem.readDecisionLineEvent(myEventId);
-		if (myDLE == null)
-			return writeFailureResponse();
-		
+		int indexOf = Model.getInstance().getDecisionLineEvents().indexOf(new DecisionLineEvent(myEventId));
+		if (indexOf < 0) { //doesn't exist in the model yet.  Read from DB
+			myDLE = DatabaseSubsystem.readDecisionLineEvent(myEventId);
+			
+			if (myDLE == null) //not found in DB, return failure
+				return writeFailureResponse("Does not exist in database!");
+			
+			Model.getInstance().getDecisionLineEvents().add(myDLE);
+		}
+		else
+			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
+			
 		//associate ClientState with this event id, or some other mechanism to link the two
 		
 		return writeSuccessResponse();
@@ -88,7 +92,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 		return myMsg;
 	}
 	
-	Message writeFailureResponse() {
+	Message writeFailureResponse(String reason) {
 		return null;
 	}
 }

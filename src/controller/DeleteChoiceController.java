@@ -18,7 +18,7 @@ public class DeleteChoiceController implements IProtocolHandler {
 
 	public boolean deleteChoice(entity.Choice choice, String uniqueId)
 	{
-		DecisionLineEvent DLE = Model.getModel().getDecisionLineEvent(uniqueId);
+		DecisionLineEvent DLE = Model.getInstance().getDecisionLineEvent(uniqueId);
 		ArrayList<Choice> choices = DLE.getChoices();
 		for(int i = 0; i < choices.size(); i++)
 		{

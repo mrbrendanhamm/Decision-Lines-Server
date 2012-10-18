@@ -3,7 +3,6 @@ package controller;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -45,7 +44,7 @@ public class CreateDLEController implements IProtocolHandler {
 		//Check for missing parameters
 		if (myQuestion.equals("")) /* test all parameters here */ { 
 			//debug message for a mal-formed message
-			return writeFailureResponse();
+			return writeFailureResponse("No question has been provided");
 		}
 		
 		//I generate the event Id and return it to the client.  probably something better than this massive string however
@@ -170,11 +169,17 @@ public class CreateDLEController implements IProtocolHandler {
 	 * @return A properly formatted Success method, or null if a message cannot be properly formed
 	 */
 	Message writeSuccessResponse() {
-		//TODO implement
-		return null;
+		String xmlString = "<?xml version='1.0' encoding='UTF-8'?>" +
+				"<response id='" + clientIdToServer + "' version='" + myVersion + "' success='true'>" +
+				"  <createResponse id='" + myEventId + "'/>" +
+				"</response>";
+		System.out.println(xmlString);
+		Message myMsg = new Message(xmlString);
+		
+		return myMsg;
 	}
 	
-	Message writeFailureResponse() {
+	Message writeFailureResponse(String reason) {
 		//TODO implement
 		return null;
 	}

@@ -11,7 +11,7 @@ public class Model {
 	}
 
 	// Changed access method to a singleton so controllers can always directly reference the model
-	public static Model getModel() {
+	public static Model getInstance() {
 		if (thisModel == null) {
 			thisModel = new Model();
 		}

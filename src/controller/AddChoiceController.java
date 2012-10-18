@@ -14,7 +14,7 @@ public class AddChoiceController implements IProtocolHandler {
 	
 	public boolean addChoice(entity.Choice choice, String uniqueId)
 	{
-		DecisionLineEvent DLE = Model.getModel().getDecisionLineEvent(uniqueId);
+		DecisionLineEvent DLE = Model.getInstance().getDecisionLineEvent(uniqueId);
 		if(DLE.canAddChoice())
 		{
 			DLE.getChoices().add(choice);
