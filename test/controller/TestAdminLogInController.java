@@ -14,12 +14,12 @@ public class TestAdminLogInController extends TestCase {
 		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
 				"<request version='1.0' id='" + clientIdForServer.toString() + "'>" +
 				"  <adminRequest>" +
-				"    <user name='admin' password='password' />" +
+				"    <user name='andrew' password='andrew' />" +
 				"  </adminRequest>" +
 				"</request>");
 		
 		if (!Message.configure("draw2choose.xsd")) { 
-			System.exit(0);
+			fail();
 		}
 		
 		Message msg = new Message(testMessageSuccess);

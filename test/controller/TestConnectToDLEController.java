@@ -17,7 +17,7 @@ public class TestConnectToDLEController extends TestCase {
 				"</request>");
 		
 		if (!Message.configure("draw2choose.xsd")) { 
-			System.exit(0);
+			fail();
 		}
 		Message msg = new Message(testMessageSuccess);
 		

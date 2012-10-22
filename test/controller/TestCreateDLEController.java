@@ -28,7 +28,7 @@ public class TestCreateDLEController extends TestCase {
 		
 		//configure the message handling system. This ensures the supplied message is valid according to the schema 
 		if (!Message.configure("draw2choose.xsd")) { 
-			System.exit(0);
+			fail();
 		}
 		Message msg = new Message(testMessageSuccess);
 		
