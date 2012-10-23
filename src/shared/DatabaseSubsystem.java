@@ -122,18 +122,34 @@ public class DatabaseSubsystem {
 			ResultSet myRS = pstmt.executeQuery();
 			Edge newEdge;
 			Choice tmpChoice;
-			int height, choiceId;
-			while (myRS.next()) { // error while executing the query, no results returned
+			User selectedUser, tmpUser;
+			int height, choiceId, indexOf;
+			String tmpUserName;
+			
+			while (myRS.next()) {
 				height = myRS.getInt("height");
 				choiceId = myRS.getInt("choiceId");
+				tmpUserName = myRS.getString("userName");
+				selectedUser = null;
+				Iterator<User> myUsers = readEvent.getUsersAndEdges().keySet().iterator();
 				
-				tmpChoice = readEvent.getChoices().get(choiceId);
+				while (myUsers.hasNext()) {
+					tmpUser = myUsers.next();
+					
+					if (tmpUser.getUser().equals(tmpUserName))
+						selectedUser = tmpUser;
+				}
 				
-				if (tmpChoice == null) //error, choice dictated is not valid
+				if (selectedUser == null) 
+					return false; //user not found in list
+				
+				indexOf = readEvent.getChoices().indexOf(new Choice("", choiceId));
+				if (indexOf == -1) //error, choice dictated is not valid
 					return false;
+				tmpChoice = readEvent.getChoices().get(indexOf);
 				
-				newEdge = new Edge(tmpChoice, height, null);
-				//TODO add edge here
+				newEdge = new Edge(tmpChoice, height);
+				readEvent.getUsersAndEdges().get(selectedUser).add(newEdge);
 			}
 
 			return true;
@@ -144,9 +160,29 @@ public class DatabaseSubsystem {
 		return false;
 	}
 	
-	public static boolean writeEdge(Edge writeEdge, String decisionLineId) {
-		//TODO implement
-		return true;
+	/**
+	 * The method writes an edge to the database.  An edge is unique if it's height and choice are different from 
+	 * any existing edge.  If they are the same then the record is an update (new otherwise).
+	 * 
+	 * @param writeEdge - The edge to be written
+	 * @param decisionLineId - the id of the parent event
+	 * @param byUser - the User that played the edge
+	 * @return -1 if an error was encountered, the number of records affected otherwise
+	 */
+	public static int writeEdge(Edge writeEdge, String decisionLineId, User byUser) {
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEdge(?, ?, ?, ?)");
+			pstmt.setString(1, decisionLineId);
+			pstmt.setInt(2, writeEdge.getHeight());
+			pstmt.setInt(3, writeEdge.getChoice().getOrder());
+			pstmt.setString(4, byUser.getUser());
+
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
 	}
 	
 	public static boolean readChoices(DecisionLineEvent readEvent) { 
@@ -173,11 +209,35 @@ public class DatabaseSubsystem {
 		return false;
 	}
 	
-	public static boolean writeChoice(Choice writeChoice, String decisionLineId) {
-		//TODO implement
-		return true;
+	/**
+	 * This method writes a choice to the database.  If a Choice order number is already present, then this
+	 * is treated as an update.  If the choice order number is not in the database, then it is a new record
+	 * 
+	 * @param writeChoice - the Choice to be written
+	 * @param decisionLineId - the Id of the parent Event
+	 * @return -1 if an error is encountered, the number of records affected otherwise
+	 */
+	public static int writeChoice(Choice writeChoice, String decisionLineId) {
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateChoice(?, ?, ?)");
+			pstmt.setString(1, decisionLineId);
+			pstmt.setInt(2, writeChoice.getOrder());
+			pstmt.setString(3, writeChoice.getName());
+
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
 	}
 	
+	/**
+	 * Reads in Users for a given DecisionLineEvent.  Must be called before the ReadEdges method
+	 * 
+	 * @param readEvent
+	 * @return
+	 */
 	public static boolean readUsers(DecisionLineEvent readEvent) { 
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from user where eventId=(?)");
@@ -190,7 +250,7 @@ public class DatabaseSubsystem {
 				name = new String(myRS.getString("userName"));
 				password = new String(myRS.getString("userPassword"));
 				newUser = new User(name, password);
-				//TODO add to user list here
+				readEvent.getUsersAndEdges().put(newUser, new ArrayList<Edge>());
 			}
 
 			return true;
@@ -201,9 +261,28 @@ public class DatabaseSubsystem {
 		return false;
 	}
 	
-	public static boolean writeUser(User writeUser, String decisionLineId) {
-		//TODO implement
-		return true;
+	/**
+	 * This method writes a user to the database.  If the user name and event id are unique, then this is
+	 * treated as a new record.  If the user name and event id are already present then this is treated
+	 * as an update.  
+	 * 
+	 * @param writeUser - the User to be written
+	 * @param decisionLineId - the id of the Event that the user is part of
+	 * @return -1 if an error is reached, the number of affected records otherwise
+	 */
+	public static int writeUser(User writeUser, String decisionLineId) {
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateUser(?, ?, ?)");
+			pstmt.setString(1, decisionLineId);
+			pstmt.setString(2, writeUser.getUser());
+			pstmt.setString(3, writeUser.getPassword());
+
+			return pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
 	}
 	
 	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) {
@@ -240,10 +319,10 @@ public class DatabaseSubsystem {
 			if (!readChoices(newDLE)) 
 				return null;
 
-			if (!readEdges(newDLE)) 
+			if (!readUsers(newDLE)) 
 				return null;
 
-			if (!readUsers(newDLE)) 
+			if (!readEdges(newDLE)) 
 				return null;
 
 			return newDLE;
@@ -253,10 +332,62 @@ public class DatabaseSubsystem {
 		
 		return null;
 	}
-	
-	public static boolean writeDecisionLineEvent(DecisionLineEvent writeEvent) {
-		//TODO implement
-		return true;
+
+	/**
+	 * This method writes an Event to the Database using a stored procedure on the DB.  This method will
+	 * write out all associated parts of the Event
+	 * 
+	 * @param writeEvent - the event to be written to DB
+	 * @return - -1 if a failure, otherwise the number of records affected is return
+	 */
+	public static int writeDecisionLineEvent(DecisionLineEvent writeEvent) {
+		try {
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEvent(?, ?, ?, ?, ?, ?, ?)");
+			pstmt.setString(1, writeEvent.getUniqueId());
+			pstmt.setString(2, writeEvent.getQuestion());
+			pstmt.setInt(3, writeEvent.getNumberOfChoice());
+			pstmt.setInt(4, writeEvent.getNumberOfEdge());
+			if (writeEvent.getBehavior() == Behavior.ASYNCHRONOUS)
+				pstmt.setBoolean(5, true);
+			else
+				pstmt.setBoolean(5, false);
+			pstmt.setString(6, writeEvent.getModerator());
+			if (writeEvent.getIsFinished())
+				pstmt.setInt(7, 2);
+			else if (writeEvent.getIsClosed())
+				pstmt.setInt(7, 1);
+			else
+				pstmt.setInt(7, 0);
+			int retVal = pstmt.executeUpdate();
+			
+			if (retVal < 0) 
+				return -1; //error
+			
+			for (int i = 0; i < writeEvent.getChoices().size(); i++) {
+				if (writeChoice(writeEvent.getChoices().get(i), writeEvent.getUniqueId()) < 0)
+					return -1; //error while writing choices
+			}
+			
+			Iterator<User> myUsers = writeEvent.getUsersAndEdges().keySet().iterator();
+			User tmpUser;
+			while (myUsers.hasNext()) {
+				tmpUser = myUsers.next();
+				if (writeUser(tmpUser, writeEvent.getUniqueId()) < 0)
+					return -1; //errors while writing users
+
+				ArrayList<Edge> edgeArray = writeEvent.getUsersAndEdges().get(tmpUser);
+				for (int i = 0; i < edgeArray.size(); i++) {
+					if (writeEdge(edgeArray.get(i), writeEvent.getUniqueId(), tmpUser) < 0)
+						return -1; //error while writing edges
+				}
+			}
+			
+			return retVal;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
 	}
 	
 	public static boolean verifyAdminCredentials(String adminId, String credentials) throws IllegalArgumentException {

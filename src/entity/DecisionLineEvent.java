@@ -11,12 +11,12 @@ public class DecisionLineEvent {
 	private String question;
 	private int numberOfChoice;
 	private int numberOfEdge;
-	private HashMap<User,ArrayList<Edge>> usersAndEdges;
+	private HashMap<User,ArrayList<Edge>> usersAndEdges = null;
 	private User currentTurn;
 	private EventType myType;
 	private Behavior myBehavior;
 //	private boolean isAsynchronous;
-	private ArrayList<Choice> choices;
+	private ArrayList<Choice> choices = null;;
 	private String moderator;
 	//private User moderator;
 	//private boolean isClosed;
@@ -35,6 +35,8 @@ public class DecisionLineEvent {
 	 */
 	public DecisionLineEvent(String uniqueId) {
 		this.uniqueId = uniqueId;
+		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+		this.choices = new ArrayList<Choice>();
 	}
 	
 	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
@@ -89,6 +91,9 @@ public class DecisionLineEvent {
 	}
 	public HashMap<User,ArrayList<Edge>> getUsersAndEdges()
 	{
+		if (usersAndEdges == null) 
+			usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+
 		return this.usersAndEdges;
 	}
 	public User getCurrentTurn()
@@ -106,6 +111,9 @@ public class DecisionLineEvent {
 	}
 	public ArrayList<Choice> getChoices()
 	{
+		if (choices == null)
+			this.choices = new ArrayList<Choice>();
+		
 		return this.choices;
 	}
 	public String getModerator()

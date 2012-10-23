@@ -3,17 +3,14 @@ package entity;
 public class Edge {
 	private Choice choice;
 	private int height;
-	private User playedBy;
 	
 	public Edge()
 	{
-		
 	}
-	public Edge(Choice choice, int height, User playedBy)
+	public Edge(Choice choice, int height)
 	{
 		this.choice = choice;
 		this.height = height;
-		this.playedBy = playedBy;
 	}
 	public void setChoice(Choice choice)
 	{
@@ -30,13 +27,5 @@ public class Edge {
 	public int getHeight()
 	{
 		return this.height;
-	}
-	public void setPlayedBy(User playedBy)
-	{
-		this.playedBy = playedBy;
-	}
-	public User getPlayedBy()
-	{
-		return this.playedBy;
 	}
 }

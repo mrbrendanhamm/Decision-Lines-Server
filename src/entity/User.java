@@ -31,10 +31,16 @@ public class User {
 	}
 	public boolean equal(Object o)
 	{
-		if(this.userid.equals(((User) o).getUser()) && this.password == ((User) o).getPassword())
-		{
+		if (o == null) 
+			return false;
+		
+		if (!(o instanceof User))
+			return false;
+
+		User tmp = (User) o;
+		if (tmp.getUser().equals(this.getUser())) 
 			return true;
-		}
+		
 		return false;		
 	}
 }
