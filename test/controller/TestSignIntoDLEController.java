@@ -42,7 +42,7 @@ public class TestSignIntoDLEController extends TestCase {
 		
 		String testMessageSuccess = "<request version='1.0' id='" + client1.id().toString() + "'>" +
 				"  <signInRequest id='12345'>" +
-				"    <user name='azafty' password='andrew' />" +
+				"    <user name='azafty' password='' />" +
 				"  </signInRequest>" +
 				"</request>";
 		
