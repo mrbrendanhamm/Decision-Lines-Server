@@ -6,7 +6,7 @@ package server;
 import java.io.IOException;
 import boundary.DefaultProtocolHandler;
 import server.Server;
-import shared.DatabaseSubsystem;
+import boundary.DatabaseSubsystem;
 import xml.*;
 
 public class ApplicationMain {

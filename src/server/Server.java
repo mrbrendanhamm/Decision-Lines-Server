@@ -10,8 +10,6 @@ import java.net.*;
 import java.util.*;
 
 
-import shared.*;
-
 /** Generic Server in a Client/Server communication. */
 public class Server {
 	ServerSocket serverSocket = null;    /* ServerSocket to which we bind */

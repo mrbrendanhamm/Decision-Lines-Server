@@ -3,16 +3,13 @@
  * from the java project ClientServer 
  */
 
-package shared;
+package server;
 
 import xml.Message;
 
 
 /** Server-side interface to per-client state. Exposes only the methods of ServerThread that are safe. */
-public interface ClientState {
-	//TODO This should be included on our ConnectedClient class which interfaces this object
-	public String myAssociatedEventId = new String();
-	
+public interface ClientState {	
 	/** 
 	 * Send the given message to the client on whose behalf this thread is executing and return true
 	 * on success, false on error. 

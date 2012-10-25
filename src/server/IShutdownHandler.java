@@ -3,8 +3,7 @@
  * from the java project ClientServer 
  */
 
-package shared;
-import shared.ClientState;
+package server;
 
 
 /** 

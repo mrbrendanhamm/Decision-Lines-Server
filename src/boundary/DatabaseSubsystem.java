@@ -1,12 +1,11 @@
+package boundary;
 /**
  * @author Team RamRod
  * 
  * Some code taken from Professor's Heineman's ClientServerEBC project, db.Manager.java file
  */
 
-package shared;
 
-import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -246,10 +245,12 @@ public class DatabaseSubsystem {
 			ResultSet myRS = pstmt.executeQuery();
 			User newUser;
 			String name, password;
+			int position;
 			while (myRS.next()) { // error while executing the query, no results returned
 				name = new String(myRS.getString("userName"));
 				password = new String(myRS.getString("userPassword"));
-				newUser = new User(name, password);
+				position = myRS.getInt("position");
+				newUser = new User(name, password, position);
 				readEvent.getUsersAndEdges().put(newUser, new ArrayList<Edge>());
 			}
 
@@ -272,10 +273,11 @@ public class DatabaseSubsystem {
 	 */
 	public static int writeUser(User writeUser, String decisionLineId) {
 		try {
-			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateUser(?, ?, ?)");
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateUser(?, ?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
 			pstmt.setString(2, writeUser.getUser());
 			pstmt.setString(3, writeUser.getPassword());
+			pstmt.setInt(4,  writeUser.getPosition());
 
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {

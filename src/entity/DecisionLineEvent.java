@@ -15,13 +15,10 @@ public class DecisionLineEvent {
 	private User currentTurn;
 	private EventType myType;
 	private Behavior myBehavior;
-//	private boolean isAsynchronous;
 	private ArrayList<Choice> choices = null;;
 	private String moderator;
-	//private User moderator;
-	//private boolean isClosed;
 	private Choice decision;
-	//private boolean isFinished;
+	ArrayList<String> connectedClientIds = null;
 	
 	public DecisionLineEvent()
 	{
@@ -44,12 +41,9 @@ public class DecisionLineEvent {
 		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
 		this.choices = new ArrayList<Choice>();
 		this.question = question;
-		//this.isClosed = false;
-		//this.isFinished = false;
 		this.uniqueId = uniqueId;
 		this.numberOfChoice = numberOfChoice;
 		this.numberOfEdge = numberOfEdge;
-//		this.isAsynchronous = isAsynchronous;
 		this.myType = newType;
 		this.myBehavior = newBehavior;
 	}
@@ -89,6 +83,13 @@ public class DecisionLineEvent {
 	{
 		return this.numberOfEdge;
 	}
+	public ArrayList<String> getConnectedClients() {
+		if (connectedClientIds == null)
+			connectedClientIds = new ArrayList<String>();
+		
+		return connectedClientIds;
+	}
+	
 	public HashMap<User,ArrayList<Edge>> getUsersAndEdges()
 	{
 		if (usersAndEdges == null) 
@@ -100,12 +101,6 @@ public class DecisionLineEvent {
 	{
 		return this.currentTurn;
 	}
-	/*
-	public boolean getIsAsynchronous()
-	{
-		return this.isAsynchronous;
-	}
-	*/
 	public EventType getEventType() {
 		return myType;
 	}
@@ -126,7 +121,6 @@ public class DecisionLineEvent {
 			return true;
 		else
 			return false;
-		//return this.isClosed;
 	}
 	public Choice getDecision()
 	{
@@ -138,7 +132,6 @@ public class DecisionLineEvent {
 			return true;
 		else 
 			return false;
-		//return this.isFinished;
 	}
 	public boolean canAddChoice()
 	{

@@ -1,7 +1,7 @@
 package controller;
 
-import shared.ClientState;
-import shared.IProtocolHandler;
+import server.ClientState;
+import server.IProtocolHandler;
 import xml.Message;
 import entity.DecisionLineEvent;
 import entity.Model;

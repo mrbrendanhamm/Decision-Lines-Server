@@ -11,7 +11,8 @@ import java.util.UUID;
 
 import org.w3c.dom.*;
 
-import shared.*;
+import controller.ClientDisconnect;
+
 import xml.*;
 
 /** Thread to handle individual requests from a client. */
@@ -71,7 +72,8 @@ public class ServerThread extends Thread implements ClientState {
 			}
 		}
 		
-		//TODO notify model that the client is disconnecting
+		//notify model that the client is disconnecting
+		new ClientDisconnect().disconnectClient(id);
 		
 		// client is done so thread can be de-registered
 		if (handler instanceof IShutdownHandler) {

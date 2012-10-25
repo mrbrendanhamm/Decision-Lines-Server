@@ -2,15 +2,15 @@ package entity;
 
 import java.util.ArrayList;
 
+import boundary.DatabaseSubsystem;
+
 public class Model {
-	private ArrayList<DecisionLineEvent> decisionLineEvents;
-	private static Model thisModel = null;
+	private ArrayList<DecisionLineEvent> decisionLineEvents = null;
+	static Model thisModel = null;
 	
 	Model() {
-		this.decisionLineEvents = new ArrayList<DecisionLineEvent>();
 	}
 
-	// Changed access method to a singleton so controllers can always directly reference the model
 	public static Model getInstance() {
 		if (thisModel == null) {
 			thisModel = new Model();
@@ -18,15 +18,26 @@ public class Model {
 		
 		return thisModel;
 	}
-	
-	public void setDecisionLineEvents(DecisionLineEvent DLE)
-	{
-		this.decisionLineEvents.add(DLE);
-	}
 	public ArrayList<DecisionLineEvent> getDecisionLineEvents()
 	{
+		if (decisionLineEvents == null)
+			decisionLineEvents = new ArrayList<DecisionLineEvent>();
+		
 		return this.decisionLineEvents;
 	}
+	public boolean removeDecisionLineEvent(DecisionLineEvent delDLE) {
+		DecisionLineEvent dle;
+		int indexOf;
+		
+		indexOf = decisionLineEvents.indexOf(delDLE);
+		if (indexOf < 0)
+			return false;
+		dle = decisionLineEvents.remove(indexOf);
+		DatabaseSubsystem.writeDecisionLineEvent(dle);
+		
+		return true;
+	}
+	
 	public DecisionLineEvent getDecisionLineEvent(String uniqueId)
 	{
 		for(DecisionLineEvent DLE : this.decisionLineEvents)

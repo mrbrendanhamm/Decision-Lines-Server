@@ -9,7 +9,8 @@ import org.w3c.dom.Node;
 
 import controller.*;
 import xml.*;
-import shared.*;
+import server.ClientState;
+import server.IShutdownHandler;
 
 /**
  * Sample implementation of a protocol handler to respond to messages received from clients.
@@ -27,14 +28,16 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 	
 	@Override
 	public synchronized Message process (ClientState st, Message request) {
-		Node child = request.contents.getFirstChild();
+		Node child = request.contents.getFirstChild().getNextSibling();
 		String type = child.getLocalName();
 		
 		System.out.println ("Receiving: " + request);
 		
+		/* this code is never called, because the ConnectResponse is handled by the Server at a lower level before it gets here
 		if (type.equals("connectRequest")) 
 			return new ConnectToDLEController().process(st, request);
-		else if (type.equals("addChoiceRequest")) 
+		*/
+		if (type.equals("addChoiceRequest")) 
 			return new AddChoiceController().process(st,  request);
 		else if (type.equals("addEdgeRequest")) 
 			return null; //TODO write the appropriate controller link here
@@ -52,6 +55,8 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 			return null; //TODO write the appropriate controller link here
 		else if (type.equals("signInRequest")) 
 			return new SignIntoDLEController().process(st, request);
+		else if (type.equals("joinRequest"))
+			return null; //TODO write the appropriate controller link here
 		//there does not appear to be a DeleteChoice option.  
 		
 		// unknown? no idea what to do

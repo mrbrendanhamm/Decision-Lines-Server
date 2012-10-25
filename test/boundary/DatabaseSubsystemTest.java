@@ -1,7 +1,9 @@
-package shared;
+package boundary;
 
 import java.util.ArrayList;
 import java.util.UUID;
+
+import boundary.DatabaseSubsystem;
 
 import junit.framework.TestCase;
 
@@ -13,7 +15,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	public void testReadEdges() {
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		myDLE.getChoices().add(new Choice("Choice 1", 1));
-		myDLE.getUsersAndEdges().put(new User("azafty",  ""), new ArrayList<Edge>());
+		myDLE.getUsersAndEdges().put(new User("azafty",  "", 0), new ArrayList<Edge>());
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
 		
@@ -21,7 +23,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteEdge() {
-		User myUser = new User("azafty", "");
+		User myUser = new User("azafty", "", 0);
 		Choice myChoice = new Choice("Choice 1", 1);
 		int height = 16;
 		Edge myEdge = new Edge(myChoice, height);
@@ -58,7 +60,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteUser() {
-		User myUser = new User("azafty2", "andrew");
+		User myUser = new User("azafty2", "", 0);
 		String myDLEId = new String("12345");
 		int retval = DatabaseSubsystem.writeUser(myUser, myDLEId);
 		assertTrue(retval > 0);
@@ -76,8 +78,8 @@ public class DatabaseSubsystemTest extends TestCase {
 		int numOfEdges = 3;
 		
 		DecisionLineEvent myEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
-		User newUser1 = new User("andrew1", "");
-		User newUser2 = new User("andrew2", "");
+		User newUser1 = new User("andrew1", "", 0);
+		User newUser2 = new User("andrew2", "", 1);
 		myEvent.getUsersAndEdges().put(newUser1, new ArrayList<Edge>());
 		myEvent.getUsersAndEdges().put(newUser2, new ArrayList<Edge>());
 		myEvent.setModerator(newUser1.getUser());

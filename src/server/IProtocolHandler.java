@@ -3,11 +3,10 @@
  * from the java project ClientServer 
  */
 
-package shared;
+package server;
 /**
  */
 
-import shared.ClientState;
 import xml.Message;
 
 /** 

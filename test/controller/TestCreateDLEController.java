@@ -2,49 +2,55 @@ package controller;
 
 import java.util.UUID;
 
+import boundary.DefaultProtocolHandler;
+
+import entity.ClearModelInstance;
+
+import server.MockClient;
+import server.Server;
+
 import xml.Message;
 import junit.framework.TestCase;
 
 public class TestCreateDLEController extends TestCase {
-	public void testProcess() {
-		/* I've done a little bit too broad of a test case here as I'm testing the functionality
-		 * of the whole class.  What I should have done was test the individual methods in the
-		 * controller first before I get this far (parse message and the like).  because I'm testing 
-		 * such a broad scope I need to include the message loader and XSD file below.
-		 */
+	MockClient client1, client2, client3;
+	
+	protected void setUp () {
+		if (!Message.configure("draw2choose.xsd")) { 
+			fail ("unable to configure protocol");
+		}
 		
-		CreateDLEController myController = new CreateDLEController();
+		// make server think there are two connected clients...
+		client1 = new MockClient("c1");
+		client2 = new MockClient("c2");
+		client3 = new MockClient("c3");
 		
+		Server.register("c1", client1);
+		Server.register("c2", client2);
+		Server.register("c3", client3);
+		
+		ClearModelInstance.clearInstance();
+	}
+
+	protected void tearDown() {
+		Server.unregister("c1");
+		Server.unregister("c2");
+		Server.unregister("c3");
+	}
+	
+	public void testProcess() {		
 		//a sample, fully formed create message XML string
-		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='" + UUID.randomUUID().toString() + "'>" +
+		String testMessageSuccess = "<request version='1.0' id='" + client1.id() + "'>" +
 				"  <createRequest type='closed' question='Test Question' numChoices='3' numRounds='3' behavior='roundRobin'>" +
 				"    <choice value='Choice1' index='0'/>" +
 				"    <choice value='Choice2' index='1'/>" +
 				"    <choice value='Choice3' index='2'/>" +
 				"    <user name='User1' />" +
 				"  </createRequest>" +
-				"</request>");
+				"</request>";
 		
-		//configure the message handling system. This ensures the supplied message is valid according to the schema 
-		if (!Message.configure("draw2choose.xsd")) { 
-			fail();
-		}
 		Message msg = new Message(testMessageSuccess);
-		
-		//I'm using this is as a debugging method.  Basically I call this function here, so that when
-		// I run the code in debug mode, I can step into this procedure.  It's a good way to review
-		// what data is being sent when and why XML is being parsed in a specific way.
-		myController.parseMessage(msg);
-		
-		
-		/* somewhat of a bad example here because as of right now all paths return null
-		 * eventually the controller will properly handle the message and therefore this
-		 * function should return an intelligent evaluation of the function.  In the meantime
-		 * I've built the general testing stub and marked it with a todo tag to let me know that
-		 * i'll need to come back and finish it
-		 */
-		//TODO: implement the testing procedure for process(clientState, Message);
-		assert(myController.process(null, msg) == null);
+		Message retVal = new DefaultProtocolHandler().process(client1, msg);
+		assert(retVal != null);
 	}
 }

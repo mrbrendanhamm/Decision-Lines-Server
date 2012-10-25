@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import shared.ClientState;
-import shared.IProtocolHandler;
+import server.ClientState;
+import server.IProtocolHandler;
 import xml.Message;
 
 
@@ -30,7 +30,7 @@ public class RemoveUserController implements IProtocolHandler {
 		while(it.hasNext())
 		{
 			Map.Entry<User, ArrayList<Edge>> entry= it.next();
-			if(entry.getKey().equal(user))
+			if(entry.getKey().equals(user))
 			{
 				it.remove();
 				return true;

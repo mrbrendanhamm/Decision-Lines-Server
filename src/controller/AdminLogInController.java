@@ -2,9 +2,9 @@ package controller;
 
 import org.w3c.dom.Node;
 
-import shared.ClientState;
-import shared.DatabaseSubsystem;
-import shared.IProtocolHandler;
+import server.ClientState;
+import server.IProtocolHandler;
+import boundary.DatabaseSubsystem;
 import xml.Message;
 
 public class AdminLogInController implements IProtocolHandler {

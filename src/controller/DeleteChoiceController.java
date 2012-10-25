@@ -2,8 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
-import shared.ClientState;
-import shared.IProtocolHandler;
+import server.ClientState;
+import server.IProtocolHandler;
 import xml.Message;
 
 import entity.Choice;
