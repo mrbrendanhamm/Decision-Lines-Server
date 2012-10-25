@@ -141,8 +141,8 @@ public class CreateDLEController implements IProtocolHandler {
 		String xmlString = Message.responseHeader(clientIdToServer) +
 				"<createResponse id='error'/>" +
 				"</response>";
-		System.out.println(xmlString);
 		Message myMsg = new Message(xmlString);
+		System.out.println("Responding: " + myMsg);
 		
 		return myMsg;
 	}
@@ -151,8 +151,8 @@ public class CreateDLEController implements IProtocolHandler {
 		String xmlString = Message.responseHeader(clientIdToServer, reason) +
 				"<createResponse id='" + myEventId + "'/>" +
 				"</response>";
-		System.out.println(xmlString);
 		Message myMsg = new Message(xmlString);
+		System.out.println("Failure: " + myMsg);
 		
 		return myMsg;
 	}

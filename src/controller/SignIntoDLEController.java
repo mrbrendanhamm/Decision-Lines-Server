@@ -111,8 +111,15 @@ public class SignIntoDLEController implements IProtocolHandler {
 	}	
 
 	Message writeJoinNotification(String localClientId) {
-		//TODO write
-		return null;
+		String xmlString = Message.responseHeader(localClientId) +
+				"<joinResponse id='" + localClientId + "'>" +
+				"  <user name='" + newUser.getUser() + "' />" +
+				"</joinResponse></response>";
+		
+		Message newMsg = new Message(xmlString);
+		System.out.println("Broadcast: " + newMsg);
+		
+		return newMsg;
 	}
 	
 	Message writeSuccessResponse() {
@@ -138,8 +145,8 @@ public class SignIntoDLEController implements IProtocolHandler {
 		}
 		
 		xmlString = xmlString + "</signInResponse></response>";
-		System.out.println("Responding: " + xmlString);
 		Message myMsg = new Message(xmlString);
+		System.out.println("Responding: " + myMsg.toString());
 		
 		return myMsg;
 	}
