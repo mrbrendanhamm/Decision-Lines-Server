@@ -16,8 +16,8 @@ public class FinishEventController implements IProtocolHandler{
 
 	}
 	
-	/** Takes the message and gets the corresponding dle.  Deletes the DLE
-	 * and then deletes it.  Response is in the form of number of affected users
+	/** Takes the message and gets the corresponding dle.  Sets the DLE type
+	 *  to FINISHED.  Response is broadcasted in the form of number of affected users
 	 */
 	@Override
 	public Message process(ClientState state, Message request) {
@@ -34,8 +34,8 @@ public class FinishEventController implements IProtocolHandler{
 		dle.setType(EventType.FINISHED);
 		
 		int count = model.getDecisionLineEvent(eventID).getConnectedClients().size();
-		xmlString = Message.responseHeader(request.id()) + "<numberAffected=" + count + 
-				"/></response>";
+		xmlString = new String(Message.responseHeader(request.id()) + "<numberAffected=" + count + 
+				"/></response>");
 		
 		//TODO Needs to be broadcasted to all users of the dle
 		

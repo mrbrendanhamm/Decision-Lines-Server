@@ -1,12 +1,14 @@
 package entity;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import boundary.DatabaseSubsystem;
 
 public class Model {
 	private ArrayList<DecisionLineEvent> decisionLineEvents = null;
 	static Model thisModel = null;
+	final String key = UUID.randomUUID().toString(); 
 	
 	Model() {
 	}
