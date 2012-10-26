@@ -31,7 +31,7 @@ public class ConnectToDLEController implements IProtocolHandler{
 		//Needs a new unique ID for the client
 		String uniqueID = UUID.randomUUID().toString();
 		String xmlResponse = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='" + uniqueID + "'>" +
+				"<response version='1.0' id='" + uniqueID + "'>" +
 				"  <complexType>" +
 				"    <user name='admin' password='password' />" +
 				"  </complexType>" +

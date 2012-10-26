@@ -17,7 +17,7 @@ public class DecisionLineEvent {
 	private Behavior myBehavior;
 	private ArrayList<Choice> choices = null;;
 	private String moderator;
-	private Choice decision;
+	private Choice decision; //decisions should be an array list
 	ArrayList<String> connectedClientIds = null;
 	
 	public DecisionLineEvent()
@@ -51,6 +51,8 @@ public class DecisionLineEvent {
 	{
 		this.choices.add(choice);
 	}
+	
+	//decisions have to be changed to be an ordering 
 	public void setDecision(Choice decision)
 	{
 		this.decision = decision;
@@ -62,6 +64,9 @@ public class DecisionLineEvent {
 	public void setCurrentTurn(User currentTurn)
 	{
 		this.currentTurn = currentTurn;
+	}
+	public void setType(EventType type){
+		this.myType = type;
 	}
 	public String getUniqueId()
 	{
