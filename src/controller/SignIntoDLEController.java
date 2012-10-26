@@ -144,6 +144,16 @@ public class SignIntoDLEController implements IProtocolHandler {
 			xmlString = xmlString + "<choice value='" + tmpChoice.getName() + "' index='" + tmpChoice.getOrder() + "'/>";
 		}
 		
+		Iterator<User> tempIt = myDLE.getUsersAndEdges().keySet().iterator();
+		
+		while (tempIt.hasNext()) {
+			User tmpU = tempIt.next();
+			
+			if (!tmpU.equals(newUser)) {
+				xmlString = xmlString + "<user name='" + tmpU.getUser() + "'/>";
+			}
+		}
+		
 		xmlString = xmlString + "</signInResponse></response>";
 		Message myMsg = new Message(xmlString);
 		System.out.println("Responding: " + myMsg.toString());

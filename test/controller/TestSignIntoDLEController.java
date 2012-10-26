@@ -69,6 +69,17 @@ public class TestSignIntoDLEController extends TestCase {
 		retVal = myHandler.process(client2, msg);
 		assert(retVal != null);
 		loadedEvent = myModel.getDecisionLineEvents().get(0);
-		assertTrue(loadedEvent.getUsersAndEdges().containsKey(new User("abra", "", -1)));		
+		assertTrue(loadedEvent.getUsersAndEdges().containsKey(new User("abra", "", -1)));
+		
+		testMessageSuccess = "<request version='1.0' id='" + client3.id().toString() + "'>" +
+				"  <signInRequest id='12345'>" +
+				"    <user name='supra' password='' />" +
+				"  </signInRequest>" +
+				"</request>";
+		msg = new Message(testMessageSuccess);
+		retVal = myHandler.process(client3, msg);
+		assert(retVal != null);
+		loadedEvent = myModel.getDecisionLineEvents().get(0);
+		assertTrue(loadedEvent.getUsersAndEdges().containsKey(new User("supra", "", -1)));
 	}
 }
