@@ -1,5 +1,6 @@
 package controller;
 
+import boundary.DefaultProtocolHandler;
 import server.MockClient;
 import server.Server;
 import xml.Message;
@@ -17,7 +18,7 @@ public class TestCloseOpenDLEController extends TestCase {
 	
 	protected void setUp() {
 		// FIRST thing to do is register the protocol being used.
-		if (!Message.configure("distributedEBC.xsd")) {
+		if (!Message.configure("draw2choose.xsd")) {
 			fail ("unable to configure protocol");
 		}
 				
@@ -34,6 +35,7 @@ public class TestCloseOpenDLEController extends TestCase {
 	
 	protected void tearDown() {
 		Server.unregister("c1");
+		Server.unregister("c");
 	}
 		
 	//This will test whether we get a success closing an open DLE
@@ -42,16 +44,15 @@ public class TestCloseOpenDLEController extends TestCase {
 		DecisionLineEvent dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
 		dle.setModerator(client1.id());
 		//a sample, fully formed create message XML string
-		String xmlString = "<request version='1.0' id='" + dle.getUniqueId() + "'>" +
-				"  <closeRequest>" +
-				"    <name=" + client1.id() + "/>" +
+		String xmlString = "<request version='1.0' id='" + client1.id() + "'>" +
+				"  <closeRequest id='" + dle.getUniqueId() + "'>" +
 				"  </closeRequest>" +
 				"</request>";
 		
 
 		Message request = new Message(xmlString);
 		
-		Message response = new CloseOpenDLEController().process(client1, request);
+		Message response = new DefaultProtocolHandler().process(client1, request);
 		
 		assertTrue(response.success());
 	}
