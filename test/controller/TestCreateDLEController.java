@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 
 public class TestCreateDLEController extends TestCase {
 	MockClient client1, client2, client3;
+
 	
 	protected void setUp () {
 		if (!Message.configure("draw2choose.xsd")) { 

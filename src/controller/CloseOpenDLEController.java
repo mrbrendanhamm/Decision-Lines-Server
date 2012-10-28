@@ -13,14 +13,14 @@ import xml.Message;
 public class CloseOpenDLEController implements IProtocolHandler{
 
 	@Override
-	public Message process(ClientState state, Message request) {
+	public synchronized Message process(ClientState state, Message request) {
 		String xmlString;
 		
 		Model model = Model.getInstance();
 		Node child = request.contents.getFirstChild();
 		
 		//get ID of Decision Line Event
-		String dleID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
+		String dleID = new String(child.getAttributes().getNamedItem("id").getNodeValue());
 		
 		DecisionLineEvent dle = model.getDecisionLineEvent(dleID);
 		//Check if DLE is already closed

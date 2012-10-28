@@ -20,7 +20,7 @@ public class FinishEventController implements IProtocolHandler{
 	 *  to FINISHED.  Response is broadcasted in the form of number of affected users
 	 */
 	@Override
-	public Message process(ClientState state, Message request) {
+	public synchronized Message process(ClientState state, Message request) {
 		String xmlString;
 		Model model = Model.getInstance();
 		Message response = null;

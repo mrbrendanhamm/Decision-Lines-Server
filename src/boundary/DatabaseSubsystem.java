@@ -112,7 +112,6 @@ public class DatabaseSubsystem {
 		}
 	}
 
-	
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from edge where eventId=(?)");

@@ -35,7 +35,7 @@ public class TestCloseOpenDLEController extends TestCase {
 	
 	protected void tearDown() {
 		Server.unregister("c1");
-		Server.unregister("c");
+		Server.unregister("c2");
 	}
 		
 	//This will test whether we get a success closing an open DLE
@@ -45,14 +45,12 @@ public class TestCloseOpenDLEController extends TestCase {
 		dle.setModerator(client1.id());
 		//a sample, fully formed create message XML string
 		String xmlString = "<request version='1.0' id='" + client1.id() + "'>" +
-				"  <closeRequest id='" + dle.getUniqueId() + "'>" +
-				"  </closeRequest>" +
+				"  <closeRequest id='" + dle.getUniqueId() + "' />" +
 				"</request>";
-		
 
 		Message request = new Message(xmlString);
 		
-		Message response = new DefaultProtocolHandler().process(client1, request);
+		Message response = new CloseOpenDLEController().process(client1, request);
 		
 		assertTrue(response.success());
 	}
