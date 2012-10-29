@@ -40,24 +40,23 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		if (type.equals("addChoiceRequest")) 
 			return new AddChoiceController().process(st,  request);
 		else if (type.equals("addEdgeRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new AddEdgeController().process(st, request);
 		else if (type.equals("adminRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new AdminLogInController().process(st, request);
 		else if (type.equals("closeRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new CloseOpenDLEController().process(st, request);
 		else if (type.equals("createRequest")) 
 			return new CreateDLEController().process(st, request);
 		else if (type.equals("forceRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new ForceFinishController().process(st, request);
 		else if (type.equals("removeRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new RemoveDLEController().process(st, request);
 		else if (type.equals("reportRequest")) 
-			return null; //TODO write the appropriate controller link here
+			return new ProduceReportController().process(st, request);
 		else if (type.equals("signInRequest")) 
 			return new SignIntoDLEController().process(st, request);
-		else if (type.equals("joinRequest"))
-			return null; //TODO write the appropriate controller link here
-		//there does not appear to be a DeleteChoice option.  
+		
+		//ForceFinishController and FinishEventController handle the same message
 		
 		// unknown? no idea what to do
 		System.err.println("Unable to handle message:" + request);
