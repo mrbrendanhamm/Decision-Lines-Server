@@ -13,8 +13,9 @@ import entity.DecisionLineEvent.EventType;
 
 public class DatabaseSubsystemTest extends TestCase {
 	public void testReadEdges() {
+		System.out.println("Testing read edges");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
-		myDLE.getChoices().add(new Choice("Choice 1", 1));
+		myDLE.getChoices().add(new Choice("Choice 1", 1, -1));
 		myDLE.getUsersAndEdges().put(new User("azafty",  "", 0), new ArrayList<Edge>());
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
@@ -23,10 +24,12 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteEdge() {
+		System.out.println("Testing write edges");
 		User myUser = new User("azafty", "", 0);
-		Choice myChoice = new Choice("Choice 1", 1);
+		Choice myLeftChoice = new Choice("Choice 1", 0, -1);
+		Choice myRightChoice = new Choice("Choice 2", 1, -1);
 		int height = 16;
-		Edge myEdge = new Edge(myChoice, height);
+		Edge myEdge = new Edge(myLeftChoice, myRightChoice, height);
 		String myDLEId = new String("12345");
 		
 		int retval = DatabaseSubsystem.writeEdge(myEdge, myDLEId, myUser);
@@ -35,6 +38,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadChoices() {
+		System.out.println("Testing read choices");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		
 		boolean retval = DatabaseSubsystem.readChoices(myDLE);
@@ -43,7 +47,8 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteChoice() {
-		Choice myChoice = new Choice("Choice 3", 3);
+		System.out.println("Testing write choices");
+		Choice myChoice = new Choice("Choice 3", 3, -1);
 		String myDLEId = new String("12345");
 		
 		int retval = DatabaseSubsystem.writeChoice(myChoice, myDLEId);
@@ -52,6 +57,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadUsers() {
+		System.out.println("Testing read users");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		
 		boolean retval = DatabaseSubsystem.readUsers(myDLE);
@@ -60,6 +66,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteUser() {
+		System.out.println("Testing write user");
 		User myUser = new User("azafty2", "", 0);
 		String myDLEId = new String("12345");
 		int retval = DatabaseSubsystem.writeUser(myUser, myDLEId);
@@ -67,12 +74,14 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
+		System.out.println("Testing read decisionlineevent");
 		String myDLEId = new String("12345");
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
 		assertTrue(retval != null);
 	}
 	
 	public void testWriteDecisionLineEvent() {
+		System.out.println("Testing write decisionlineevent");
 		String uniqueId = UUID.randomUUID().toString();
 		int numOfChoices = 4;
 		int numOfEdges = 3;
@@ -84,18 +93,19 @@ public class DatabaseSubsystemTest extends TestCase {
 		myEvent.getUsersAndEdges().put(newUser2, new ArrayList<Edge>());
 		myEvent.setModerator(newUser1.getUser());
 		
-		Choice newChoice1 = new Choice("Choice 1", 1);
-		Choice newChoice2 = new Choice("Choice 2", 2);
-		Choice newChoice3 = new Choice("Choice 3", 3);
+		Choice newChoice1 = new Choice("Choice 1", 1, -1);
+		Choice newChoice2 = new Choice("Choice 2", 2, -1);
+		Choice newChoice3 = new Choice("Choice 3", 3, -1);
+		Choice newChoice4 = new Choice("Choice 4", 4, -1);
 		myEvent.getChoices().add(newChoice1);
 		myEvent.getChoices().add(newChoice2);
 		myEvent.getChoices().add(newChoice3);
 		
-		Edge newEdge1 = new Edge(newChoice1, 1);
-		Edge newEdge2 = new Edge(newChoice2, 1);
-		Edge newEdge3 = new Edge(newChoice3, 1);
-		Edge newEdge4 = new Edge(newChoice1, 2);
-		Edge newEdge5 = new Edge(newChoice2, 2);
+		Edge newEdge1 = new Edge(newChoice1, newChoice2, 1);
+		Edge newEdge2 = new Edge(newChoice2, newChoice3, 1);
+		Edge newEdge3 = new Edge(newChoice3, newChoice4, 1);
+		Edge newEdge4 = new Edge(newChoice1, newChoice2, 2);
+		Edge newEdge5 = new Edge(newChoice2, newChoice3, 2);
 		myEvent.getUsersAndEdges().get(newUser1).add(newEdge1);
 		myEvent.getUsersAndEdges().get(newUser1).add(newEdge2);
 		myEvent.getUsersAndEdges().get(newUser1).add(newEdge3);
@@ -108,6 +118,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testVerifyAdminCredentials() {
+		System.out.println("Testing verify admin credentials");
 		String adminId = new String("andrew");
 		String credentials = new String("andrew");
 		

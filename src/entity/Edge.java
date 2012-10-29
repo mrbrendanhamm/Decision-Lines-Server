@@ -1,24 +1,31 @@
 package entity;
 
 public class Edge {
-	private Choice choice;
+	private Choice leftChoice;
+	private Choice rightChoice;
 	private int height;
 	
 	public Edge()
 	{
 	}
-	public Edge(Choice choice, int height)
+	public Edge(Choice leftChoice, Choice rigthChoice, int height)
 	{
-		this.choice = choice;
+		this.leftChoice = leftChoice;
+		this.rightChoice = rigthChoice;
 		this.height = height;
 	}
-	public void setChoice(Choice choice)
+	public void setChoices(Choice leftChoice, Choice rightChoice)
 	{
-		this.choice = choice;
+		this.leftChoice = leftChoice;
+		this.rightChoice = rightChoice;
 	}
-	public Choice getChoice()
+	public Choice getLeftChoice()
 	{
-		return this.choice;
+		return this.leftChoice;
+	}
+	public Choice getRightChoice()
+	{
+		return this.rightChoice;
 	}
 	public void setHeight(int height)
 	{

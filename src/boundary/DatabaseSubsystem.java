@@ -119,7 +119,7 @@ public class DatabaseSubsystem {
 
 			ResultSet myRS = pstmt.executeQuery();
 			Edge newEdge;
-			Choice tmpChoice;
+			Choice leftChoice, rightChoice;
 			User selectedUser, tmpUser;
 			int height, choiceId, indexOf;
 			String tmpUserName;
@@ -141,12 +141,17 @@ public class DatabaseSubsystem {
 				if (selectedUser == null) 
 					return false; //user not found in list
 				
-				indexOf = readEvent.getChoices().indexOf(new Choice("", choiceId));
+				indexOf = readEvent.getChoices().indexOf(new Choice("", choiceId, -1));
 				if (indexOf == -1) //error, choice dictated is not valid
 					return false;
-				tmpChoice = readEvent.getChoices().get(indexOf);
+				leftChoice = readEvent.getChoices().get(indexOf);
 				
-				newEdge = new Edge(tmpChoice, height);
+				indexOf = readEvent.getChoices().indexOf(new Choice("", choiceId+1, -1));
+				if (indexOf == -1) //error, choice dictated is not valid
+					return false;
+				rightChoice = readEvent.getChoices().get(indexOf);
+				
+				newEdge = new Edge(leftChoice, rightChoice, height);
 				readEvent.getUsersAndEdges().get(selectedUser).add(newEdge);
 			}
 
@@ -172,7 +177,7 @@ public class DatabaseSubsystem {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEdge(?, ?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
 			pstmt.setInt(2, writeEdge.getHeight());
-			pstmt.setInt(3, writeEdge.getChoice().getOrder());
+			pstmt.setInt(3, writeEdge.getLeftChoice().getOrder());
 			pstmt.setString(4, byUser.getUser());
 
 			return pstmt.executeUpdate();
@@ -192,10 +197,12 @@ public class DatabaseSubsystem {
 			Choice newChoice;
 			String name;
 			int order;
+			int finalDecision;
 			while (myRS.next()) { // error while executing the query, no results returned
 				name = new String(myRS.getString("name"));
 				order = myRS.getInt("orderValue");
-				newChoice = new Choice(name, order);
+				finalDecision = myRS.getInt("finalDecisionOrder");
+				newChoice = new Choice(name, order, finalDecision);
 				readEvent.getChoices().add(newChoice);
 			}
 
@@ -217,10 +224,11 @@ public class DatabaseSubsystem {
 	 */
 	public static int writeChoice(Choice writeChoice, String decisionLineId) {
 		try {
-			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateChoice(?, ?, ?)");
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateChoice(?, ?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
 			pstmt.setInt(2, writeChoice.getOrder());
 			pstmt.setString(3, writeChoice.getName());
+			pstmt.setInt(4,  writeChoice.getFinalDecisionOrder());
 
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {

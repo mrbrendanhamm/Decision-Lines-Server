@@ -114,7 +114,7 @@ public class CreateDLEController implements IProtocolHandler {
 				choiceName = myList.item(i).getAttributes().getNamedItem("value").getNodeValue();
 				indexOf = Integer.parseInt(myList.item(i).getAttributes().getNamedItem("index").getNodeValue());
 				
-				Choice newChoice = new Choice(choiceName, indexOf);
+				Choice newChoice = new Choice(choiceName, indexOf, -1);
 				myChoices.add(newChoice);
 			}
 			else if (myList.item(i).getNodeName().equals("user")) {  //A Moderator has been found
@@ -139,7 +139,7 @@ public class CreateDLEController implements IProtocolHandler {
 	 */
 	Message writeSuccessResponse() {
 		String xmlString = Message.responseHeader(clientIdToServer) +
-				"<createResponse id='error'/>" +
+				"<createResponse id='" + myEventId + "'/>" +
 				"</response>";
 		Message myMsg = new Message(xmlString);
 		System.out.println("Responding: " + myMsg);

@@ -4,16 +4,18 @@ public class Choice {
 
 private String name;
 private int order;
+int finalDecisionOrder;
 
 	public Choice()
 	{
 		
 	}
 	
-	public Choice(String name, int order)
+	public Choice(String name, int order, int finalDecisionOrder)
 	{
 		this.name = name;
 		this.order = order;
+		this.finalDecisionOrder = finalDecisionOrder;
 	}
 	public int getOrder()
 	{
@@ -30,6 +32,12 @@ private int order;
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+	public int getFinalDecisionOrder() {
+		return finalDecisionOrder;
+	}
+	public void setFinalDecisionOrder(int newSetting) {
+		finalDecisionOrder = newSetting;
 	}
 	
 	@Override
