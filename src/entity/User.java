@@ -50,7 +50,7 @@ public class User {
 			return false;
 
 		User tmp = (User) o;
-		if (tmp.getUser().equals(this.getUser())) 
+		if (tmp.getUser().equals(this.userid)) 
 			return true;
 		
 		return false;		

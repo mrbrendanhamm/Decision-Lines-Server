@@ -35,4 +35,12 @@ public class Edge {
 	{
 		return this.height;
 	}
+	public boolean hasChoice(int order)
+	{
+		if(this.leftChoice.getOrder() == order || this.rightChoice.getOrder() == order)
+		{
+			return true;
+		}
+		return false;
+	}
 }

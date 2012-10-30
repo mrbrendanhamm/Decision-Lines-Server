@@ -2,6 +2,9 @@ package entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class DecisionLineEvent {
 	public static enum EventType { OPEN, CLOSED, FINISHED }; 
@@ -142,7 +145,60 @@ public class DecisionLineEvent {
 	{
 		return (this.choices.size() <  this.numberOfChoice);
 	}
-	
+	private ArrayList<Edge> getEdgesList()
+	{
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+		Iterator<Entry<User, ArrayList<Edge>>> it = this.usersAndEdges.entrySet().iterator();
+		while(it.hasNext())
+		{
+			Map.Entry<User, ArrayList<Edge>> entry = (Entry<User, ArrayList<Edge>>) it.next();
+			ArrayList<Edge> edgestmp = entry.getValue();
+			edges.addAll(edgestmp);
+		}
+		return edges;
+	}
+	private int getClosestEdge(int order, int height, ArrayList<Edge> edges)
+	{
+		int min = Integer.MAX_VALUE;
+		int result = order;
+		for(Edge edge : edges)
+		{
+			if(edge.hasChoice(order) && edge.getHeight() > height)
+			{
+				int diff = edge.getHeight() - height;
+				if(diff < min)
+				{
+					if(edge.getLeftChoice().getOrder() != order)
+					{
+						result = edge.getLeftChoice().getOrder();
+					}else
+					{
+						result = edge.getRightChoice().getOrder();
+					}
+					min = diff;					
+				}
+			}
+		}
+		return result;
+	}
+	public void getFinalOrder()
+	{
+		int preOrder = -1;
+		int curOrder = -1;
+		int curHeight = 0;
+		ArrayList<Edge> edges = this.getEdgesList();
+		for(Choice choice : this.choices)
+		{
+			preOrder = choice.getOrder();
+			curOrder = this.getClosestEdge(preOrder, curHeight, edges);
+			while(preOrder != curOrder)
+			{
+				preOrder = curOrder;
+				curOrder = this.getClosestEdge(preOrder, curHeight, edges);
+			}
+			choice.setFinalDecisionOrder(curOrder);
+		}
+	}
 	/**
 	 * This is required for this object to exist in an ArrayList.  Essentially I am stating
 	 * that the uniqueId field the way to uniquely identify this object.  
@@ -157,7 +213,7 @@ public class DecisionLineEvent {
 
 		DecisionLineEvent tmp = (DecisionLineEvent) o;
 		
-		if (tmp.uniqueId.equals(this.uniqueId)) 
+		if (tmp.getUniqueId().equals(this.uniqueId)) 
 			return true;
 		
 		return false;

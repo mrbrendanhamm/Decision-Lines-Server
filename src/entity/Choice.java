@@ -4,13 +4,18 @@ public class Choice {
 
 private String name;
 private int order;
-int finalDecisionOrder;
+private int finalDecisionOrder;
 
 	public Choice()
 	{
 		
 	}
-	
+	public Choice(String name, int order)
+	{
+		this.name = name;
+		this.order = order;
+		this.finalDecisionOrder = -1;
+	}
 	public Choice(String name, int order, int finalDecisionOrder)
 	{
 		this.name = name;
@@ -50,7 +55,7 @@ int finalDecisionOrder;
 
 		Choice tmp = (Choice) o;
 		
-		if (tmp.order == this.order) 
+		if (tmp.getOrder() == this.order) 
 			return true;
 		
 		return false;
