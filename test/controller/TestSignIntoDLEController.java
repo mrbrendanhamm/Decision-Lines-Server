@@ -2,6 +2,7 @@ package controller;
 
 import boundary.DefaultProtocolHandler;
 
+import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
 import entity.*;
@@ -13,7 +14,7 @@ public class TestSignIntoDLEController extends TestCase {
 	MockClient client1, client2, client3;
 	
 	protected void setUp () {
-		if (!Message.configure("draw2choose.xsd")) { 
+		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
 			fail ("unable to configure protocol");
 		}
 		

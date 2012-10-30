@@ -1,11 +1,10 @@
 package controller;
 
-import java.util.UUID;
-
 import boundary.DefaultProtocolHandler;
 
 import entity.ClearModelInstance;
 
+import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
 
@@ -17,7 +16,7 @@ public class TestCreateDLEController extends TestCase {
 
 	
 	protected void setUp () {
-		if (!Message.configure("draw2choose.xsd")) { 
+		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
 			fail ("unable to configure protocol");
 		}
 		

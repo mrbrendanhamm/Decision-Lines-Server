@@ -4,29 +4,27 @@ package server;
  */
 
 import java.io.IOException;
+
 import boundary.DefaultProtocolHandler;
 import server.Server;
 import boundary.DatabaseSubsystem;
 import xml.*;
 
 public class ApplicationMain {
+	public static boolean useLocalXSD = false;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("Hello World!");
 		
-		//sample access method, all static so no need to generate an object to use
-		DatabaseSubsystem.readDecisionLineEvent(null);
-
 		/**
 		 *  Code taken directly and nearly completely from Professor Heineman's Project: ClientServerEBC, 
 		 *  Class: ServerLauncher  
 		 */
 		// FIRST thing to do is register the protocol being used. There will be a single class protocol
 		// that will be defined and which everyone will use. For now, demonstrate with skeleton protocol.
-		if (!Message.configure("draw2choose.xsd")) { 
+		if (!Message.configure(getMessageXSD())) { 
 			System.exit(0);
 		}
 		
@@ -53,6 +51,13 @@ public class ApplicationMain {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}    
+	}
+	
+	public static String getMessageXSD() {
+		if (useLocalXSD)
+			return "draw2choose.xsd";
+		else
+			return "http://draw2choose.com/draw2choose.xsd";
 	}
 }
 
