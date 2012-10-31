@@ -41,6 +41,10 @@ public class AddEdgeController implements IProtocolHandler {
 		//TODO Needs to be broadcasted to all users of the dle
 		
 		response = new Message(xmlString);
+		if((dle.getUsers().size() * dle.getNumberOfEdge()) <= dle.getEdges().size())
+		{
+			dle.getFinalOrder();
+		}
 		return response;
 	}
 

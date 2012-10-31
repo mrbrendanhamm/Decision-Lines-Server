@@ -3,7 +3,7 @@ package entity;
 public class User {
 	private String userid;
 	private String password;
-	int position;
+	private int position;
 	
 	public User()
 	{

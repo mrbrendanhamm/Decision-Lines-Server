@@ -1,5 +1,10 @@
 package controller;
 
+import org.w3c.dom.Node;
+
+import entity.DecisionLineEvent;
+import entity.Model;
+import entity.DecisionLineEvent.EventType;
 import server.ClientState;
 import server.IProtocolHandler;
 import xml.Message;
@@ -8,8 +13,41 @@ public class ForceFinishController implements IProtocolHandler {
 
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
-		// TODO Auto-generated method stub
-		return null;
+		String xmlString;
+		Model model = Model.getInstance();
+		Message response = null;
+		
+		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
+		//get ID of event and the dle
+		if(child.getAttributes().getNamedItem("name").getNodeValue() != null)
+		{
+			String eventID = new String(child.getAttributes()
+					.getNamedItem("name").getNodeValue());
+			DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+
+			// finish the dle
+			dle.setType(EventType.FINISHED);
+			dle.getFinalOrder();
+			int count = model.getDecisionLineEvent(eventID)
+					.getConnectedClients().size();
+			xmlString = new String(Message.responseHeader(request.id())
+					+ "<numberAffected=" + count + "/></response>");
+		}else
+		{
+			int daysOld = new Integer(child.getAttributes()
+					.getNamedItem("daysOld").getNodeValue());
+
+			int count = model.getDecisionLineEvent(eventID)
+					.getConnectedClients().size();
+			xmlString = new String(Message.responseHeader(request.id())
+					+ "<numberAffected=" + count + "/></response>");
+		}
+		//TODO Needs to be broadcasted to all users of the dle
+		
+		
+		response = new Message(xmlString);
+		return response;
+		
 	}
 
 }
