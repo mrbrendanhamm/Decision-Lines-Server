@@ -4,16 +4,18 @@ public class User {
 	private String userid;
 	private String password;
 	private int position;
+	private String clientStateId;
 	
 	public User()
 	{
-		
+		clientStateId = "";
 	}
 	public User(String userid, String password, int position)
 	{
 		this.userid = userid;
 		this.password = password;
 		this.position = position;
+		clientStateId = "";
 	}
 	public String getUser()
 	{
@@ -31,6 +33,9 @@ public class User {
 	{
 		this.password = password;
 	}
+	
+	public String getClientStateId() { return clientStateId; } 
+	public void setClientStateId(String newId) { clientStateId = new String(newId); } 
 	
 	public int getPosition() { return position; }
 	public void setPosition(int position) { this.position = position; }

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class DecisionLineEvent {
-	public static enum EventType { OPEN, CLOSED, FINISHED }; 
-	public static enum Behavior { ASYNCHRONOUS, ROUNDROBIN }; 
+	public static enum EventType { OPEN, CLOSED, FINISHED, ERROR }; 
+	public static enum Behavior { ASYNCHRONOUS, ROUNDROBIN, ERROR }; 
 	
 	private String uniqueId;
 	private String question;
@@ -23,24 +23,27 @@ public class DecisionLineEvent {
 	private ArrayList<Choice> choices = null;;
 	private String moderator;
 	private Choice decision; //decisions should be an array list
-	ArrayList<String> connectedClientIds = null;
 	
 	public DecisionLineEvent()
 	{
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
+		myType = EventType.ERROR;
+		myBehavior = Behavior.ERROR;
 	}
 	
 	/**
 	 * This constructor is only used when attempting to locate a DecisionLineEvent within an ArrayList
-	 * @param uniqueId
+	 * @param uniqueId - the unique identifier of the DecisionLineEvent
 	 */
 	public DecisionLineEvent(String uniqueId) {
 		this.uniqueId = uniqueId;
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
+		myType = EventType.ERROR;
+		myBehavior = Behavior.ERROR;
 	}
 	
 	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
@@ -81,8 +84,23 @@ public class DecisionLineEvent {
 		return this.uniqueId;
 	}
 
-	public void setBehavior(Behavior newBehavior) { myBehavior = newBehavior; }
-	public Behavior getBehavior() { return myBehavior; }
+	/**
+	 * This method sets the behavior of the Decision Line Event based on the Behavior enumeration.  
+	 * 
+	 * @param newBehavior - the new behavior type, either ROUNDROBIN or ASYNCHRONOUS
+	 */
+	public void setBehavior(Behavior newBehavior) { 
+		myBehavior = newBehavior; 
+	}
+	
+	/**
+	 * This methods returns the current Behavior of the DLE.
+	 * 
+	 * @return Behavior.ROUNDROBIN if this is a round robin DLE, or Behavior.ASYNCHRONOUS if this is an asynchronous DLE
+	 */
+	public Behavior getBehavior() { 
+		return myBehavior; 
+	}
 		
 	public String getQuestion()
 	{
@@ -96,11 +114,66 @@ public class DecisionLineEvent {
 	{
 		return this.numberOfEdge;
 	}
-	public ArrayList<String> getConnectedClients() {
-		if (connectedClientIds == null)
-			connectedClientIds = new ArrayList<String>();
+	
+	/**
+	 * This method returns the total number of users that have a client application connected to the DLE.  This is used
+	 * to determine when a DLE should be removed from memory (aka when no clients are connected).  Other uses to be determined...
+	 * 
+	 * @return 0 - the count of users which have a client connected.
+	 */
+	public int connectedClientCount() {
+		int count = 0;
 		
-		return connectedClientIds;
+		for (int i = 0; i < getUsers().size(); i++) {
+			if (!getUsers().get(i).getClientStateId().equals(""))
+				count++;
+		}
+		return count;
+	}
+	
+	/**
+	 * This removes a client connection from an association with the User.  
+	 * 
+	 * @param clientId - the ClientState Id to be removed
+	 * @return - always true
+	 */
+	public boolean disconnectClientId(String clientId) {
+		for (int i = 0; i < getUsers().size(); i++) 
+			if (getUsers().get(i).getClientStateId().equals(clientId)) 
+				getUsers().get(i).setClientStateId("");
+		
+		return true;
+	}
+	
+	/**
+	 * This method associates a user with a ClientState Id.  
+	 * 
+	 * @param userName - the UserName that will be associated with the ClientState Id
+	 * @param clientId - The ClientState Id being associated
+	 * @return - true if successfully associated, false otherwose
+	 */
+	public boolean addClientConnection(String userName, String clientId) {
+		for (int i = 0; i < getUsers().size(); i++) 
+			if (getUsers().get(i).getUser().equals(userName)) {
+				getUsers().get(i).setClientStateId(clientId);
+				return true;
+			}
+
+		return false;
+	}
+	
+	/**
+	 * This method retrieves a User from the ClientState Id provided
+	 * 
+	 * @param clientId - The ClientState Id being searched for.
+	 * @return - The User with the associated ClientState Id, or null otherwise
+	 */
+	public User getUserFromClientId(String clientId) {
+		for (int i = 0; i < getUsers().size(); i++) 
+			if (getUsers().get(i).getClientStateId().equals(clientId)) 
+				return getUsers().get(i);
+		
+		return null;
 	}
 	
 	public ArrayList<Edge> getEdges()
@@ -121,9 +194,18 @@ public class DecisionLineEvent {
 	{
 		return this.currentTurn;
 	}
+	
+	/**
+	 * This method returns the current status of the event
+	 * 
+	 * @return 	EventType.OPEN - the event is in the choice setting phase
+	 * 			EventType.CLOSED - the event has all choices selected and is ready to play edges
+	 * 			EventType.FINISHED - Edge playing has concluded and a final decision has been reached.
+	 */
 	public EventType getEventType() {
 		return myType;
 	}
+	
 	public ArrayList<Choice> getChoices()
 	{
 		if (choices == null)
@@ -135,24 +217,7 @@ public class DecisionLineEvent {
 	{
 		return this.moderator;
 	}
-	public boolean getIsClosed()
-	{
-		if (myType == EventType.CLOSED || myType == EventType.FINISHED)
-			return true;
-		else
-			return false;
-	}
-	public Choice getDecision()
-	{
-		return this.decision;
-	}
-	public boolean getIsFinished()
-	{
-		if (myType == EventType.FINISHED) 
-			return true;
-		else 
-			return false;
-	}
+	
 	public boolean canAddChoice()
 	{
 		return (this.choices.size() <  this.numberOfChoice);
@@ -239,9 +304,13 @@ public class DecisionLineEvent {
 			choice.setFinalDecisionOrder(curOrder);
 		}
 	}
+	
 	/**
 	 * This is required for this object to exist in an ArrayList.  Essentially I am stating
 	 * that the uniqueId field the way to uniquely identify this object.  
+	 * 
+	 * @param o - the object being compared
+	 * @return True if the objects are the same, false otherwise 
 	 */
 	@Override
 	public boolean equals(Object o) {

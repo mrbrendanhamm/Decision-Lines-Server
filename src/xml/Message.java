@@ -6,6 +6,7 @@
 package xml;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.xml.XMLConstants;
@@ -16,6 +17,8 @@ import javax.xml.transform.dom.*;
 import javax.xml.validation.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
+
+import xml.XMLSegment.SegmentType;
 
 
 /** Support class for XML parsing of requests and responses. */
@@ -57,7 +60,9 @@ public class Message {
 		}
 
 		try {
-			InputSource is = new InputSource (new StringReader (xmlSource));
+			String normalizedInput = normalizeInput(xmlSource);
+			InputSource is = new InputSource (new StringReader (normalizedInput));
+			//InputSource is = new InputSource (new StringReader (xmlSource));
 
 			// parse method in builder is not thread safe.
 			Document d = null;
@@ -95,6 +100,54 @@ public class Message {
 		}
 	}  
 
+	/**  
+	 * Custom function to remove stray characters that throw off the building of the node structure
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public static String normalizeInput(String input) {
+		ArrayList<XMLSegment> mySegments = new ArrayList<XMLSegment>();
+		int curIndex = 0;
+
+		try {
+			XMLSegment newSegment;
+			
+			while (curIndex < input.length()) {
+				newSegment = new XMLSegment();
+				curIndex = newSegment.readSegment(input, curIndex);
+				mySegments.add(newSegment);
+			}
+		} catch (Exception e) {
+			System.out.println("error while normalizing string.");
+			return input;
+		}
+
+		String output = "";
+		XMLSegment previousSegment;
+		XMLSegment currentSegment = null;
+		for(int i = 0; i < mySegments.size(); i++) {
+			previousSegment = currentSegment;
+			currentSegment = mySegments.get(i);
+			
+			if (previousSegment == null)
+				output += currentSegment.formattedString;
+			else {
+				if (previousSegment.myType == SegmentType.NODECLOSE || previousSegment.myType == SegmentType.NODEINLINECLOSE)
+					output += currentSegment.formattedString;
+				else if ((previousSegment.myType == SegmentType.NODEDECLARATION || previousSegment.myType == SegmentType.ATTRIBUTE) && 
+						(currentSegment.myType == SegmentType.ATTRIBUTE))
+					output += " " + currentSegment.formattedString;
+				else if ((previousSegment.myType == SegmentType.NODEDECLARATION || previousSegment.myType == SegmentType.ATTRIBUTE) && 
+						(currentSegment.myType == SegmentType.NODECLOSE || currentSegment.myType == SegmentType.NODEINLINECLOSE))
+					output += currentSegment.formattedString;
+				else if (currentSegment.myType == SegmentType.UNKNOWN || previousSegment.myType == SegmentType.UNKNOWN)
+					output += " " + currentSegment.rawString;
+			}
+		}
+		
+		return output;
+	}
 
 	/** Determine the success of the given message. */
 	public boolean success() {

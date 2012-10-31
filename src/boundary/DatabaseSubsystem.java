@@ -19,6 +19,10 @@ public class DatabaseSubsystem {
 	private static final String USER     = "azafty";
 	private static final String PASSWORD = "UjnyxY";
 	private static final String DATABASE = "decisionsserver";
+	/* full connection string from SSH 
+	 * mysql -hmysql.wpi.edu -uazafty -pUjnyxY decisionsserver
+	 */
+
 
 	// as long as you're using mysql, leave this alone.
 	private static final String DATABASE_TYPE = "mysql";
@@ -31,7 +35,7 @@ public class DatabaseSubsystem {
 	/**
 	 * Gets a connection to for the manager and makes a good effort to
 	 * make sure it is open
-	 * Taken directly from Professor Heinemen's files
+	 * Taken directly from Professor Heineman's files
 	 * @return either an open connection or null
 	 */
 	static synchronized Connection getConnection() {
@@ -47,7 +51,7 @@ public class DatabaseSubsystem {
 	}
 
 	/** Closes the database connection 
-	 *	Taken directly from Professor Heinemen's files
+	 *	Taken directly from Professor Heineman's files
 	 */
 	public static void disconnect () {
 		if (con == null) {
@@ -66,7 +70,7 @@ public class DatabaseSubsystem {
 
 	/** 
 	 * Utility method to validate connection is valid.
-	 * Taken directly from Professor Heinemen's files
+	 * Taken directly from Professor Heineman's files
 	 * @return true if DATABASE is available; false otherwise.
 	 */
 	public static boolean isConnected() {
@@ -82,7 +86,7 @@ public class DatabaseSubsystem {
 	}
 
 	/*
-	 * Taken directly from Professor Heinemen's files
+	 * Taken directly from Professor Heineman's files
 	 */
 	public static boolean connect() {
 		// already connected.
@@ -120,26 +124,11 @@ public class DatabaseSubsystem {
 			ResultSet myRS = pstmt.executeQuery();
 			Edge newEdge;
 			Choice leftChoice, rightChoice;
-			User selectedUser, tmpUser;
 			int height, choiceId, indexOf;
-			String tmpUserName;
 			
 			while (myRS.next()) {
 				height = myRS.getInt("height");
 				choiceId = myRS.getInt("choiceId");
-				tmpUserName = myRS.getString("userName");
-				selectedUser = null;
-				Iterator<User> myUsers = readEvent.getUsersAndEdges().keySet().iterator();
-				
-				while (myUsers.hasNext()) {
-					tmpUser = myUsers.next();
-					
-					if (tmpUser.getUser().equals(tmpUserName))
-						selectedUser = tmpUser;
-				}
-				
-				if (selectedUser == null) 
-					return false; //user not found in list
 				
 				indexOf = readEvent.getChoices().indexOf(new Choice("", choiceId, -1));
 				if (indexOf == -1) //error, choice dictated is not valid
@@ -152,7 +141,7 @@ public class DatabaseSubsystem {
 				rightChoice = readEvent.getChoices().get(indexOf);
 				
 				newEdge = new Edge(leftChoice, rightChoice, height);
-				readEvent.getUsersAndEdges().get(selectedUser).add(newEdge);
+				readEvent.getEdges().add(newEdge);
 			}
 
 			return true;
@@ -172,13 +161,12 @@ public class DatabaseSubsystem {
 	 * @param byUser - the User that played the edge
 	 * @return -1 if an error was encountered, the number of records affected otherwise
 	 */
-	public static int writeEdge(Edge writeEdge, String decisionLineId, User byUser) {
+	public static int writeEdge(Edge writeEdge, String decisionLineId) {
 		try {
-			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEdge(?, ?, ?, ?)");
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEdge(?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
 			pstmt.setInt(2, writeEdge.getHeight());
 			pstmt.setInt(3, writeEdge.getLeftChoice().getOrder());
-			pstmt.setString(4, byUser.getUser());
 
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -258,7 +246,7 @@ public class DatabaseSubsystem {
 				password = new String(myRS.getString("userPassword"));
 				position = myRS.getInt("position");
 				newUser = new User(name, password, position);
-				readEvent.getUsersAndEdges().put(newUser, new ArrayList<Edge>());
+				readEvent.getUsers().add(newUser);
 			}
 
 			return true;
@@ -361,9 +349,9 @@ public class DatabaseSubsystem {
 			else
 				pstmt.setBoolean(5, false);
 			pstmt.setString(6, writeEvent.getModerator());
-			if (writeEvent.getIsFinished())
+			if (writeEvent.getEventType() == EventType.FINISHED)
 				pstmt.setInt(7, 2);
-			else if (writeEvent.getIsClosed())
+			else if (writeEvent.getEventType() == EventType.CLOSED)
 				pstmt.setInt(7, 1);
 			else
 				pstmt.setInt(7, 0);
@@ -377,18 +365,16 @@ public class DatabaseSubsystem {
 					return -1; //error while writing choices
 			}
 			
-			Iterator<User> myUsers = writeEvent.getUsersAndEdges().keySet().iterator();
-			User tmpUser;
-			while (myUsers.hasNext()) {
-				tmpUser = myUsers.next();
-				if (writeUser(tmpUser, writeEvent.getUniqueId()) < 0)
+			ArrayList<Edge> edgeList = writeEvent.getEdges();
+			for(int i = 0; i < edgeList.size(); i++) {
+				if (writeEdge(edgeList.get(i), writeEvent.getUniqueId()) < 0)
+					return -1; //error while writing edges
+			}
+			
+			ArrayList<User> userList = writeEvent.getUsers();
+			for(int i = 0; i < userList.size(); i++) {
+				if (writeUser(userList.get(i), writeEvent.getUniqueId()) < 0)
 					return -1; //errors while writing users
-
-				ArrayList<Edge> edgeArray = writeEvent.getUsersAndEdges().get(tmpUser);
-				for (int i = 0; i < edgeArray.size(); i++) {
-					if (writeEdge(edgeArray.get(i), writeEvent.getUniqueId(), tmpUser) < 0)
-						return -1; //error while writing edges
-				}
 			}
 			
 			return retVal;

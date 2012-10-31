@@ -1,5 +1,8 @@
 package controller;
 
+/**
+ * Many aspects of this adapted from Professor Heineman's TestCase examples discussed during class
+ */
 import boundary.DefaultProtocolHandler;
 
 import server.ApplicationMain;
@@ -70,7 +73,7 @@ public class TestSignIntoDLEController extends TestCase {
 		retVal = myHandler.process(client2, msg);
 		assert(retVal != null);
 		loadedEvent = myModel.getDecisionLineEvents().get(0);
-		assertTrue(loadedEvent.getUsersAndEdges().containsKey(new User("abra", "", -1)));
+		assertTrue(loadedEvent.getUsers().contains(new User("abra", "", -1)));
 		
 		testMessageSuccess = "<request version='1.0' id='" + client3.id().toString() + "'>" +
 				"  <signInRequest id='12345'>" +
@@ -81,6 +84,6 @@ public class TestSignIntoDLEController extends TestCase {
 		retVal = myHandler.process(client3, msg);
 		assert(retVal != null);
 		loadedEvent = myModel.getDecisionLineEvents().get(0);
-		assertTrue(loadedEvent.getUsersAndEdges().containsKey(new User("supra", "", -1)));
+		assertTrue(loadedEvent.getUsers().contains(new User("supra", "", -1)));
 	}
 }

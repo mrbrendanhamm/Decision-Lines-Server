@@ -29,11 +29,22 @@ public class CreateDLEController implements IProtocolHandler {
 	String clientIdToServer;
 	DecisionLineEvent createdDLE;
 	
+	/**
+	 * Default constructor
+	 */
 	public CreateDLEController() {
 		myChoices = new ArrayList<Choice>();
 		myQuestion = new String();
 	}
 	
+	/**
+	 * This method is the calling entry point for this controller.  It is assumed that the message type is appropriate
+	 * for this controller.
+	 * 
+	 * @param state - The ClientState of the requesting client
+	 * @param request - An XML request
+	 * @return A properly formatted XML response or null if one cannot be formed
+	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
 		// Read in the Request
@@ -43,10 +54,18 @@ public class CreateDLEController implements IProtocolHandler {
 		}
 		
 		//Check for missing parameters
-		if (myQuestion.equals("")) /* test all parameters here */ { 
-			//debug message for a malformed message
+		if (myQuestion.equals("")) //missing question
 			return writeFailureResponse("No question has been provided");
-		}
+		if (myType == EventType.ERROR) 
+			return writeFailureResponse("Unrecognized event type");
+		if (myBehavior == Behavior.ERROR) 
+			return writeFailureResponse("Unrecognized event behavior");
+		if (numOfRounds < 0)
+			return writeFailureResponse("Set at least 0 rounds of edge selection");
+		if (numOfChoices < 1)
+			return writeFailureResponse("Ensure that there can be at least 1 choice");
+		if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
+			return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
 		
 		//I generate the event Id and return it to the client.  probably something better than this massive string however
 		myEventId = UUID.randomUUID().toString();
@@ -56,7 +75,7 @@ public class CreateDLEController implements IProtocolHandler {
 		User newModerator = new User(moderator, moderatorPassword, 0);
 		for (int i = 0; i < myChoices.size(); i++)
 			createdDLE.getChoices().add(myChoices.get(i));
-		createdDLE.getUsersAndEdges().put(newModerator, new ArrayList<Edge>());
+		createdDLE.getUsers().add(newModerator);
 		
 		//Update the model appropriately
 		Model.getInstance().getDecisionLineEvents().add(createdDLE);
@@ -65,7 +84,7 @@ public class CreateDLEController implements IProtocolHandler {
 		DatabaseSubsystem.writeDecisionLineEvent(createdDLE);
 		
 		//Register client
-		createdDLE.getConnectedClients().add(clientIdToServer);
+		createdDLE.addClientConnection(newModerator.getUser(), clientIdToServer);
 		
 		return writeSuccessResponse(); //this specific message is sent back to the requesting client
 	}
@@ -85,17 +104,19 @@ public class CreateDLEController implements IProtocolHandler {
 		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 
 		Node child = request.contents.getFirstChild();
-		child = child.getNextSibling();
 		
 		if (child.getAttributes().getNamedItem("type").getNodeValue().equals("open"))
 			myType = EventType.OPEN;
-		else
+		else if (child.getAttributes().getNamedItem("type").getNodeValue().equals("closed"))
 			myType = EventType.CLOSED;
+		else
+			myType = EventType.ERROR;
 			
 		if (child.getAttributes().getNamedItem("behavior").getNodeValue().equals("roundRobin"))
 			myBehavior = Behavior.ROUNDROBIN;
-		else
+		else if (child.getAttributes().getNamedItem("behavior").getNodeValue().equals("asynchronous"))
 			myBehavior = Behavior.ASYNCHRONOUS;
+		else myBehavior = Behavior.ERROR;
 			
 		myQuestion = new String(child.getAttributes().getNamedItem("question").getNodeValue());
 		numOfChoices = Integer.parseInt(child.getAttributes().getNamedItem("numChoices").getNodeValue());
@@ -132,10 +153,9 @@ public class CreateDLEController implements IProtocolHandler {
 	}
 
 	/**
-	 * This method creates the appropriate response.  Might need to be split into two methods, one for 
-	 * Open and one for Closed DLEs
+	 * This method creates the appropriate success response.  
 	 *  
-	 * @return A properly formatted Success method, or null if a message cannot be properly formed
+	 * @return A properly formatted Success response, or null if a message cannot be properly formed
 	 */
 	Message writeSuccessResponse() {
 		String xmlString = Message.responseHeader(clientIdToServer) +
@@ -146,7 +166,13 @@ public class CreateDLEController implements IProtocolHandler {
 		
 		return myMsg;
 	}
-	
+
+	/**
+	 * This method creates the appropriate failure response.  
+	 * 
+	 * @param reason - the reason for the failure
+	 * @return a properly formatted XML response
+	 */
 	Message writeFailureResponse(String reason) {
 		String xmlString = Message.responseHeader(clientIdToServer, reason) +
 				"<createResponse id='" + myEventId + "'/>" +

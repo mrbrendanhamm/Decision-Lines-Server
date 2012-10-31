@@ -1,14 +1,13 @@
 package controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.w3c.dom.Node;
 
 import entity.Choice;
 import entity.DecisionLineEvent;
 import entity.DecisionLineEvent.Behavior;
-import entity.Edge;
+import entity.DecisionLineEvent.EventType;
 import entity.Model;
 import entity.User;
 import server.ClientState;
@@ -24,11 +23,23 @@ public class SignIntoDLEController implements IProtocolHandler {
 	DecisionLineEvent myDLE;
 	User newUser;
 	
+	/**
+	 * The default constructor
+	 */
 	public SignIntoDLEController() {
 		myEventId = new String("");
 		myVersion = new String("");
 	}
 
+	
+	/**
+	 * This method is the calling entry point for this controller.  It is assumed that the message type is appropriate
+	 * for this controller.
+	 * 
+	 * @param state - The ClientState of the requesting client
+	 * @param request - An XML request
+	 * @return A properly formatted XML response or null if one cannot be formed
+	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
 		// Initialize local variables
@@ -53,50 +64,64 @@ public class SignIntoDLEController implements IProtocolHandler {
 		else
 			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
 
-		//associate ClientState with this event id
-		myDLE.getConnectedClients().add(clientIdToServer);
-		
 		//Set the appropriate position and add user to DLE
-		if (myDLE.getUsersAndEdges().containsKey(newUser)) { //user has already logged in
-			Iterator<User> tmpIt = myDLE.getUsersAndEdges().keySet().iterator();
-			
-			while (tmpIt.hasNext()) {
-				User tmpUse = tmpIt.next();
-				if (newUser.getUser().equals(tmpUse.getUser())) {
-					if (newUser.getPassword().equals(tmpUse.getPassword()))
-						newUser = tmpUse;
-					else //error, incorrect password
-						return writeFailureResponse("Invalid password for user: " + newUser.getUser());
+		boolean userAlreadyExists = false;
+		ArrayList<User> userList = myDLE.getUsers();
+		for (int i = 0; i < userList.size(); i++) {
+			if (newUser.getUser().equals(userList.get(i).getUser())) {
+				if (newUser.getPassword().equals(userList.get(i).getPassword())) {
+					newUser = userList.get(i);
+					userAlreadyExists = true;
 				}
+				else //error, incorrect password
+					return writeFailureResponse("Invalid password for user: " + newUser.getUser());
 			}
 		}
-		else { //new user that has never logged in
-			newUser.setPosition(myDLE.getUsersAndEdges().keySet().size());
-			myDLE.getUsersAndEdges().put(newUser, new ArrayList<Edge>());
+		
+		if (!userAlreadyExists) {
+			if (userList.size() >= myDLE.getNumberOfChoice()) {
+				return writeFailureResponse("Error, maximum number of users exceeded!");
+			}
+			
+			newUser.setPosition(userList.size());
+			userList.add(newUser);
 			DatabaseSubsystem.writeUser(newUser,  myDLE.getUniqueId());
 		}
 		
+		//associate ClientState with this event id
+		myDLE.addClientConnection(newUser.getUser(), clientIdToServer);
+		
+		//TODO what else do I have to verify?  Just that the user count isn't exceeded and the User/Password match?
+		
 		//notify all other connected clients that a new client is on board
-		ArrayList<String> connectedList = myDLE.getConnectedClients();
-		for (String processing : connectedList) {
-			if (!processing.equals(clientIdToServer)) {
+		for(int i = 0; i < userList.size(); i++) {
+			String processing = userList.get(i).getClientStateId();
+			if (!processing.equals(clientIdToServer) && !processing.equals("")) {
 				Server.getState(processing).sendMessage(writeJoinNotification(processing));
 			}
 		}
 		
 		return writeSuccessResponse();
 	}
-
+	
+	/**
+	 * This method performs the XML manipulation to read the message and separate out the data.
+	 * In general there are two types of data: Nodes and Attributes.  Attributes exist only on Nodes
+	 * Nodes can hold other Nodes.  So parsing really just means traversing the node list and knowing
+	 * when to query for attributes.  
+	 *  
+	 * @param request - XML Message of type createRequest that needs to be parsed for inputs
+	 * @return true if successfully parsed
+	 */
 	boolean parseMessage(Message request) {
 		myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
 		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 		
 		Node child = request.contents.getFirstChild();
-		child = child.getNextSibling();
 		
 		myEventId = child.getAttributes().getNamedItem("id").getNodeValue();
 		
-		child = child.getFirstChild().getNextSibling();
+		child = child.getFirstChild();
 		String userName = child.getAttributes().getNamedItem("name").getNodeValue();
 		String userPassword;
 		
@@ -110,6 +135,13 @@ public class SignIntoDLEController implements IProtocolHandler {
 		return true;
 	}	
 
+	/**
+	 * This method creates a JoinResponse message that will be sent to notify other connected clients that a new 
+	 * client has logged into the same DecisionLineEvent
+	 * 
+	 * @param localClientId - the ClientState Id used by the connected client
+	 * @return - A properly formatted joinResponse message or null if one cannot be formed
+	 */
 	Message writeJoinNotification(String localClientId) {
 		String xmlString = Message.responseHeader(localClientId) +
 				"<joinResponse id='" + localClientId + "'>" +
@@ -121,11 +153,16 @@ public class SignIntoDLEController implements IProtocolHandler {
 		
 		return newMsg;
 	}
-	
+
+	/**
+	 * This method creates the appropriate success response.  
+	 *  
+	 * @return A properly formatted Success response, or null if a message cannot be properly formed
+	 */
 	Message writeSuccessResponse() {
 		String xmlString = Message.responseHeader(clientIdToServer) +
 				"<signInResponse id='" + myDLE.getUniqueId() + "' ";
-		if (myDLE.getIsClosed())
+		if (myDLE.getEventType() == EventType.CLOSED || myDLE.getEventType() == EventType.FINISHED)
 			xmlString = xmlString + "type='closed' ";
 		else
 			xmlString = xmlString + "type='open' ";
@@ -144,27 +181,30 @@ public class SignIntoDLEController implements IProtocolHandler {
 			xmlString = xmlString + "<choice value='" + tmpChoice.getName() + "' index='" + tmpChoice.getOrder() + "'/>";
 		}
 		
-		Iterator<User> tempIt = myDLE.getUsersAndEdges().keySet().iterator();
-		
-		while (tempIt.hasNext()) {
-			User tmpU = tempIt.next();
-			
-			if (!tmpU.equals(newUser)) {
-				xmlString = xmlString + "<user name='" + tmpU.getUser() + "'/>";
-			}
+		ArrayList<User> userList = myDLE.getUsers();
+		for (int i = 0; i < userList.size(); i++) {
+			if (!userList.get(i).equals(newUser)) {
+				xmlString = xmlString + "<user name='" + userList.get(i).getUser() + "'/>";
+			}	
 		}
-		
+				
 		xmlString = xmlString + "</signInResponse></response>";
 		Message myMsg = new Message(xmlString);
 		System.out.println("Responding: " + myMsg.toString());
 		
 		return myMsg;
 	}
-	
+
+	/**
+	 * This method creates the appropriate failure response.  
+	 * 
+	 * @param reason - the reason for the failure
+	 * @return a properly formatted XML response
+	 */
 	Message writeFailureResponse(String reason) {
 		String xmlString = Message.responseHeader(clientIdToServer, reason) + 
 				"<signInResponse id='" + myDLE.getUniqueId() + "' ";
-		if (myDLE.getIsClosed())
+		if (myDLE.getEventType() == EventType.CLOSED || myDLE.getEventType() == EventType.FINISHED)
 			xmlString = xmlString + "type='closed' ";
 		else
 			xmlString = xmlString + "type='open' ";

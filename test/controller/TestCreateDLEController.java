@@ -1,5 +1,9 @@
 package controller;
 
+/**
+ * Many aspects of this adapted from Professor Heineman's TestCase examples discussed during class
+ */
+
 import boundary.DefaultProtocolHandler;
 
 import entity.ClearModelInstance;

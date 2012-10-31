@@ -28,7 +28,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 	
 	@Override
 	public synchronized Message process (ClientState st, Message request) {
-		Node child = request.contents.getFirstChild().getNextSibling();
+		Node child = request.contents.getFirstChild();
 		String type = child.getLocalName();
 		
 		System.out.println ("Receiving: " + request);
@@ -56,8 +56,6 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		else if (type.equals("signInRequest")) 
 			return new SignIntoDLEController().process(st, request);
 		
-		//ForceFinishController and FinishEventController handle the same message
-		
 		// unknown? no idea what to do
 		System.err.println("Unable to handle message:" + request);
 		return null;
@@ -65,7 +63,7 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 
 	@Override
 	public void logout(ClientState st) {
-		//TODO to be replace by our customer disconnect controller
-		//new ClientDisconnectController().process(st);		
+		//notify model that the client is disconnecting
+		new ClientDisconnect().disconnectClient(st.id());	
 	} 
 }

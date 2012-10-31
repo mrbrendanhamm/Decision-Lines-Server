@@ -1,6 +1,5 @@
 package boundary;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import boundary.DatabaseSubsystem;
@@ -16,7 +15,7 @@ public class DatabaseSubsystemTest extends TestCase {
 		System.out.println("Testing read edges");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		myDLE.getChoices().add(new Choice("Choice 1", 1, -1));
-		myDLE.getUsersAndEdges().put(new User("azafty",  "", 0), new ArrayList<Edge>());
+		myDLE.getUsers().add(new User("azafty",  "", 0));
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
 		
@@ -25,14 +24,13 @@ public class DatabaseSubsystemTest extends TestCase {
 	
 	public void testWriteEdge() {
 		System.out.println("Testing write edges");
-		User myUser = new User("azafty", "", 0);
 		Choice myLeftChoice = new Choice("Choice 1", 0, -1);
 		Choice myRightChoice = new Choice("Choice 2", 1, -1);
 		int height = 16;
 		Edge myEdge = new Edge(myLeftChoice, myRightChoice, height);
 		String myDLEId = new String("12345");
 		
-		int retval = DatabaseSubsystem.writeEdge(myEdge, myDLEId, myUser);
+		int retval = DatabaseSubsystem.writeEdge(myEdge, myDLEId);
 		
 		assertTrue(retval > 0);
 	}
@@ -89,8 +87,8 @@ public class DatabaseSubsystemTest extends TestCase {
 		DecisionLineEvent myEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
 		User newUser1 = new User("andrew1", "", 0);
 		User newUser2 = new User("andrew2", "", 1);
-		myEvent.getUsersAndEdges().put(newUser1, new ArrayList<Edge>());
-		myEvent.getUsersAndEdges().put(newUser2, new ArrayList<Edge>());
+		myEvent.getUsers().add(newUser1);
+		myEvent.getUsers().add(newUser2);
 		myEvent.setModerator(newUser1.getUser());
 		
 		Choice newChoice1 = new Choice("Choice 1", 1, -1);
@@ -106,11 +104,11 @@ public class DatabaseSubsystemTest extends TestCase {
 		Edge newEdge3 = new Edge(newChoice3, newChoice4, 1);
 		Edge newEdge4 = new Edge(newChoice1, newChoice2, 2);
 		Edge newEdge5 = new Edge(newChoice2, newChoice3, 2);
-		myEvent.getUsersAndEdges().get(newUser1).add(newEdge1);
-		myEvent.getUsersAndEdges().get(newUser1).add(newEdge2);
-		myEvent.getUsersAndEdges().get(newUser1).add(newEdge3);
-		myEvent.getUsersAndEdges().get(newUser2).add(newEdge4);
-		myEvent.getUsersAndEdges().get(newUser2).add(newEdge5);
+		myEvent.getEdges().add(newEdge1);
+		myEvent.getEdges().add(newEdge2);
+		myEvent.getEdges().add(newEdge3);
+		myEvent.getEdges().add(newEdge4);
+		myEvent.getEdges().add(newEdge5);
 		
 		int retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		

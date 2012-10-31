@@ -6,7 +6,7 @@ import server.ClientState;
 import xml.Message;
 
 /**
- * Represent "client" from the point of view of the server.
+ * Represent "client" from the point of view of the server.  Taken directly from Professor Heineman's ClientEBC project
  */
 public class MockClient implements ClientState {
 

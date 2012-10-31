@@ -72,9 +72,6 @@ public class ServerThread extends Thread implements ClientState {
 			}
 		}
 		
-		//notify model that the client is disconnecting
-		new ClientDisconnect().disconnectClient(id);
-		
 		// client is done so thread can be de-registered
 		if (handler instanceof IShutdownHandler) {
 			((IShutdownHandler)handler).logout(Server.getState(id));
