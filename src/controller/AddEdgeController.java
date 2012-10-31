@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 
 import entity.Choice;
 import entity.DecisionLineEvent;
+import entity.Edge;
 import entity.Model;
 import server.*;
 import xml.Message;
@@ -22,16 +23,19 @@ public class AddEdgeController implements IProtocolHandler {
 		int right = new Integer(child.getAttributes().getNamedItem("right").getNodeValue());
 		int height = new Integer(child.getAttributes().getNamedItem("height").getNodeValue());
 		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
-		if(dle.addEdge(edge));
+		Choice leftChoice = dle.getChoice(left);
+		Choice rightChoice = dle.getChoice(right);
+		Edge edge = new Edge(leftChoice,rightChoice,height);
+		if(dle.addEdge(edge) && leftChoice != null && rightChoice != null)
 		{
 			xmlString = new String(Message.responseHeader(request.id())
-					+ "<name=" + eventID + "/><number=" + order + "/><choice="
-					+ eventID + "/></response>");
+					+ "<id=" + eventID + "/><left=" + left + "/><right=" + right + "/><height="
+					+ height + "/></response>");
 		}else
 		{
-			xmlString = new String(Message.responseHeader(request.id(),"Too many choices")
-					+ "<name=" + eventID + "/><number=" + order + "/><choice="
-					+ eventID + "/></response>");
+			xmlString = new String(Message.responseHeader(request.id(),"Vaild Edge")
+					+ "<id=" + eventID + "/><left=" + left + "/><right=" + right + "/><height="
+					+ height + "/></response>");
 		}
 		
 		//TODO Needs to be broadcasted to all users of the dle

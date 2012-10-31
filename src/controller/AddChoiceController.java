@@ -31,12 +31,12 @@ public class AddChoiceController implements IProtocolHandler {
 		{
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<name=" + eventID + "/><number=" + order + "/><choice="
-					+ eventID + "/></response>");
+					+ choiceString + "/></response>");
 		}else
 		{
 			xmlString = new String(Message.responseHeader(request.id(),"Too many choices")
 					+ "<name=" + eventID + "/><number=" + order + "/><choice="
-					+ eventID + "/></response>");
+					+ choiceString + "/></response>");
 		}
 		
 		//TODO Needs to be broadcasted to all users of the dle

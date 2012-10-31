@@ -175,6 +175,17 @@ public class DecisionLineEvent {
 		}
 		return false;
 	}
+	public Choice getChoice(int order)
+	{
+		for(Choice choice : this.choices)
+		{
+			if(choice.getOrder() == order)
+			{
+				return choice;
+			}
+		}
+		return null;
+	}
 	private boolean canAddEdge(Edge edge)
 	{
 		int height = edge.getHeight();
