@@ -14,29 +14,20 @@ public class AddChoiceController implements IProtocolHandler {
 	{
 		
 	}
-	
-	public boolean addChoice(entity.Choice choice, String uniqueId)
-	{
-		DecisionLineEvent DLE = Model.getInstance().getDecisionLineEvent(uniqueId);
-		if(DLE.canAddChoice())
-		{
-			DLE.getChoices().add(choice);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
 		String xmlString;
 		Message response = null;
+		Model model = Model.getInstance();
 		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
 		//get ID of event and the dle
 		String eventID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
 		String choiceString = new String(child.getAttributes().getNamedItem("choice").getNodeValue());
 		int order = new Integer(child.getAttributes().getNamedItem("number").getNodeValue());
 		Choice choice = new Choice(choiceString,order);
-		if(addChoice(choice,eventID))
+		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+		if(dle.addChoice(choice))
 		{
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<name=" + eventID + "/><number=" + order + "/><choice="

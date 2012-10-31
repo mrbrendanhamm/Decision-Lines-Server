@@ -14,7 +14,9 @@ public class DecisionLineEvent {
 	private String question;
 	private int numberOfChoice;
 	private int numberOfEdge;
-	private HashMap<User,ArrayList<Edge>> usersAndEdges = null;
+	//private HashMap<User,ArrayList<Edge>> usersAndEdges = null;
+	private ArrayList<Edge> edges = null;
+	private ArrayList<User> users = null;
 	private User currentTurn;
 	private EventType myType;
 	private Behavior myBehavior;
@@ -25,7 +27,8 @@ public class DecisionLineEvent {
 	
 	public DecisionLineEvent()
 	{
-		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+		this.edges = new ArrayList<Edge>();
+		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
 	}
 	
@@ -35,13 +38,15 @@ public class DecisionLineEvent {
 	 */
 	public DecisionLineEvent(String uniqueId) {
 		this.uniqueId = uniqueId;
-		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+		this.edges = new ArrayList<Edge>();
+		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
 	}
 	
 	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
 	{
-		this.usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+		this.edges = new ArrayList<Edge>();
+		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
 		this.question = question;
 		this.uniqueId = uniqueId;
@@ -98,12 +103,19 @@ public class DecisionLineEvent {
 		return connectedClientIds;
 	}
 	
-	public HashMap<User,ArrayList<Edge>> getUsersAndEdges()
+	public ArrayList<Edge> getEdges()
 	{
-		if (usersAndEdges == null) 
-			usersAndEdges = new HashMap<User,ArrayList<Edge>>();
+		if (this.edges == null) 
+			this.edges = new ArrayList<Edge>();
 
-		return this.usersAndEdges;
+		return this.edges;
+	}
+	public ArrayList<User> getUsers()
+	{
+		if (this.users == null) 
+			this.users = new ArrayList<User>();
+
+		return this.users;
 	}
 	public User getCurrentTurn()
 	{
@@ -145,17 +157,35 @@ public class DecisionLineEvent {
 	{
 		return (this.choices.size() <  this.numberOfChoice);
 	}
-	private ArrayList<Edge> getEdgesList()
+	public boolean addEdge(Edge edge)
 	{
-		ArrayList<Edge> edges = new ArrayList<Edge>();
-		Iterator<Entry<User, ArrayList<Edge>>> it = this.usersAndEdges.entrySet().iterator();
-		while(it.hasNext())
+		if(canAddEdge(edge))
 		{
-			Map.Entry<User, ArrayList<Edge>> entry = (Entry<User, ArrayList<Edge>>) it.next();
-			ArrayList<Edge> edgestmp = entry.getValue();
-			edges.addAll(edgestmp);
+			this.edges.add(edge);
+			return true;
 		}
-		return edges;
+		return false;
+	}
+	public boolean addChoice(entity.Choice choice)
+	{
+		if(this.canAddChoice())
+		{
+			this.choices.add(choice);
+			return true;
+		}
+		return false;
+	}
+	private boolean canAddEdge(Edge edge)
+	{
+		int height = edge.getHeight();
+		for(Edge edgeT: this.edges)
+		{
+			if(Math.abs(edgeT.getHeight() - height) < 7)	
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	private int getClosestEdge(int order, int height, ArrayList<Edge> edges)
 	{
@@ -186,15 +216,14 @@ public class DecisionLineEvent {
 		int preOrder = -1;
 		int curOrder = -1;
 		int curHeight = 0;
-		ArrayList<Edge> edges = this.getEdgesList();
 		for(Choice choice : this.choices)
 		{
 			preOrder = choice.getOrder();
-			curOrder = this.getClosestEdge(preOrder, curHeight, edges);
+			curOrder = this.getClosestEdge(preOrder, curHeight, this.edges);
 			while(preOrder != curOrder)
 			{
 				preOrder = curOrder;
-				curOrder = this.getClosestEdge(preOrder, curHeight, edges);
+				curOrder = this.getClosestEdge(preOrder, curHeight, this.edges);
 			}
 			choice.setFinalDecisionOrder(curOrder);
 		}
