@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.ArrayList;
+
 public class User {
 	private String userid;
 	private String password;

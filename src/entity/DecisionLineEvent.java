@@ -22,7 +22,6 @@ public class DecisionLineEvent {
 	private Behavior myBehavior;
 	private ArrayList<Choice> choices = null;;
 	private String moderator;
-	private Choice decision; //decisions should be an array list
 	
 	public DecisionLineEvent()
 	{
@@ -63,11 +62,6 @@ public class DecisionLineEvent {
 		this.choices.add(choice);
 	}
 	
-	//decisions have to be changed to be an ordering 
-	public void setDecision(Choice decision)
-	{
-		this.decision = decision;
-	}
 	public void setModerator(String moderator)
 	{
 		this.moderator = moderator;
@@ -83,7 +77,10 @@ public class DecisionLineEvent {
 	{
 		return this.uniqueId;
 	}
-
+	public void addUser(User user)
+	{
+		this.users.add(user);
+	}
 	/**
 	 * This method sets the behavior of the Decision Line Event based on the Behavior enumeration.  
 	 * 
@@ -114,7 +111,6 @@ public class DecisionLineEvent {
 	{
 		return this.numberOfEdge;
 	}
-	
 	/**
 	 * This method returns the total number of users that have a client application connected to the DLE.  This is used
 	 * to determine when a DLE should be removed from memory (aka when no clients are connected).  Other uses to be determined...
@@ -263,11 +259,11 @@ public class DecisionLineEvent {
 		}
 		return true;
 	}
-	private int getClosestEdge(int order, int height, ArrayList<Edge> edges)
+	private int getClosestEdge(int order, int height)
 	{
 		int min = Integer.MAX_VALUE;
 		int result = order;
-		for(Edge edge : edges)
+		for(Edge edge : this.edges)
 		{
 			if(edge.hasChoice(order) && edge.getHeight() > height)
 			{
@@ -295,11 +291,11 @@ public class DecisionLineEvent {
 		for(Choice choice : this.choices)
 		{
 			preOrder = choice.getOrder();
-			curOrder = this.getClosestEdge(preOrder, curHeight, this.edges);
+			curOrder = this.getClosestEdge(preOrder, curHeight);
 			while(preOrder != curOrder)
 			{
 				preOrder = curOrder;
-				curOrder = this.getClosestEdge(preOrder, curHeight, this.edges);
+				curOrder = this.getClosestEdge(preOrder, curHeight);
 			}
 			choice.setFinalDecisionOrder(curOrder);
 		}
