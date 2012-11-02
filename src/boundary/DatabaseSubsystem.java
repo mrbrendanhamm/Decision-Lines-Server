@@ -7,7 +7,9 @@ package boundary;
 
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+//import java.util.Date;
 
 import entity.*;
 import entity.DecisionLineEvent.Behavior;
@@ -294,6 +296,7 @@ public class DatabaseSubsystem {
 			
 			String uniqueId = new String(myRS.getString("id"));
 			String question = new String(myRS.getString("question"));
+			java.util.Date dleDate = myRS.getDate("createdDate");
 			int numberOfChoices = myRS.getInt("numberOfChoices");
 			int numberOfEdges = myRS.getInt("numberOfEdges");
 			EventType newType = EventType.OPEN;
@@ -312,6 +315,7 @@ public class DatabaseSubsystem {
 
 			DecisionLineEvent newDLE = new DecisionLineEvent(uniqueId, question, numberOfChoices, numberOfEdges, newType, newBehavior);
 			newDLE.setModerator(myRS.getString("moderator"));
+			newDLE.setDate(dleDate);
 
 			if (!readChoices(newDLE)) 
 				return null;
@@ -339,7 +343,7 @@ public class DatabaseSubsystem {
 	 */
 	public static int writeDecisionLineEvent(DecisionLineEvent writeEvent) {
 		try {
-			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEvent(?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEvent(?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, writeEvent.getUniqueId());
 			pstmt.setString(2, writeEvent.getQuestion());
 			pstmt.setInt(3, writeEvent.getNumberOfChoice());
@@ -355,6 +359,8 @@ public class DatabaseSubsystem {
 				pstmt.setInt(7, 1);
 			else
 				pstmt.setInt(7, 0);
+			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+			pstmt.setString(8, ft.format(writeEvent.getDate()));
 			int retVal = pstmt.executeUpdate();
 			
 			if (retVal < 0) 
@@ -378,6 +384,24 @@ public class DatabaseSubsystem {
 			}
 			
 			return retVal;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
+	}
+	
+	public static int deleteEventsByAge(java.util.Date deleteByDate) {
+		try {
+			
+			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+			String qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d')";
+			
+			PreparedStatement pstmt = getConnection().prepareStatement(qry);
+
+			int numRecordsAffected = pstmt.executeUpdate();
+			
+			return numRecordsAffected;
 		} catch (SQLException e) {
 			System.out.println("error executing SQL statement!");
 		}

@@ -1,6 +1,7 @@
 package entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,12 +23,14 @@ public class DecisionLineEvent {
 	private Behavior myBehavior;
 	private ArrayList<Choice> choices = null;;
 	private String moderator;
+	private Date createDate;
 	
 	public DecisionLineEvent()
 	{
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
+		createDate = new Date();
 		myType = EventType.ERROR;
 		myBehavior = Behavior.ERROR;
 	}
@@ -76,6 +79,12 @@ public class DecisionLineEvent {
 	public String getUniqueId()
 	{
 		return this.uniqueId;
+	}
+	public Date getDate() {
+		return createDate;
+	}
+	public void setDate(Date newDate) {
+		createDate = newDate;
 	}
 	public void addUser(User user)
 	{

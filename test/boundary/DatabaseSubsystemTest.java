@@ -1,5 +1,6 @@
 package boundary;
 
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import boundary.DatabaseSubsystem;
@@ -85,6 +86,7 @@ public class DatabaseSubsystemTest extends TestCase {
 		int numOfEdges = 3;
 		
 		DecisionLineEvent myEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
+		myEvent.setDate(new java.util.Date());
 		User newUser1 = new User("andrew1", "", 0);
 		User newUser2 = new User("andrew2", "", 1);
 		myEvent.getUsers().add(newUser1);
@@ -113,6 +115,26 @@ public class DatabaseSubsystemTest extends TestCase {
 		int retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		
 		assertTrue(retval > 0);
+	}
+	
+	public void testDeleteEventByDate() {
+		System.out.println("Testing the delete by date function");
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+		java.util.Date convertedDate =  new java.util.Date();
+		try {
+			convertedDate = dateFormat.parse("2012-10-03");
+		} catch (Exception e) {
+			fail("error while converting date");
+		}
+	    
+		try {
+			int retval = DatabaseSubsystem.deleteEventsByAge(convertedDate);
+		
+			assert(retval != -1);
+		} catch (IllegalArgumentException e) {
+			fail("invalid login");
+		}
 	}
 	
 	public void testVerifyAdminCredentials() {

@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import org.w3c.dom.Node;
@@ -28,6 +29,7 @@ public class CreateDLEController implements IProtocolHandler {
 	String myVersion;
 	String clientIdToServer;
 	DecisionLineEvent createdDLE;
+	Date dleDate;
 	
 	/**
 	 * Default constructor
@@ -69,9 +71,11 @@ public class CreateDLEController implements IProtocolHandler {
 		
 		//I generate the event Id and return it to the client.  probably something better than this massive string however
 		myEventId = UUID.randomUUID().toString();
+		dleDate = new Date();
 		
 		createdDLE = new DecisionLineEvent(myEventId, myQuestion, numOfChoices, numOfRounds, myType, myBehavior);
 		createdDLE.setModerator(moderator);
+		createdDLE.setDate(dleDate);
 		User newModerator = new User(moderator, moderatorPassword, 0);
 		for (int i = 0; i < myChoices.size(); i++)
 			createdDLE.getChoices().add(myChoices.get(i));
