@@ -31,11 +31,15 @@ public class TestAdminLogInController extends TestCase {
 		// clear the singleton
 		ClearModelInstance.clearInstance();
 	}
-	
+	/** test the Process message for the AdminLogInController
+	 *  Takes client1 and signs him in as the admin.  AdminLoginController should
+	 *	response should contain the key used for further transmissions
+	 */
 	public void testProcess(){
+		Model myModel = Model.getInstance();
 		AdminLogInController myController = new AdminLogInController();
 
-		//a sample, fully formed SignInRequest message XML string
+		//An xml string which contains 
 		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
 				"<request version='1.0' id='c1'>" +
 					"<adminRequest>" +

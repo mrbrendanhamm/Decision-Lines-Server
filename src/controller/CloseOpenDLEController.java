@@ -15,12 +15,12 @@ import xml.Message;
 
 public class CloseOpenDLEController implements IProtocolHandler{
 
-	private DecisionLineEvent myDLE; //should only care about 1 dle
-	private boolean isSuccess; //used to respond whether message was success or not
-	private String reason; //used in case of failure null otherwise
-	private String moderator; //in case we want to check the moderator sent the message
-	private ArrayList<User> userList; //we need to broadcast to all users of dle
-	private String xmlString; //string to construct response message
+	DecisionLineEvent myDLE; //should only care about 1 dle
+	boolean isSuccess; //used to respond whether message was success or not
+	String reason; //used in case of failure null otherwise
+	String moderator; //in case we want to check the moderator sent the message
+	ArrayList<User> userList; //we need to broadcast to all users of dle
+	String xmlString; //string to construct response message
 	
 	public CloseOpenDLEController(){
 		

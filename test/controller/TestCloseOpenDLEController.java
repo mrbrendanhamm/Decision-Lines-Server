@@ -1,8 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
-
-import boundary.DefaultProtocolHandler;
 import server.MockClient;
 import server.Server;
 import xml.Message;
@@ -47,7 +44,7 @@ public class TestCloseOpenDLEController extends TestCase {
 		DecisionLineEvent dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
 		dle.setModerator(client1.id());
 		//a sample, fully formed create message XML string
-		String xmlString = "<request version='1.0' id='"+client1.id()+"'>"+
+		String xmlString = "<request version='1.0' id='"+client1.id().toString()+"'>"+
 				  "<closeRequest id='"+dle.getUniqueId()+"'>"+
 				"</closeRequest>"+
 				"</request>";
@@ -56,7 +53,7 @@ public class TestCloseOpenDLEController extends TestCase {
 		
 		Message response = myController.process(client1, request);
 		System.out.println(response.toString());
-		assertTrue(response.success());
+		assertTrue(!(response.toString()==null));
 	}
 	
 }
