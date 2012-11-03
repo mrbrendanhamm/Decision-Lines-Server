@@ -55,7 +55,7 @@ public class CreateDLEController implements IProtocolHandler {
 			return null;
 		}
 		
-		//Check for missing parameters
+		//Check for missing or invalid parameters
 		if (myQuestion.equals("")) //missing question
 			return writeFailureResponse("No question has been provided");
 		if (myType == EventType.ERROR) 
@@ -69,7 +69,7 @@ public class CreateDLEController implements IProtocolHandler {
 		if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
 			return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
 		
-		//I generate the event Id and return it to the client.  probably something better than this massive string however
+		//I generate the event Id and return it to the client.  probably something better than the massive UUID string however
 		myEventId = UUID.randomUUID().toString();
 		dleDate = new Date();
 		
