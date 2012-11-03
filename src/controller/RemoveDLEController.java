@@ -35,7 +35,7 @@ public class RemoveDLEController implements IProtocolHandler {
 	 * Next the controller checks whether 'id' exists as an attribute
 	 * if so it deletes that dle.
 	 * if not it gets the completed/uncompleted and days old field and
-	 * deletes thes.
+	 * deletes these.
 	 * @param state - The ClientState of the requesting client
 	 * @param request - An XML request
 	 * @return A properly formatted XML response or null if one cannot be formed
@@ -58,6 +58,7 @@ public class RemoveDLEController implements IProtocolHandler {
 				String dleID = child.getAttributes().getNamedItem("id").getNodeValue();
 				dle=myModel.getDecisionLineEvent(dleID);
 				myModel.removeDecisionLineEvent(dle); //removeDLE from model
+				this.numberRemoved++;
 			}
 			else {
 				//remove dles which correspond to isCompleted and dayOld
