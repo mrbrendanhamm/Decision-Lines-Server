@@ -37,9 +37,9 @@ public class TestAdminLogInController extends TestCase {
 
 		//a sample, fully formed SignInRequest message XML string
 		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='" + client1 + "'>" +
+				"<request version='1.0' id='c1'>" +
 					"<adminRequest>" +
-				  		"<user name='andrew' password='andrew' />" +
+				  		"<user name='andrew' password='andrew'/>" +
 				  	"</adminRequest>" +
 				"</request>");
 		System.out.println(testMessageSuccess);

@@ -21,6 +21,10 @@ public class CloseOpenDLEController implements IProtocolHandler{
 	private String moderator; //in case we want to check the moderator sent the message
 	private ArrayList<User> userList; //we need to broadcast to all users of dle
 	private String xmlString; //string to construct response message
+	
+	public CloseOpenDLEController(){
+		
+	}
 	/**
 	 * This method is used to process a Close message from the moderator
 	 * It is assumed right now that only the moderator can send this message
