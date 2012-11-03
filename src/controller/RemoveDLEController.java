@@ -21,6 +21,7 @@ public class RemoveDLEController implements IProtocolHandler {
 	boolean isSuccess;
 	ArrayList<DecisionLineEvent> dles;
     int numberRemoved=0;
+    String xmlString;
 	/** constructor for RemoveDLEController
 	 * 
 	 */
@@ -48,7 +49,9 @@ public class RemoveDLEController implements IProtocolHandler {
 		myKey=child.getAttributes().getNamedItem("key").getNodeValue();
 		//check the key and if it is wrong we need a failure
 		if (myModel.checkKey(myKey)==true){
-			//need to return reason for failure			
+			//need to return reason for failure	
+			isSuccess=false;
+			reason = "Invalid Key";
 		}
 		//if it matches the model key we can proceed to delete dle
 		else if(myModel.checkKey(myKey)==true){
@@ -59,21 +62,28 @@ public class RemoveDLEController implements IProtocolHandler {
 				dle=myModel.getDecisionLineEvent(dleID);
 				myModel.removeDecisionLineEvent(dle); //removeDLE from model
 				this.numberRemoved++;
+				isSuccess=true;
+				reason="";
 			}
 			else {
 				//remove dles which correspond to isCompleted and dayOld
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
-				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("dasOld").getNodeValue());
+				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
 				this.numberRemoved=DatabaseSubsystem.deleteEventsByAge(daysOld, isCompleted);
-				myModel.removeDecisionLineEvent(dle); //removeDLE from model
+				isSuccess=true;
+				reason="";
 				}
 						
 			
 		}
 		
-		
-		// TODO Auto-generated method stub
-		return null;
+		xmlString = "<?xml version='1.0' encoding='UTF-8'?>"+
+				"<response id='"+child.getAttributes().getNamedItem("id").getNodeValue() +"' success='"+isSuccess+"'>"+
+					"<removeResponse numberAffected='"+this.numberRemoved+"'>"+
+					"</removeResponse>"+
+				"</response>";
+		Message response = new Message(xmlString);
+		return response;
 	}
 
 }
