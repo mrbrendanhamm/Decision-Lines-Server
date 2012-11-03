@@ -1,5 +1,7 @@
 package controller;
 
+import org.w3c.dom.Node;
+
 import server.ClientState;
 import server.IProtocolHandler;
 import xml.Message;
@@ -18,6 +20,12 @@ public class ProduceReportController implements IProtocolHandler {
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
 		// TODO Auto-generated method stub
+		
+		Node child = request.contents.getFirstChild();
+		String eventType = child.getAttributes().getNamedItem("type").getNodeValue();
+		
+		
+		
 		return null;
 	}
 

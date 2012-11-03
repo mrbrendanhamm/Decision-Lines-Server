@@ -51,4 +51,11 @@ public class Model {
 		}
 		return null;
 	}
+
+	public boolean checkKey(String testKey) {
+		if(testKey.equals(key)){
+			return true;
+		}
+		else return false;
+	}
 }
