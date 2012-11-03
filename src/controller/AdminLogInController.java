@@ -41,7 +41,7 @@ public class AdminLogInController implements IProtocolHandler {
 		//Not sure if these are the proper .getNamedItem
 		msgAdminID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
 		msgAdminCredentials= new String(child.getAttributes().getNamedItem("password").getNodeValue());
-
+		System.out.println(msgAdminID);
 		if (DatabaseSubsystem.verifyAdminCredentials(msgAdminID,  msgAdminCredentials))
 			adminVerified = true;
 		else

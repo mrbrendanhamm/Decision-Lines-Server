@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.ArrayList;
+
 import boundary.DefaultProtocolHandler;
 import server.MockClient;
 import server.Server;
@@ -40,18 +42,20 @@ public class TestCloseOpenDLEController extends TestCase {
 		
 	//This will test whether we get a success closing an open DLE
 	public void testProcess(){
+		CloseOpenDLEController myController= new CloseOpenDLEController();
 		model = Model.getInstance();
 		DecisionLineEvent dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
 		dle.setModerator(client1.id());
 		//a sample, fully formed create message XML string
-		String xmlString = "<request version='1.0' id='" + client1.id() + "'>" +
-				"  <closeRequest id='" + dle.getUniqueId() + "' />" +
+		String xmlString = "<request version='1.0' id='"+client1.id()+"'>"+
+				  "<closeRequest id='"+dle.getUniqueId()+"'>"+
+				"</closeRequest>"+
 				"</request>";
-
+		System.out.println(xmlString);
 		Message request = new Message(xmlString);
 		
-		Message response = new CloseOpenDLEController().process(client1, request);
-		
+		Message response = myController.process(client1, request);
+		System.out.println(response.toString());
 		assertTrue(response.success());
 	}
 	
