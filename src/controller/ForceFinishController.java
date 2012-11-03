@@ -37,8 +37,7 @@ public class ForceFinishController implements IProtocolHandler {
 			// finish the dle
 			dle.setType(EventType.FINISHED);
 			dle.getFinalOrder();
-			int count = model.getDecisionLineEvent(eventID)
-					.getConnectedClients().size();
+			int count = 0; //= model.getDecisionLineEvent(eventID).getConnectedClients().size();
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<numberAffected=" + count + "/></response>");
 		}else
@@ -46,8 +45,7 @@ public class ForceFinishController implements IProtocolHandler {
 			int daysOld = new Integer(child.getAttributes()
 					.getNamedItem("daysOld").getNodeValue());
 
-			int count = model.getDecisionLineEvent(eventID)
-					.getConnectedClients().size();
+			int count = 0; // = model.getDecisionLineEvent(eventID).getConnectedClients().size();
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<numberAffected=" + count + "/></response>");
 		}
