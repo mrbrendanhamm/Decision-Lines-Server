@@ -1,21 +1,20 @@
 package controller;
 
-/**
- * Many aspects of this adapted from Professor Heineman's TestCase examples discussed during class
- */
-import boundary.DatabaseSubsystem;
-import boundary.DefaultProtocolHandler;
-
 import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
-import entity.*;
-
 import xml.Message;
+import boundary.DatabaseSubsystem;
+import boundary.DefaultProtocolHandler;
+import entity.ClearModelInstance;
+import entity.DecisionLineEvent;
+import entity.Model;
+import entity.User;
 import junit.framework.TestCase;
 
-public class TestSignIntoDLEController extends TestCase {
+public class TestClientDisconnect extends TestCase {
 	MockClient client1, client2, client3;
+
 	
 	protected void setUp () {
 		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
@@ -45,21 +44,11 @@ public class TestSignIntoDLEController extends TestCase {
 		Server.unregister("c3");
 	}
 	
-	public void testProcess() {
+	public void testDisconnectClient() {
 		//a sample, fully formed SignInRequest message XML string
 		Model myModel = Model.getInstance();
 		DecisionLineEvent loadedEvent;
 		DefaultProtocolHandler myHandler = new DefaultProtocolHandler();
-		
-		String testMessageFailure = "<request version='1.0' id='" + client1.id().toString() + "'>" +
-				"  <signInRequest id='12345'>" +
-				"    <user name='azafty' password='bad_password' />" +
-				"  </signInRequest>" +
-				"</request>";
-		Message msg = new Message(testMessageFailure);
-		Message retVal = myHandler.process(client1, msg);
-		assertTrue(retVal != null);
-		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("false"));
 		
 		
 		String testMessageSuccess = "<request version='1.0' id='" + client1.id().toString() + "'>" +
@@ -67,8 +56,8 @@ public class TestSignIntoDLEController extends TestCase {
 				"    <user name='azafty' password='' />" +
 				"  </signInRequest>" +
 				"</request>";
-		msg = new Message(testMessageSuccess);
-		retVal = myHandler.process(client1, msg);
+		Message msg = new Message(testMessageSuccess);
+		myHandler.process(client1, msg);
 		
 		testMessageSuccess = "<request version='1.0' id='" + client2.id().toString() + "'>" +
 				"  <signInRequest id='12345'>" +
@@ -76,10 +65,7 @@ public class TestSignIntoDLEController extends TestCase {
 				"  </signInRequest>" +
 				"</request>";
 		msg = new Message(testMessageSuccess);
-		retVal = myHandler.process(client2, msg);
-		assert(retVal != null);
-		loadedEvent = myModel.getDecisionLineEvents().get(0);
-		assertTrue(loadedEvent.getUsers().contains(new User("abra", "", -1)));
+		myHandler.process(client1, msg);
 				
 		testMessageSuccess = "<request version='1.0' id='" + client3.id().toString() + "'>" +
 				"  <signInRequest id='12345'>" +
@@ -87,14 +73,15 @@ public class TestSignIntoDLEController extends TestCase {
 				"  </signInRequest>" +
 				"</request>";
 		msg = new Message(testMessageSuccess);
-		retVal = myHandler.process(client3, msg);
-		assert(retVal != null);
-		loadedEvent = myModel.getDecisionLineEvents().get(0);
-		assertTrue(loadedEvent.getUsers().contains(new User("supra", "", -1)));
-
-	
+		myHandler.process(client1, msg);
 		
-		//TODO what else to verify?
-
+		loadedEvent = myModel.getDecisionLineEvent("12345");
+		assertTrue(loadedEvent != null);
+		//TODO verify that the users are connected with the expected client states
+		
+		myHandler.logout(client1);
+		myHandler.logout(client2);
+		myHandler.logout(client3);
+		
 	}
 }

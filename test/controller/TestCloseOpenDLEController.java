@@ -43,6 +43,9 @@ public class TestCloseOpenDLEController extends TestCase {
 		model = Model.getInstance();
 		DecisionLineEvent dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
 		dle.setModerator(client1.id());
+		dle.setDate(new java.util.Date());
+		model.getDecisionLineEvents().add(dle);
+		
 		//a sample, fully formed create message XML string
 		String xmlString = "<request version='1.0' id='"+client1.id().toString()+"'>"+
 				  "<closeRequest id='"+dle.getUniqueId()+"'>"+

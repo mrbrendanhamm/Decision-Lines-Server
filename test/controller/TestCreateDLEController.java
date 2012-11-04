@@ -4,9 +4,12 @@ package controller;
  * Many aspects of this adapted from Professor Heineman's TestCase examples discussed during class
  */
 
+import boundary.DatabaseSubsystem;
 import boundary.DefaultProtocolHandler;
 
 import entity.ClearModelInstance;
+import entity.DecisionLineEvent;
+import entity.Model;
 
 import server.ApplicationMain;
 import server.MockClient;
@@ -22,6 +25,11 @@ public class TestCreateDLEController extends TestCase {
 	protected void setUp () {
 		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
 			fail ("unable to configure protocol");
+		}
+		
+		if (!DatabaseSubsystem.connect()) {
+			System.out.println("Error, cannot connect to the database");
+			System.exit(0);
 		}
 		
 		// make server think there are two connected clients...
@@ -56,5 +64,22 @@ public class TestCreateDLEController extends TestCase {
 		Message msg = new Message(testMessageSuccess);
 		Message retVal = new DefaultProtocolHandler().process(client1, msg);
 		assert(retVal != null);
+		String dleId = retVal.contents.getFirstChild().getAttributes().getNamedItem("id").getNodeValue();
+
+		DecisionLineEvent loadedEvent = Model.getInstance().getDecisionLineEvent(dleId);
+		assert(loadedEvent != null);
+		assertTrue(loadedEvent.getUniqueId().equals(dleId));
+		
+		String testMessageFailure = "<request version='1.0' id='" + client1.id() + "'>" +
+					"  <createRequest type='closed' question='Test Question' numChoices='3' numRounds='3' behavior='roundRobin'>" +
+					"    <choice value='Choice1' index='0'/>" +
+					"    <user name='User1' />" +
+					"  </createRequest>" +
+					"</request>";
+		msg = new Message(testMessageFailure);
+		retVal = new DefaultProtocolHandler().process(client1, msg);
+		assertTrue(retVal != null);
+		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("false"));
+		//TODO other verifications here
 	}
 }

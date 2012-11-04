@@ -3,6 +3,11 @@ package boundary;
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
+import server.ApplicationMain;
+import server.MockClient;
+import server.Server;
+import xml.Message;
+
 import boundary.DatabaseSubsystem;
 
 import junit.framework.TestCase;
@@ -12,10 +17,19 @@ import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
 public class DatabaseSubsystemTest extends TestCase {
+
+	protected void setUp () {
+		if (!DatabaseSubsystem.connect()) {
+			System.out.println("Error, cannot connect to the database");
+			System.exit(0);
+		}
+	}
+	
 	public void testReadEdges() {
 		System.out.println("Testing read edges");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
-		myDLE.getChoices().add(new Choice("Choice 1", 1, -1));
+		myDLE.getChoices().add(new Choice("Choice 1", 0, -1));
+		myDLE.getChoices().add(new Choice("Choice 2", 1, -1));
 		myDLE.getUsers().add(new User("azafty",  "", 0));
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
@@ -76,6 +90,9 @@ public class DatabaseSubsystemTest extends TestCase {
 		System.out.println("Testing read decisionlineevent");
 		String myDLEId = new String("12345");
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
+		assertTrue(retval != null);
+		
+		retval = DatabaseSubsystem.readDecisionLineEvent("23456");
 		assertTrue(retval != null);
 	}
 	
