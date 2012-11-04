@@ -42,7 +42,7 @@ public class TestRemoveDLEController extends TestCase {
 	/** This test will hand the RemoveDLEController a single dleID to be deleted
 	 * 
 	 */
-	protected void testProcessOneDLE(){
+ public void testProcessOneDLE(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
 		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
@@ -59,6 +59,7 @@ public class TestRemoveDLEController extends TestCase {
 		
 		//Create a new dle
 		DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
+		myModel.getDecisionLineEvents().add(dle);
 		//construct the message
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
 					"<removeRequest key='"+myKey+"' id='dleID'>" +
@@ -74,7 +75,7 @@ public class TestRemoveDLEController extends TestCase {
 	/** This will test the deletion of all completed events 0 days old
 	 * 
 	 */
-	protected void testProcessByCompleted(){
+public void testProcessByCompleted(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
 		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
@@ -96,6 +97,14 @@ public class TestRemoveDLEController extends TestCase {
 		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question3",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question3",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question3",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
+		
+		//and add them
+		myModel.getDecisionLineEvents().add(dleOpen1);
+		myModel.getDecisionLineEvents().add(dleOpen2);
+		myModel.getDecisionLineEvents().add(dleClosed1);
+		myModel.getDecisionLineEvents().add(dleClosed2);
+		myModel.getDecisionLineEvents().add(dleFinish1);
+		myModel.getDecisionLineEvents().add(dleFinish2);
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
@@ -116,7 +125,7 @@ public class TestRemoveDLEController extends TestCase {
 	/** This will test that only unFinished events 0 days old are deleted
 	 * 
 	 */
-	protected void testProcessByNotCompleted(){
+public void testProcessByNotCompleted(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
 		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
@@ -138,6 +147,14 @@ public class TestRemoveDLEController extends TestCase {
 		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question3",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question3",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question3",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
+		
+		//and add them
+		myModel.getDecisionLineEvents().add(dleOpen1);
+		myModel.getDecisionLineEvents().add(dleOpen2);
+		myModel.getDecisionLineEvents().add(dleClosed1);
+		myModel.getDecisionLineEvents().add(dleClosed2);
+		myModel.getDecisionLineEvents().add(dleFinish1);
+		myModel.getDecisionLineEvents().add(dleFinish2);
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +

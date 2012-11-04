@@ -2,15 +2,20 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import entity.Model;
+
 import server.ClientState;
 import server.IProtocolHandler;
 import boundary.DatabaseSubsystem;
 import xml.Message;
 
 public class AdminLogInController implements IProtocolHandler {
-	boolean adminVerified=false;
+	Model myModel;
 	String msgAdminID;
 	String msgAdminCredentials;
+	String userID;
+	String key;
+	Message response;
 	public AdminLogInController(){
 		
 	}
@@ -25,9 +30,7 @@ public class AdminLogInController implements IProtocolHandler {
 	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
-		// Initialize local variables
-		Message response = null;
-
+		myModel = Model.getInstance();
 		/* Walking through the message contents isn't always straight forward.  There are several extra
 		 * nodes in the list that do not correspond to anything that I can identify, so it's largely
 		 * trial an error.  To build this list I first went to my CreateDLEController class and
@@ -36,21 +39,57 @@ public class AdminLogInController implements IProtocolHandler {
 		 * it.  But the one good thing is that once you define it successfully, the XSD verifier will 
 		 * guaranty that all future messages are formatted in a similar manner.
 		 */
-		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
 		
-		//Not sure if these are the proper .getNamedItem
+		//parse the message
+		Node child = request.contents.getFirstChild();
 		msgAdminID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
 		msgAdminCredentials= new String(child.getAttributes().getNamedItem("password").getNodeValue());
+		userID = child.getAttributes().getNamedItem("id").getNodeValue();
+		
+		//print them to line
 		System.out.println(msgAdminID);
-		if (DatabaseSubsystem.verifyAdminCredentials(msgAdminID,  msgAdminCredentials))
-			adminVerified = true;
-		else
-			adminVerified = false;
+		System.out.println(msgAdminCredentials);
+		
+		if (DatabaseSubsystem.verifyAdminCredentials(msgAdminID,  msgAdminCredentials)){
+			//get key
+			//TODO define this method
+			//key = myModel.getKey();
+			writeSuccess();
+		}	
+		
+		else {
+			writeFailure();
+			
+		}
 
-		//TODO: Generate response. Must contain the 'key' for future admin messages
+
+		//TODO: Need to finish out how these controllers lookqa
 		
 		
 		return response;
+	}
+	
+	/**
+	 * This method will return the response with the key if id/password match.
+	 * @return
+	 */
+	public Message writeSuccess(){
+		String xmlString = Message.responseHeader(userID) + 
+				"<response>"+
+				"<response/>";
+		Message retval = new Message(xmlString);
+		return(retval);
+	}
+	/** This method returns a failure response for invalid credentials
+	 * 
+	 * @return
+	 */
+	public Message writeFailure(){
+		String xmlString = Message.responseHeader(userID, "Invalid Credentials") +
+				"<response>"+
+				"<response/>";
+		Message retval = new Message(xmlString);
+		return(retval);
 	}
 
 }
