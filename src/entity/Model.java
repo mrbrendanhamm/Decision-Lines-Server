@@ -68,7 +68,7 @@ public class Model {
 	}
 	
 	/**
-	 * This method is to get the certain DecisionLineEvent by uniqueId in the Modle
+	 * This method is to get the certain DecisionLineEvent by uniqueId in the Model
 	 * 
 	 * @param String uniqueId - the uniqueId of the DecisionLineEvent requiring
 	 * @return The DecisionLineEvent with the certaion uniqueId
@@ -85,10 +85,21 @@ public class Model {
 		return null;
 	}
 
+	/** This method checks if the passed key is the key stored in model
+	 *	 * @param testKey
+	 * @return
+	 */
 	public boolean checkKey(String testKey) {
 		if(testKey.equals(key)){
 			return true;
 		}
 		else return false;
+	}
+	
+	/** This method returns the key stored in Model
+	 * 
+	 */
+	public String getKey(){
+		return key;
 	}
 }
