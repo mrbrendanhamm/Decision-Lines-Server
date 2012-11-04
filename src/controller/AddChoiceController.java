@@ -29,12 +29,19 @@ public class AddChoiceController implements IProtocolHandler {
 		Message response = null;
 		Model model = Model.getInstance();
 		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
+		
 		//get ID of event and the dle
 		String eventID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
 		String choiceString = new String(child.getAttributes().getNamedItem("choice").getNodeValue());
 		int order = new Integer(child.getAttributes().getNamedItem("number").getNodeValue());
 		Choice choice = new Choice(choiceString,order);
 		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+		
+		/*
+		 * validate that the DLE is open
+		 * that the order is a valid order number (the position of the choice is the same as the position of the user)
+		 * maybe use an easier error message construction method here
+		 */
 		if(dle.addChoice(choice))
 		{
 			xmlString = new String(Message.responseHeader(request.id())
@@ -48,6 +55,10 @@ public class AddChoiceController implements IProtocolHandler {
 		}
 		
 		//TODO Needs to be broadcasted to all users of the dle
+		// how do we determine when all choices have been created?  what is the mechanism (turnResponse?)?
+		// should this dle be converted to closed?
+		
+		//write to database
 		
 		response = new Message(xmlString);
 		return response;

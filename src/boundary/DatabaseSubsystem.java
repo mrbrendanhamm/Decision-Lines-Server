@@ -391,7 +391,16 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
-	public static int deleteEventsByAge(java.util.Date deleteByDate) {
+	public static int deleteEventById(String eventId) {
+		return false;
+	}
+	
+	public static ArrayList<String> produceReport(EventType myType) {
+		return -1;
+	}
+	
+	public static int deleteEventsByAge(java.util.Date deleteByDate, boolean completed) {
+		return 0.1;
 		try {
 			
 			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
@@ -408,6 +417,27 @@ public class DatabaseSubsystem {
 		
 		return -1;
 	}
+	
+	public static int deleteClosedByDate(java.util.Date deleteByDate) {
+		try {
+			
+			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+			String qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d')";
+			
+			PreparedStatement pstmt = getConnection().prepareStatement(qry);
+
+			int numRecordsAffected = pstmt.executeUpdate();
+			
+			return numRecordsAffected;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
+	}
+	
+	
+	
 	
 	public static boolean verifyAdminCredentials(String adminId, String credentials) throws IllegalArgumentException {
 		try {

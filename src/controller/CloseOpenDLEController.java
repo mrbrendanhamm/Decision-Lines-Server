@@ -45,6 +45,8 @@ public class CloseOpenDLEController implements IProtocolHandler{
 		
 		//get ID of Decision Line Event, access the DLE, and get a list of users.
 		String dleID = child.getAttributes().getNamedItem("id").getNodeValue().toString();
+		
+		//check that the DLE is currently loaded in memory, aka is this a valid identifier?
 		myDLE = model.getDecisionLineEvent(dleID);
 		moderator = myDLE.getModerator();	
 		userList = myDLE.getUsers();
@@ -83,7 +85,7 @@ public class CloseOpenDLEController implements IProtocolHandler{
 					"</response>";
 		}
 		
-		System.out.println(xmlString);
+		System.out.println("Response:" + xmlString);
 		//convert string xmlString to a Message
 		Message response = new Message(xmlString); 
 		// broadcast to all connected clients except self
@@ -92,6 +94,9 @@ public class CloseOpenDLEController implements IProtocolHandler{
 				Server.getState(user.getClientStateId()).sendMessage(response);
 			}
 		}
+		// <turnResponse> needs to be generated and sent to various clients depending on Round Robin/Asynchronous 
+		// could be an opportunity to have the turnResponse creation be controlled by a devoted controller or within the DLE instance
+		
 		
 			return response;
 	

@@ -27,11 +27,16 @@ public class ForceFinishController implements IProtocolHandler {
 		Message response = null;
 		
 		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
+		
+		// if the attribute Key is present, then this call originates from an Administrator
+		//otherwise, this is originating from a Moderator and is for one specific event
+		
 		//get ID of event and the dle
 		if(child.getAttributes().getNamedItem("name").getNodeValue() != null)
 		{
 			String eventID = new String(child.getAttributes()
 					.getNamedItem("name").getNodeValue());
+			//validate that this DLE exists
 			DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
 
 			// finish the dle
@@ -39,25 +44,33 @@ public class ForceFinishController implements IProtocolHandler {
 			dle.getFinalOrder();
 			int count = 0; 
 				/*  
-				 * model.getDecisionLineEvent(eventID).getConnectedClients().size();.  
-				 * Commented this guy out.  The count should be the number of DLEs that were closed and not the number of connected clients 
+				 *  The count should be the number of DLEs that were closed and not the number of connected clients 
 				 */
+			
+			// write to database
+
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<numberAffected=" + count + "/></response>");
+			
+
+			//TODO Needs to be broadcasted to all users of the dle
 		}else
 		{
 			int daysOld = new Integer(child.getAttributes()
 					.getNamedItem("daysOld").getNodeValue());
+			
+			// step 1) iterate through each DLE in memory
+			//		1a) is it older than daysOld, then finish the DLE
+			//		1b) notify any connected clients that the dle has been finished
+			//		2) we will still need some way to close DLEs that do not exist in memory.  this must be brought to the attention of the prof
 
 			int count = 0; 
 			/*  
-			 * model.getDecisionLineEvent(eventID).getConnectedClients().size();.  
-			 * Commented this guy out.  The count should be the number of DLEs that were closed and not the number of connected clients 
+			 *The count should be the number of DLEs that were closed and not the number of connected clients 
 			 */
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<numberAffected=" + count + "/></response>");
 		}
-		//TODO Needs to be broadcasted to all users of the dle
 		
 		
 		response = new Message(xmlString);

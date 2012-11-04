@@ -48,7 +48,7 @@ public class AdminLogInController implements IProtocolHandler {
 			adminVerified = false;
 
 		//TODO: Generate response. Must contain the 'key' for future admin messages
-		// I would imagine 'key' must be stored in Model as the controllers life span is short
+		
 		
 		return response;
 	}

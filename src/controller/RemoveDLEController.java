@@ -47,8 +47,9 @@ public class RemoveDLEController implements IProtocolHandler {
 		//Access the message tree
 		Node child = request.contents.getFirstChild();
 		myKey=child.getAttributes().getNamedItem("key").getNodeValue();
+
 		//check the key and if it is wrong we need a failure
-		if (myModel.checkKey(myKey)==true){
+		if (myModel.checkKey(myKey)!=true){
 			//need to return reason for failure	
 			isSuccess=false;
 			reason = "Invalid Key";
@@ -61,7 +62,9 @@ public class RemoveDLEController implements IProtocolHandler {
 				String dleID = child.getAttributes().getNamedItem("id").getNodeValue();
 				dle=myModel.getDecisionLineEvent(dleID);
 				myModel.removeDecisionLineEvent(dle); //removeDLE from model
-				this.numberRemoved++;
+
+				//delete from database
+				numberRemoved = DatabaseSubsystem.deleteEventById(dleID);
 				isSuccess=true;
 				reason="";
 			}
@@ -70,8 +73,8 @@ public class RemoveDLEController implements IProtocolHandler {
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
 				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
 				java.util.Date currentDate = new java.util.Date();
-				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*daysOld);
-				this.numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate); //, isCompleted);
+				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*24*daysOld);
+				numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate, isCompleted);
 				isSuccess=true;
 				reason="";
 				}
@@ -79,11 +82,18 @@ public class RemoveDLEController implements IProtocolHandler {
 			
 		}
 		
+		if (isSuccess) 
+			xmlString = Message.responseHeader(state.id()) + "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
+		else
+			xmlString = Message.responseHeader(state.id(), reason) + "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
+
+		/*
 		xmlString = "<?xml version='1.0' encoding='UTF-8'?>"+
-				"<response id='"+child.getAttributes().getNamedItem("id").getNodeValue() +"' success='"+isSuccess+"'>"+
-					"<removeResponse numberAffected='"+this.numberRemoved+"'>"+
+				"<response id='"+state.id() +"' success='"+isSuccess+"'>"+
+					"<removeResponse numberAffected='"+numberRemoved+"'>"+
 					"</removeResponse>"+
 				"</response>";
+				*/
 		Message response = new Message(xmlString);
 		return response;
 	}

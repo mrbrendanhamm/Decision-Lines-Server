@@ -22,6 +22,7 @@ public class ClientDisconnect {
 			
 			//TODO do I need to notify other clients that this guy has disconnected?
 			
+			
 			if (myModel.getDecisionLineEvents().get(i).connectedClientCount() == 0) {
 				//No clients are connected to this DLE.  Save it to DB and remove it from memory
 				DatabaseSubsystem.writeDecisionLineEvent(myModel.getDecisionLineEvents().get(i));

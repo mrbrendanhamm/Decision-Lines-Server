@@ -1,6 +1,12 @@
 package controller;
 
+import java.util.ArrayList;
+
 import org.w3c.dom.Node;
+
+import boundary.DatabaseSubsystem;
+
+import entity.DecisionLineEvent.EventType;
 
 import server.ClientState;
 import server.IProtocolHandler;
@@ -23,8 +29,23 @@ public class ProduceReportController implements IProtocolHandler {
 		
 		Node child = request.contents.getFirstChild();
 		String eventType = child.getAttributes().getNamedItem("type").getNodeValue();
+
+		//translate from string to eventType
+		EventType myType = EventType.ERROR;
+		if (eventType.equals("open"))
+			myType = EventType.OPEN;
+			
 		
+		//this one probably needs more definition from the professor, but a first shot would look like this:
 		
+		//read from database
+		ArrayList<String> reportResults = DatabaseSubsystem.produceReport(myType);
+
+		
+		for (int i = 0; i < reportResults.size(); i++) {
+			//iterate through the returned ArrayList, adding entries to the XML response for each element
+			String value = reportResults.get(i);
+		}
 		
 		return null;
 	}

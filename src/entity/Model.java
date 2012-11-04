@@ -11,6 +11,9 @@ public class Model {
 	// Singleton Model instance
 	static Model thisModel = null;
 	
+	/*
+	 * This is the key used to identify admins.  There is one and only one key used.
+	 */
 	final String key = UUID.randomUUID().toString(); 
 	
 	/**
