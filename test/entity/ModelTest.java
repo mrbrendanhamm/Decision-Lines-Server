@@ -10,7 +10,7 @@ public class ModelTest extends TestCase
 	private DecisionLineEvent DLE = new DecisionLineEvent("1");
 	protected void setUp() throws Exception
 	{
-		model = new Model();
+		model = Model.getInstance();
 	}
 
 	public void testGetInstance()

@@ -54,6 +54,7 @@ public class AddEdgeController implements IProtocolHandler {
 		{
 			dle.getFinalOrder();
 		}
+		Model.getInstance().getDecisionLineEvents().add(dle);
 		return response;
 	}
 
