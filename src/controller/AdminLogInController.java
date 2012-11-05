@@ -74,7 +74,7 @@ public class AdminLogInController implements IProtocolHandler {
 	 */
 	public Message writeFailure(){
 		String xmlString = Message.responseHeader(userID, "Invalid Credentials") +
-				"<adminResponse/>"+
+				"<adminResponse key=''/>"+
 				"</response>";
 		Message retval = new Message(xmlString);
 		return(retval);
