@@ -45,12 +45,11 @@ public class TestRemoveDLEController extends TestCase {
  public void testProcessOneDLE(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
-		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='c1'>" +
+		String testAdmin = 	"<request version='1.0' id='c1'>" +
 				"<adminRequest>" +
 			  		"<user name='andrew' password='andrew'/>" +
 			  	"</adminRequest>" +
-			"</request>");
+			"</request>";
 		Message adminLogMessage = new Message(testAdmin);
 		AdminLogInController myAdminLogIn = new AdminLogInController();
 		Message adminLoginResponse = myAdminLogIn.process(client1, adminLogMessage);
@@ -78,12 +77,11 @@ public class TestRemoveDLEController extends TestCase {
 public void testProcessByCompleted(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
-		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='c1'>" +
+		String testAdmin = 	"<request version='1.0' id='c1'>" +
 				"<adminRequest>" +
 			  		"<user name='andrew' password='andrew'/>" +
 			  	"</adminRequest>" +
-			"</request>");
+			"</request>";
 		Message adminLogMessage = new Message(testAdmin);
 		AdminLogInController myAdminLogIn = new AdminLogInController();
 		Message adminLoginResponse = myAdminLogIn.process(client1, adminLogMessage);
@@ -94,9 +92,9 @@ public void testProcessByCompleted(){
 		DecisionLineEvent dleOpen1 = new DecisionLineEvent("dleOpen1","question1",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleOpen2 = new DecisionLineEvent("dleOpen2","question2",3, 3, EventType.OPEN, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleClosed1 = new DecisionLineEvent("dleClosed1","question3",3, 3, EventType.CLOSED, Behavior.ROUNDROBIN);
-		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question3",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
-		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question3",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
-		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question3",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
+		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question4",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
+		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question5",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
+		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question6",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
 		
 		//and add them
 		myModel.getDecisionLineEvents().add(dleOpen1);
@@ -128,12 +126,11 @@ public void testProcessByCompleted(){
 public void testProcessByNotCompleted(){
 		Model myModel = Model.getInstance();
 		//need to have client1 sign in as admin.  So we send request and get the key
-		String testAdmin = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='c1'>" +
+		String testAdmin = "<request version='1.0' id='c1'>" +
 				"<adminRequest>" +
 			  		"<user name='andrew' password='andrew'/>" +
 			  	"</adminRequest>" +
-			"</request>");
+			"</request>";
 		Message adminLogMessage = new Message(testAdmin);
 		AdminLogInController myAdminLogIn = new AdminLogInController();
 		Message adminLoginResponse = myAdminLogIn.process(client1, adminLogMessage);
@@ -144,9 +141,9 @@ public void testProcessByNotCompleted(){
 		DecisionLineEvent dleOpen1 = new DecisionLineEvent("dleOpen1","question1",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleOpen2 = new DecisionLineEvent("dleOpen2","question2",3, 3, EventType.OPEN, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleClosed1 = new DecisionLineEvent("dleClosed1","question3",3, 3, EventType.CLOSED, Behavior.ROUNDROBIN);
-		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question3",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
-		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question3",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
-		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question3",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
+		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question4",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
+		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question5",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
+		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question6",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
 		
 		//and add them
 		myModel.getDecisionLineEvents().add(dleOpen1);

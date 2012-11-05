@@ -53,7 +53,7 @@ public class AdminLogInController implements IProtocolHandler {
 			response = writeFailure();
 			
 		}
-		System.out.println(response);
+		System.out.println("Response:"+response);
 		return response;
 	}
 	

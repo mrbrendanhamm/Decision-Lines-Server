@@ -43,17 +43,21 @@ public class RemoveDLEController implements IProtocolHandler {
 	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
+		System.out.println("Request:"+request); //print request to line
 		myModel=Model.getInstance(); //Get the singleton
+		
 		//Access the message tree
 		Node child = request.contents.getFirstChild();
 		myKey=child.getAttributes().getNamedItem("key").getNodeValue();
-
+		
+		
 		//check the key and if it is wrong we need a failure
 		if (myModel.checkKey(myKey)!=true){
 			//need to return reason for failure	
 			isSuccess=false;
 			reason = "Invalid Key";
 		}
+
 		//if it matches the model key we can proceed to delete dle
 		else if(myModel.checkKey(myKey)==true){
 			//check id attribute and remove one or several dles
@@ -83,18 +87,14 @@ public class RemoveDLEController implements IProtocolHandler {
 		}
 		
 		if (isSuccess) 
-			xmlString = Message.responseHeader(state.id()) + "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
+			xmlString = Message.responseHeader(state.id()) + 
+			"<removeResponse numberAffected='"+numberRemoved+"'/></response>";
 		else
-			xmlString = Message.responseHeader(state.id(), reason) + "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
+			xmlString = Message.responseHeader(state.id(), reason) +
+			 "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
 
-		/*
-		xmlString = "<?xml version='1.0' encoding='UTF-8'?>"+
-				"<response id='"+state.id() +"' success='"+isSuccess+"'>"+
-					"<removeResponse numberAffected='"+numberRemoved+"'>"+
-					"</removeResponse>"+
-				"</response>";
-				*/
 		Message response = new Message(xmlString);
+		System.out.println("Response:"+response);
 		return response;
 	}
 
