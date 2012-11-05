@@ -5,8 +5,10 @@ public class User {
 	private String userid;
 	// The password 
 	private String password;
-	// The position 
+	// The position of the player.  This value is used to determine the order of turns in RoundRobin
 	private int position;
+	
+	// The id of the ClientState of a client who has connected to the DLE using a specific user name
 	private String clientStateId;
 	
 	/**
@@ -73,11 +75,18 @@ public class User {
 	}
 	
 	/**
-	 * This method is to get the private attribute clinetStateId of User
+	 * This method is to get the private attribute ClientState of User
 	 * 
 	 * @return the clientStateId of the User
 	 */
 	public String getClientStateId() { return clientStateId; } 
+	
+	/**
+	 * This method associates a ClientState with a User.  This linking can be later used to determine the user from
+	 * the client state, or determine if any clients are connected to a DLE.
+	 * 
+	 * @param newId - the clientstate id of the connected client associated with this User
+	 */
 	public void setClientStateId(String newId) { clientStateId = new String(newId); } 
 	
 	/**
@@ -94,6 +103,12 @@ public class User {
 	 */
 	public void setPosition(int position) { this.position = position; }
 	
+	/**
+	 * This method sets the hash code used for hashing function.  May no longer be used as we have since moved away
+	 * from a Hashmap storage for users.
+	 * 
+	 * @return a hash code that serves as a unique identifier for this User.
+	 */
 	@Override
 	public int hashCode() {
 		return userid.hashCode() + 31;

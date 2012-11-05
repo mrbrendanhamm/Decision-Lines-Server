@@ -22,11 +22,11 @@ public class TestMessage extends TestCase {
 				"</request  >";
 		
 		String response = Message.normalizeInput(testMessageSuccess);
-		Message tmpMessage = new Message(response);
+		Message tmpMessage = new Message(testMessageSuccess);
 		
-		System.out.println(testMessageSuccess);
-		System.out.println(response);
-		System.out.println(tmpMessage);
+		System.out.println("Original XML String:                          " + testMessageSuccess);
+		System.out.println("Normalized through Segment Processing:        " + response);
+		System.out.println("Tested through full Message Building Process: " + tmpMessage);
 		
 		assert(true);
 	}

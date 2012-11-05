@@ -16,6 +16,9 @@ import server.Server;
 import boundary.DatabaseSubsystem;
 import xml.Message;
 
+/**
+ * This controller handles all <signInRequest> messages coming from the client.
+ */
 public class SignIntoDLEController implements IProtocolHandler {
 	String myEventId;
 	String clientIdToServer;
@@ -78,6 +81,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 			}
 		}
 		
+		//Has the user logged into this DLE before?
 		if (!userAlreadyExists) {
 			if (userList.size() >= myDLE.getNumberOfChoice()) {
 				return writeFailureResponse("Error, maximum number of users exceeded!");

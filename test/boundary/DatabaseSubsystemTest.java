@@ -150,20 +150,24 @@ public class DatabaseSubsystemTest extends TestCase {
 		} catch (Exception e) {
 			fail("error while converting date");
 		}
-	    
-		try {
-			int retval = DatabaseSubsystem.deleteEventsByAge(convertedDate, true);
+    
+		int retval = DatabaseSubsystem.deleteEventsByAge(convertedDate, true);
+		assert(retval != -1);
 		
-			assert(retval != -1);
-		} catch (IllegalArgumentException e) {
-			fail("invalid login");
-		}
+		retval = DatabaseSubsystem.deleteEventsByAge(convertedDate, false);
+		assert(retval != -1);
 	}
 	
 	public void testProduceReport() {
 		ArrayList<String> myAL = DatabaseSubsystem.produceReport(EventType.CLOSED);
-		
 		assert(myAL.size() > 0);
+		
+		myAL = DatabaseSubsystem.produceReport(EventType.OPEN);
+		assert(myAL.size() >= 0);
+		
+		myAL = DatabaseSubsystem.produceReport(EventType.FINISHED);
+		assert(myAL.size() >= 0);
+		
 	}
 	
 	public void testVerifyAdminCredentials() {

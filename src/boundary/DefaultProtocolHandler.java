@@ -1,6 +1,6 @@
 /**
- * Taken directly and completely from Professor Heineman's fusion project Draw2Choose, 
- * from the java project ClientServer 
+ * Taken directly and almost completely from Professor Heineman's fusion project Draw2Choose, 
+ * from the java project ClientServer.
  */
 
 package boundary;
@@ -61,6 +61,11 @@ public class DefaultProtocolHandler implements IShutdownHandler {
 		return null;
 	}
 
+	/**
+	 * This method is called when a client disconnects from the server 
+	 * 
+	 * @param st - the ClientState object that corresponds to the disconnecting client
+	 */
 	@Override
 	public void logout(ClientState st) {
 		//notify model that the client is disconnecting

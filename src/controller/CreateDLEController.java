@@ -16,7 +16,11 @@ import entity.*;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
+/**
+ *  This controller handles all <createRequest> requests coming from the client applications.
+ */
 public class CreateDLEController implements IProtocolHandler {
+	// local variable storage.
 	ArrayList<Choice> myChoices; 
 	EventType myType;
 	Behavior myBehavior;
@@ -36,7 +40,6 @@ public class CreateDLEController implements IProtocolHandler {
 	 */
 	public CreateDLEController() {
 		myChoices = new ArrayList<Choice>();
-		myQuestion = new String();
 	}
 	
 	/**
@@ -69,16 +72,21 @@ public class CreateDLEController implements IProtocolHandler {
 		if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
 			return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
 		
-		//I generate the event Id and return it to the client.  probably something better than the massive UUID string however
+		//I generate the event Id and return it to the client.  probably something better than the massive UUID string
 		myEventId = UUID.randomUUID().toString();
 		dleDate = new Date();
 		
+		//instantiate the DLE
 		createdDLE = new DecisionLineEvent(myEventId, myQuestion, numOfChoices, numOfRounds, myType, myBehavior);
 		createdDLE.setModerator(moderator);
 		createdDLE.setDate(dleDate);
 		User newModerator = new User(moderator, moderatorPassword, 0);
+		
+		//add the appropriate choices
 		for (int i = 0; i < myChoices.size(); i++)
 			createdDLE.getChoices().add(myChoices.get(i));
+		
+		//set the moderator also as a user
 		createdDLE.getUsers().add(newModerator);
 		
 		//Update the model appropriately
@@ -87,7 +95,10 @@ public class CreateDLEController implements IProtocolHandler {
 		//Write to the database
 		DatabaseSubsystem.writeDecisionLineEvent(createdDLE);
 		
-		//Register client
+		/*
+		 * Register client so that future requests can use the clientIdServer to tie back to this user and determine when
+		 * there are no longer any users connected to a DLE 
+		 */
 		createdDLE.addClientConnection(newModerator.getUser(), clientIdToServer);
 		
 		return writeSuccessResponse(); //this specific message is sent back to the requesting client

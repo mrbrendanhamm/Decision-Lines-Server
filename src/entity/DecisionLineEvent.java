@@ -13,7 +13,7 @@ public class DecisionLineEvent {
 	private String uniqueId;
 	// The question of the DLE
 	private String question;
-	// The number of Choices of the DLE
+	// The number of Choices of the DLE.  Also corresponds to the maximum number of users that can be connected
 	private int numberOfChoice;
 	// The number of Edges of the DLE
 	private int numberOfEdge;

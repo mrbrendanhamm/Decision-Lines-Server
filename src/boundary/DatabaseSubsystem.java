@@ -15,6 +15,9 @@ import entity.*;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
+/**
+ * This class uses the Facade design template to manage all communication to and from the database. 
+ */
 public class DatabaseSubsystem {
 	/** Hard-coded database access information */
 	private static final String SERVER   = "mysql.wpi.edu";
@@ -52,7 +55,8 @@ public class DatabaseSubsystem {
 		return con;
 	}
 
-	/** Closes the database connection 
+	/** 
+	 *  Closes the database connection 
 	 *	Taken directly from Professor Heineman's files
 	 */
 	public static void disconnect () {
@@ -73,6 +77,7 @@ public class DatabaseSubsystem {
 	/** 
 	 * Utility method to validate connection is valid.
 	 * Taken directly from Professor Heineman's files
+	 * 
 	 * @return true if DATABASE is available; false otherwise.
 	 */
 	public static boolean isConnected() {
@@ -87,7 +92,7 @@ public class DatabaseSubsystem {
 		}
 	}
 
-	/*
+	/**
 	 * Taken directly from Professor Heineman's files
 	 */
 	public static boolean connect() {
@@ -118,6 +123,13 @@ public class DatabaseSubsystem {
 		}
 	}
 
+	/**
+	 * This method reads in the edges associated with the readEvent's unique id from the database.  All edges are added
+	 * to the event.
+	 * 
+	 * @param readEvent - the event to have it's edges read in from the DB
+	 * @return - true if successfully read, false otherwise
+	 */
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from edge where eventId=(?)");
@@ -178,6 +190,13 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
+	/**
+	 * This method reads in all the choices linked to the requested event from the database.  All choices are added to the
+	 * event
+	 * 
+	 * @param readEvent - the event to have it's choices read in
+	 * @return true if successfully processed, false otherwise
+	 */
 	public static boolean readChoices(DecisionLineEvent readEvent) { 
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from choice where eventId=(?) ORDER BY orderValue asc");
@@ -229,10 +248,10 @@ public class DatabaseSubsystem {
 	}
 	
 	/**
-	 * Reads in Users for a given DecisionLineEvent.  Must be called before the ReadEdges method
+	 * Reads in Users for a given DecisionLineEvent from the database.  The event should be free of any users before calling.  
 	 * 
-	 * @param readEvent
-	 * @return
+	 * @param readEvent - The event to have it's users read in
+	 * @return true if successful, false if any error is encountered
 	 */
 	public static boolean readUsers(DecisionLineEvent readEvent) { 
 		try {
@@ -284,6 +303,13 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
+	/**
+	 * This method reads in an entire decision line.  Subsequent calls from this method are made to the readUser, 
+	 * readEdge, and readChoice methods.  
+	 * 
+	 * @param decisionLineId - the unique identifier for the decision line event
+	 * @return The fully formed decision line event or null if any error was encountered  
+	 */
 	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) {
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from event where id=(?)");
@@ -391,6 +417,12 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
+	/**
+	 * This method deletes any events from the database that bear this event id.
+	 * 
+	 * @param eventId - the id of the event to be deleted
+	 * @return the number of records that were affected or -1 if there was an error
+	 */
 	public static int deleteEventById(String eventId) {
 		try {
 			String qry = "DELETE FROM event where id='" + eventId + "'";
@@ -407,6 +439,12 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
+	/**
+	 * This method produces a report of events based on the requested event type.
+	 * 
+	 * @param myType - the type of event that the caller wishes to report upon
+	 * @return - an Array of Strings containing the event id, question, and moderator that matches the event type
+	 */
 	public static ArrayList<String> produceReport(EventType myType) {
 		ArrayList<String> retVal = new ArrayList<String>();
 
@@ -442,12 +480,18 @@ public class DatabaseSubsystem {
 			System.out.println("error executing SQL statement!");
 		}
 		
-
-		
-		
 		return retVal;
 	}
 	
+	
+	/**
+	 * This method deletes events based on an age and whether or not their current status is finished.  All events on 
+	 * this day or before will be deleted
+	 * 
+	 * @param deleteByDate - the date to be deleted 
+	 * @param finished - set to true if you want to delete only finished events.  false will delete any event on or before the deleteByDate
+	 * @return the number of records affected or -1 if there was an error
+	 */
 	public static int deleteEventsByAge(java.util.Date deleteByDate, boolean finished) {
 		try {
 			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
@@ -469,29 +513,14 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
-	/*
-	public static int deleteClosedByDate(java.util.Date deleteByDate) {
-		try {
-			
-			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
-			String qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d')";
-			
-			PreparedStatement pstmt = getConnection().prepareStatement(qry);
-
-			int numRecordsAffected = pstmt.executeUpdate();
-			
-			return numRecordsAffected;
-		} catch (SQLException e) {
-			System.out.println("error executing SQL statement!");
-		}
-		
-		return -1;
-	}*/
-	
-	
-	
-	
-	public static boolean verifyAdminCredentials(String adminId, String credentials) throws IllegalArgumentException {
+	/**
+	 * This method verifies the login and password of a user attempting to access the administrator panel
+	 *  
+	 * @param adminId - the login name of the administrator
+	 * @param credentials - the credentials of the administrator
+	 * @return - true if the login-credentials match the database, false otherwise
+	 */
+	public static boolean verifyAdminCredentials(String adminId, String credentials) {
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT COUNT(*) as CountAmt FROM administration WHERE adminId=? and adminCredentials=MD5(?);");
 			pstmt.setString(1, adminId);
