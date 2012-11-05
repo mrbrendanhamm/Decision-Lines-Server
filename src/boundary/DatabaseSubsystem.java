@@ -392,19 +392,70 @@ public class DatabaseSubsystem {
 	}
 	
 	public static int deleteEventById(String eventId) {
-		return false;
-	}
-	
-	public static ArrayList<String> produceReport(EventType myType) {
+		try {
+			String qry = "DELETE FROM event where id='" + eventId + "'";
+			
+			PreparedStatement pstmt = getConnection().prepareStatement(qry);
+
+			int numRecordsAffected = pstmt.executeUpdate();
+			
+			return numRecordsAffected;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
 		return -1;
 	}
 	
-	public static int deleteEventsByAge(java.util.Date deleteByDate, boolean completed) {
-		return 0.1;
+	public static ArrayList<String> produceReport(EventType myType) {
+		ArrayList<String> retVal = new ArrayList<String>();
+
 		try {
+			String qry;
 			
+			if (myType == EventType.OPEN)
+				qry  = "SELECT * FROM event where playStatus=0;";
+			else if (myType == EventType.CLOSED)
+				qry  = "SELECT * FROM event where playStatus=1;";
+			else if (myType == EventType.FINISHED)
+				qry  = "SELECT * FROM event where playStatus=2;";
+			else
+				return retVal;
+			
+			PreparedStatement pstmt = getConnection().prepareStatement(qry);
+			ResultSet myRS = pstmt.executeQuery();
+
+			String field;
+			while (myRS.next()) {
+				field = new String(myRS.getString("id"));
+				retVal.add(field);
+
+				field = new String(myRS.getString("question"));
+				retVal.add(field);
+
+				field = new String(myRS.getString("moderator"));
+				retVal.add(field);
+			}
+			
+			return retVal;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+
+		
+		
+		return retVal;
+	}
+	
+	public static int deleteEventsByAge(java.util.Date deleteByDate, boolean finished) {
+		try {
 			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
-			String qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d')";
+			String qry;
+			if (finished)
+				qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d') and playStatus=2";
+			else
+				qry = "DELETE FROM event where createdDate<=str_to_date(('" + ft.format(deleteByDate) + "'), '%Y-%m-%d')";
 			
 			PreparedStatement pstmt = getConnection().prepareStatement(qry);
 
@@ -454,7 +505,7 @@ public class DatabaseSubsystem {
 			if (myRS.getInt("CountAmt") > 0)
 				return true;
 			else
-				throw new IllegalArgumentException ("Invalid username or password.");
+				return false;
 				
 		} catch (SQLException e) {
 			System.out.println("error executing SQL statement!");

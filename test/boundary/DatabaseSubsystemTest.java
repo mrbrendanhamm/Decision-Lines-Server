@@ -1,6 +1,7 @@
 package boundary;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import server.ApplicationMain;
@@ -133,6 +134,10 @@ public class DatabaseSubsystemTest extends TestCase {
 		int retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		
 		assertTrue(retval > 0);
+		
+		//and while I'm at it, test delete an event
+		retval = DatabaseSubsystem.deleteEventById(uniqueId);
+		assertTrue(retval == 1);
 	}
 	
 	public void testDeleteEventByDate() {
@@ -147,7 +152,7 @@ public class DatabaseSubsystemTest extends TestCase {
 		}
 	    
 		try {
-			int retval = DatabaseSubsystem.deleteEventsByAge(convertedDate);
+			int retval = DatabaseSubsystem.deleteEventsByAge(convertedDate, true);
 		
 			assert(retval != -1);
 		} catch (IllegalArgumentException e) {
@@ -155,17 +160,22 @@ public class DatabaseSubsystemTest extends TestCase {
 		}
 	}
 	
+	public void testProduceReport() {
+		ArrayList<String> myAL = DatabaseSubsystem.produceReport(EventType.CLOSED);
+		
+		assert(myAL.size() > 0);
+	}
+	
 	public void testVerifyAdminCredentials() {
 		System.out.println("Testing verify admin credentials");
 		String adminId = new String("andrew");
 		String credentials = new String("andrew");
 		
-		try {
-			boolean retval = DatabaseSubsystem.verifyAdminCredentials(adminId, credentials);
+		boolean retval = DatabaseSubsystem.verifyAdminCredentials(adminId, credentials);
 		
-			assertTrue(retval);
-		} catch (IllegalArgumentException e) {
-			fail("invalid login");
-		}
+		assert(retval);
+		
+		retval = DatabaseSubsystem.verifyAdminCredentials("andrew", "badpassword");
+		assert(!retval);
 	}
 }
