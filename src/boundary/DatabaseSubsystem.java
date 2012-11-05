@@ -469,6 +469,7 @@ public class DatabaseSubsystem {
 		return -1;
 	}
 	
+	/*
 	public static int deleteClosedByDate(java.util.Date deleteByDate) {
 		try {
 			
@@ -485,7 +486,7 @@ public class DatabaseSubsystem {
 		}
 		
 		return -1;
-	}
+	}*/
 	
 	
 	
