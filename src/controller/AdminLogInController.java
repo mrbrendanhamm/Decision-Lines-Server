@@ -39,7 +39,6 @@ public class AdminLogInController implements IProtocolHandler {
 		Node child = request.contents.getFirstChild();
 		NodeList listChild = child.getChildNodes();
 		userID = request.contents.getAttributes().getNamedItem("id").getNodeValue();//NamedItem("id").getNodeValue();
-		System.out.println(userID);
 		msgAdminID = listChild.item(0).getAttributes().getNamedItem("name").getNodeValue();
 		msgAdminCredentials = listChild.item(0).getAttributes().getNamedItem("password").getNodeValue();
 		
