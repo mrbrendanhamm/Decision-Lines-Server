@@ -35,26 +35,52 @@ public class TestAdminLogInController extends TestCase {
 	 *  Takes client1 and signs him in as the admin.  AdminLoginController should
 	 *	response should contain the key used for further transmissions
 	 */
-	public void testProcess(){
+	public void testProcessSuccess(){
 		Model myModel = Model.getInstance();
 		AdminLogInController myController = new AdminLogInController();
 
-		//An xml string which contains 
-		String testMessageSuccess = new String("<?xml version='1.0' encoding='UTF-8'?>" +
-				"<request version='1.0' id='c1'>" +
-					"<adminRequest>" +
-				  		"<user name='andrew' password='andrew'/>" +
+		//A valid adminRequest message
+		String testMessageSuccess = new String(
+				"<request id='c1'>" +
+					"<adminRequest>"+
+						"<user name='andrew' password='andrew'/>" +
 				  	"</adminRequest>" +
 				"</request>");
-		System.out.println(testMessageSuccess);
+		//make sure xsd is configured
 		if (!Message.configure("draw2choose.xsd")) { 
 			fail();
 		}
 		
 		Message msg = new Message(testMessageSuccess);
+		System.out.println(msg);
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
-		
+		//TODO: Need to have this test that the key is received 
+	}
+	
+	/** This method tests for a failure given invalid credentials;
+	 * 
+	 */
+	public void testProcessInvalidCredentials(){
+		Model myModel = Model.getInstance();
+		AdminLogInController myController = new AdminLogInController();
+
+		//A valid adminRequest message with bad credentials
+		String testMessageSuccess = new String(
+				"<request id='c1'>" +
+					"<adminRequest>"+
+						"<user name='notAdmin' password='wrongPW'/>" +
+				  	"</adminRequest>" +
+				"</request>");
+		//make sure xsd is configured
+		if (!Message.configure("draw2choose.xsd")) { 
+			fail();
+		}
+		Message msg = new Message(testMessageSuccess);
+		System.out.println(msg);
+		Message retVal = myController.process(client1, msg);
+		assert(retVal != null);
+		//TODO : Need to ensure that this has correct failure response
 	}
 
 }
