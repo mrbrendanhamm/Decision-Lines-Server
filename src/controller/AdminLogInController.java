@@ -39,7 +39,6 @@ public class AdminLogInController implements IProtocolHandler {
 		Node child = request.contents.getFirstChild();
 		NodeList listChild = child.getChildNodes();
 		userID = request.contents.getAttributes().getNamedItem("id").getNodeValue();//NamedItem("id").getNodeValue();
-		System.out.println(userID);
 		msgAdminID = listChild.item(0).getAttributes().getNamedItem("name").getNodeValue();
 		msgAdminCredentials = listChild.item(0).getAttributes().getNamedItem("password").getNodeValue();
 		
@@ -54,7 +53,7 @@ public class AdminLogInController implements IProtocolHandler {
 			response = writeFailure();
 			
 		}
-		System.out.println(response);
+		System.out.println("Response:"+response);
 		return response;
 	}
 	
@@ -75,7 +74,7 @@ public class AdminLogInController implements IProtocolHandler {
 	 */
 	public Message writeFailure(){
 		String xmlString = Message.responseHeader(userID, "Invalid Credentials") +
-				"<adminResponse/>"+
+				"<adminResponse key=''/>"+
 				"</response>";
 		Message retval = new Message(xmlString);
 		return(retval);
