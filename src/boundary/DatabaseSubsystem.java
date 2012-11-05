@@ -352,6 +352,24 @@ public class DatabaseSubsystem {
 			if (!readEdges(newDLE)) 
 				return null;
 
+			/* 
+			 * Check if the decision line event is finished yet no choices have been made.  DLEs can be finished through an offline
+			 * manner when ForceFinish is called but the DLE is not currently in memory.
+			 */
+			
+			if (newDLE.getEventType() == EventType.FINISHED) {
+				boolean decisionMissing = false;
+				for(int i = 0; i < newDLE.getChoices().size(); i++) {
+					if (newDLE.getChoice(i).getFinalDecisionOrder() == -1)
+						decisionMissing = true;
+				}
+				if (decisionMissing) { 
+					//at least one choice does not have it's final order set.  Set them and write the answer back to the DB
+					newDLE.getFinalOrder();
+					writeDecisionLineEvent(newDLE);
+				}
+			}
+			
 			return newDLE;
 		} catch (SQLException e) {
 			System.out.println("error executing SQL statement!");
@@ -505,6 +523,29 @@ public class DatabaseSubsystem {
 
 			int numRecordsAffected = pstmt.executeUpdate();
 			
+			return numRecordsAffected;
+		} catch (SQLException e) {
+			System.out.println("error executing SQL statement!");
+		}
+		
+		return -1;
+	}
+	
+	
+	/**
+	 * This method finishes any OPEN or CLOSED DLE based on a specified date.
+	 * 
+	 * @param finishByDate - the date to finish DLEs by.  All DLEs this age and older will be finished.
+	 * @return the number of records affected or -1 if there was an error
+	 */
+	public static int finishDLEBasedOnDate(java.util.Date finishByDate) {
+		try {
+			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+			String qry;
+			qry = "UPDATE event SET playStatus=2 where createdDate<=str_to_date(('" + ft.format(finishByDate) + "'), '%Y-%m-%d')";
+			
+			PreparedStatement pstmt = getConnection().prepareStatement(qry);
+			int numRecordsAffected = pstmt.executeUpdate();
 			return numRecordsAffected;
 		} catch (SQLException e) {
 			System.out.println("error executing SQL statement!");

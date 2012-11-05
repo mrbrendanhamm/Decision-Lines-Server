@@ -61,6 +61,8 @@ public class AddEdgeController implements IProtocolHandler {
 		}
 		
 		//TODO Needs to be broadcasted to all users of the dle
+		
+		//determine the next user's turn
 		/*
 		 * under round robin - broadcast out the edge and broadcast to the next user that it is their turn (turnResponse)
 		 * under asynchronous - broadcast to everyone if no more turns remain for everyone, otherwise just return the 
@@ -74,11 +76,13 @@ public class AddEdgeController implements IProtocolHandler {
 		if((dle.getUsers().size() * dle.getNumberOfEdge()) <= dle.getEdges().size())
 		{
 			dle.getFinalOrder();
+			//write final order out to database
+			DatabaseSubsystem.writeDecisionLineEvent(dle);
 		}
-		Model.getInstance().getDecisionLineEvents().add(dle);
+		//Model.getInstance().getDecisionLineEvents().add(dle);
 		
 		//write out to database
-		DatabaseSubsystem.writeDecisionLineEvent(dle);
+		DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
 		
 		return response;
 	}

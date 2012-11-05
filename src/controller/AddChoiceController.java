@@ -2,6 +2,8 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import boundary.DatabaseSubsystem;
+
 import server.ClientState;
 import server.IProtocolHandler;
 import xml.Message;
@@ -56,9 +58,10 @@ public class AddChoiceController implements IProtocolHandler {
 		
 		//TODO Needs to be broadcasted to all users of the dle
 		// how do we determine when all choices have been created?  what is the mechanism (turnResponse?)?
-		// should this dle be converted to closed?
+		// should this dle be converted to closed?  If so, how do we notify users of this?  How do we notify users of the current turn?
 		
 		//write to database
+		DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
 		
 		response = new Message(xmlString);
 		return response;

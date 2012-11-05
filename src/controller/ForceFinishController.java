@@ -62,7 +62,8 @@ public class ForceFinishController implements IProtocolHandler {
 			// step 1) iterate through each DLE in memory
 			//		1a) is it older than daysOld, then finish the DLE
 			//		1b) notify any connected clients that the dle has been finished
-			//		2) we will still need some way to close DLEs that do not exist in memory.  this must be brought to the attention of the prof
+			//		1c) write DLE to database
+			//		2) run the function DatabaseSubsystem.finishDLEBasedOnDate() to finish any DLEs not in memory
 
 			int count = 0; 
 			/*  
