@@ -52,15 +52,16 @@ public class TestAdminLogInController extends TestCase {
 		}
 		
 		Message msg = new Message(testMessageSuccess);
-		System.out.println(msg);
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
 		//TODO: Need to have this test that the key is received 
 	}
 	
+	
 	/** This method tests for a failure given invalid credentials;
 	 * 
 	 */
+	/*
 	public void testProcessInvalidCredentials(){
 		Model myModel = Model.getInstance();
 		AdminLogInController myController = new AdminLogInController();
@@ -80,7 +81,9 @@ public class TestAdminLogInController extends TestCase {
 		System.out.println(msg);
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
+		
 		//TODO : Need to ensure that this has correct failure response
 	}
+	*/
 
 }

@@ -31,16 +31,17 @@ public class AdminLogInController implements IProtocolHandler {
 	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
+		System.out.println("Request:"+request);
 		// get the model
 		myModel = Model.getInstance();
 
 		//parse the message
 		Node child = request.contents.getFirstChild();
-		//userID = child.getAttributes().getNamedItem("id").getNodeValue();
-		//System.out.println(userID);
-		NodeList testChild = child.getChildNodes();
-		msgAdminID = testChild.item(0).getAttributes().getNamedItem("name").getNodeValue();
-		msgAdminCredentials=testChild.item(0).getAttributes().getNamedItem("password").getNodeValue();
+		NodeList listChild = child.getChildNodes();
+		userID = request.contents.getAttributes().getNamedItem("id").getNodeValue();//NamedItem("id").getNodeValue();
+		System.out.println(userID);
+		msgAdminID = listChild.item(0).getAttributes().getNamedItem("name").getNodeValue();
+		msgAdminCredentials = listChild.item(0).getAttributes().getNamedItem("password").getNodeValue();
 		
 
 		//verify the admin credentials and generate message with key
@@ -53,7 +54,7 @@ public class AdminLogInController implements IProtocolHandler {
 			response = writeFailure();
 			
 		}
-		
+		System.out.println(response);
 		return response;
 	}
 	
