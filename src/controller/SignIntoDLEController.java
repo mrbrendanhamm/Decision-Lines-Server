@@ -67,11 +67,12 @@ public class SignIntoDLEController implements IProtocolHandler {
 		else
 			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
 
-		//Set the appropriate position and add user to DLE
 		boolean userAlreadyExists = false;
 		ArrayList<User> userList = myDLE.getUsers();
+		//Locate if user is already associated with DLE
 		for (int i = 0; i < userList.size(); i++) {
 			if (newUser.getUser().equals(userList.get(i).getUser())) {
+				//User id already connected to DLE.  Check password
 				if (newUser.getPassword().equals(userList.get(i).getPassword())) {
 					newUser = userList.get(i);
 					userAlreadyExists = true;
@@ -81,8 +82,8 @@ public class SignIntoDLEController implements IProtocolHandler {
 			}
 		}
 		
-		//Has the user logged into this DLE before?
-		if (!userAlreadyExists) {
+		
+		if (!userAlreadyExists) { //Create the user if they are new
 			if (userList.size() >= myDLE.getNumberOfChoice()) {
 				return writeFailureResponse("Error, maximum number of users exceeded!");
 			}

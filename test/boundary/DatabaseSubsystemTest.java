@@ -25,6 +25,21 @@ public class DatabaseSubsystemTest extends TestCase {
 			System.exit(0);
 		}
 	}
+	/*
+	public void testRandom() {
+
+		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
+			fail ("unable to configure protocol");
+		}
+
+		String testMessageSuccess = "<request version='1.0' id='clientid'><addEdgeRequest id='0' left='0' right='1' height='0'/></request>";
+		Message request = new Message(testMessageSuccess);
+		String clientId = request.contents.getAttributes().getNamedItem("id").getNodeValue();
+		String eventId = request.contents.getFirstChild().getAttributes().getNamedItem("id").getNodeValue();
+		System.out.println(eventId + " " + clientId);
+		
+	}
+	*/
 	
 	public void testReadEdges() {
 		System.out.println("Testing read edges");
@@ -89,6 +104,8 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
+		//TODO how about sending it a badly formed finish event that needs to have the final order set?
+		//dont' forget to reset the unfinished status and unordered values when done
 		System.out.println("Testing read decisionlineevent");
 		String myDLEId = new String("12345");
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
@@ -155,6 +172,21 @@ public class DatabaseSubsystemTest extends TestCase {
 		assert(retval != -1);
 		
 		retval = DatabaseSubsystem.deleteEventsByAge(convertedDate, false);
+		assert(retval != -1);
+	}
+	
+	public void testFinishEventByDate() {
+		System.out.println("Testing the close by date function");
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+		java.util.Date convertedDate =  new java.util.Date();
+		try {
+			convertedDate = dateFormat.parse("2012-09-03");
+		} catch (Exception e) {
+			fail("error while converting date");
+		}
+    
+		int retval = DatabaseSubsystem.finishDLEBasedOnDate(convertedDate);
 		assert(retval != -1);
 	}
 	
