@@ -489,8 +489,8 @@ public class DatabaseSubsystem {
 				field = new String(myRS.getString("question"));
 				retVal.add(field);
 
-				field = new String(myRS.getString("moderator"));
-				retVal.add(field);
+				//field = new String(myRS.getString("moderator"));
+				//retVal.add(field);
 			}
 			
 			return retVal;
