@@ -61,6 +61,10 @@ public class TestRemoveDLEController extends TestCase {
 		//Create a new dle
 		DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		myModel.getDecisionLineEvents().add(dle);
+		java.util.Date currentDate = new java.util.Date();
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		dle.setDate(oldDate);
+		DatabaseSubsystem.writeDecisionLineEvent(dle);
 		
 		//construct the message
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
