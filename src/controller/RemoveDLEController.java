@@ -2,12 +2,14 @@ package controller;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.w3c.dom.Node;
 
 import boundary.DatabaseSubsystem;
 
 import entity.DecisionLineEvent;
+import entity.DecisionLineEvent.EventType;
 import entity.Model;
 import server.ClientState;
 import server.IProtocolHandler;
@@ -22,6 +24,7 @@ public class RemoveDLEController implements IProtocolHandler {
 	ArrayList<DecisionLineEvent> dles;
     int numberRemoved=0;
     String xmlString;
+    ArrayList<DecisionLineEvent> deleteList = null;
 	/** constructor for RemoveDLEController
 	 * 
 	 */
@@ -50,22 +53,23 @@ public class RemoveDLEController implements IProtocolHandler {
 		Node child = request.contents.getFirstChild();
 		myKey=child.getAttributes().getNamedItem("key").getNodeValue();
 		
-		
 		//check the key and if it is wrong we need a failure
 		if (myModel.checkKey(myKey)!=true){
 			//need to return reason for failure	
 			isSuccess=false;
 			reason = "Invalid Key";
 		}
-
 		//if it matches the model key we can proceed to delete dle
 		else if(myModel.checkKey(myKey)==true){
 			//check id attribute and remove one or several dles
-			if(child.getAttributes().getNamedItem("id").getNodeValue()!=null){
+			//this requires checking if the first node name is "id" or "completed"
+			String firstNodeName = child.getAttributes().item(0).getNodeName();
+			System.out.println(firstNodeName);
+			if(firstNodeName.equals("id")){
 				//remove the one dle by id
 				String dleID = child.getAttributes().getNamedItem("id").getNodeValue();
 				dle=myModel.getDecisionLineEvent(dleID);
-				myModel.removeDecisionLineEvent(dle); //removeDLE from model
+				if(!(myModel.removeDecisionLineEvent(dle)));{} //removeDLE from model
 
 				//delete from database
 				numberRemoved = DatabaseSubsystem.deleteEventById(dleID);
@@ -73,17 +77,39 @@ public class RemoveDLEController implements IProtocolHandler {
 				reason="";
 			}
 			else {
-				//remove dles which correspond to isCompleted and dayOld
+				//remove dles which correspond to isCompleted and dayOld from database
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
+				System.out.println(isCompleted);
 				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
+				System.out.println("DaysOld:"+daysOld);
 				java.util.Date currentDate = new java.util.Date();
 				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*24*daysOld);
 				numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate, isCompleted);
 				isSuccess=true;
 				reason="";
-				}
+				
+				//remove dles which correspond to isCompleted from Model
+				ArrayList<DecisionLineEvent> dleList = myModel.getDecisionLineEvents();
+				//cycle through dles in model
+					for (DecisionLineEvent DLE: dleList){
+						EventType type = DLE.getEventType();
+						Date dleDate = DLE.getDate();
+						// is the dle older than deleteByDate if so add to the deleteList
+						if(dleDate.before(deleteByDate)){
+							if((type.equals(EventType.OPEN) || type.equals(EventType.CLOSED)) && isCompleted==false){
+								deleteList.add(DLE);
+							}
+							else if(type.equals(EventType.CLOSED) && isCompleted==true){
+								deleteList.add(DLE);
+							}
+						}
 						
-			
+					}
+					for (DecisionLineEvent DLE : deleteList){
+						myModel.removeDecisionLineEvent(DLE);
+					}
+					
+				}
 		}
 		
 		if (isSuccess) 

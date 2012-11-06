@@ -2,6 +2,8 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import boundary.DatabaseSubsystem;
+
 import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
@@ -59,6 +61,7 @@ public class TestRemoveDLEController extends TestCase {
 		//Create a new dle
 		DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		myModel.getDecisionLineEvents().add(dle);
+		
 		//construct the message
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
 					"<removeRequest key='"+myKey+"' id='dleID'>" +
@@ -67,8 +70,11 @@ public class TestRemoveDLEController extends TestCase {
 		Message request = new Message(testMessage);
 		RemoveDLEController removeController = new RemoveDLEController();
 		
+		//send the message
 		removeController.process(client1, request);
 		
+		//assert that the dle has been removed.
+		assertTrue(myModel.getDecisionLineEvent("dleID")==null);
 	}
 	
 	/** This will test the deletion of all completed events 0 days old
@@ -103,6 +109,23 @@ public void testProcessByCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
+		
+		//set dates to be older than 0 days
+		java.util.Date currentDate = new java.util.Date();
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		dleOpen1.setDate(oldDate);
+		dleOpen2.setDate(oldDate);
+		dleClosed1.setDate(oldDate);
+		dleClosed2.setDate(oldDate);
+		dleFinish1.setDate(oldDate);
+		dleFinish2.setDate(oldDate);
+		
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
@@ -152,6 +175,24 @@ public void testProcessByNotCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
+		
+		//set dates to be older than 0 days
+		java.util.Date currentDate = new java.util.Date();
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		dleOpen1.setDate(oldDate);
+		dleOpen2.setDate(oldDate);
+		dleClosed1.setDate(oldDate);
+		dleClosed2.setDate(oldDate);
+		dleFinish1.setDate(oldDate);
+		dleFinish2.setDate(oldDate);
+		System.out.println(oldDate.toString());
+		
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
