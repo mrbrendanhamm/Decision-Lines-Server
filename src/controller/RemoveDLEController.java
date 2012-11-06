@@ -79,7 +79,7 @@ public class RemoveDLEController implements IProtocolHandler {
 			else {
 				//remove dles which correspond to isCompleted and dayOld from database
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
-				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
+				long daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
 				java.util.Date currentDate = new java.util.Date();
 				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*24*daysOld);
 				numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate, isCompleted);

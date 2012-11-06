@@ -38,7 +38,7 @@ public class ProduceReportController implements IProtocolHandler {
 		if (eventType.equals("open"))
 			myType = EventType.OPEN;
 		else if (eventType.equals("closed"))
-			myType = EventType.OPEN;
+			myType = EventType.CLOSED;
 		else if (eventType.equals("finished"))
 			myType = EventType.FINISHED;
 			
@@ -46,21 +46,33 @@ public class ProduceReportController implements IProtocolHandler {
 		//this one probably needs more definition from the professor, but a first shot would look like this:
 		
 		//create header for the XML response string
-		xmlString = "<response id='"+request.id()+"'+version='1.0'>"+ 
+		xmlString = "<response id='"+request.id()+"' version='1.0' success='true'>"+ 
 				"<reportResponse>";
-
 		//read from database
 		ArrayList<String> reportResults = DatabaseSubsystem.produceReport(myType);
-
 		
-		for (int i = 0; i < reportResults.size(); i++) {
+		for (int i = 0; i < reportResults.size(); i=i+8) {
 			//iterate through the returned ArrayList, adding entries to the XML response for each element
-			String value = reportResults.get(i);
-			xmlString = xmlString+"<entry='"+value+"'/>";
+			String idString = reportResults.get(i);
+			String typeString = reportResults.get(i+1);
+			String behaviorString = reportResults.get(i+2);
+			String questionString = reportResults.get(i+3);
+			String numChoicesString = reportResults.get(i+4);
+			String numRoundsString = reportResults.get(i+5);
+			String createdString = reportResults.get(i+6);
+			String completedString = reportResults.get(i+7);
+			xmlString = xmlString+"<entry id='"+idString+
+					"' type='"+typeString+
+					"' behavior='"+behaviorString+
+					"' quesion='"+questionString+
+					"' numChoices='"+numChoicesString+
+					"' numRounds='"+numRoundsString+
+					"' created='"+createdString+
+					"' completed='"+completedString+"'/>";
 		}
 		
 		
-		xmlString = xmlString + "</reportResponse><response>";
+		xmlString = xmlString + "</reportResponse></response>";
 		System.out.println(xmlString);
 		Message response = new Message(xmlString);
 		System.out.println("Response:"+response);
