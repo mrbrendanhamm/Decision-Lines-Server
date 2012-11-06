@@ -93,8 +93,7 @@ public class RemoveDLEController implements IProtocolHandler {
 					for (DecisionLineEvent DLE: dleList){
 						EventType type = DLE.getEventType();
 						Date dleDate = DLE.getDate();
-						System.out.println("DleDate:"+dleDate);
-						System.out.println("DeleteByDate:"+deleteByDate);
+
 						// is the dle older than deleteByDate if so add to the deleteList
 						if(dleDate.before(deleteByDate)){
 							if((type.equals(EventType.OPEN) || type.equals(EventType.CLOSED)) && isCompleted==false){
