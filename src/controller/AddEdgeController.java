@@ -2,88 +2,162 @@ package controller;
 
 import org.w3c.dom.Node;
 
+
 import boundary.DatabaseSubsystem;
 
 import entity.Choice;
 import entity.DecisionLineEvent;
+import entity.DecisionLineEvent.Behavior;
 import entity.Edge;
 import entity.Model;
+import entity.User;
 import server.*;
 import xml.Message;
 
-public class AddEdgeController implements IProtocolHandler {
+public class AddEdgeController implements IProtocolHandler
+{
 
-	
 	/**
-	 * This method is the calling entry point for this controller.  It is assumed that the message type is appropriate
-	 * for this controller.
+	 * This method is the calling entry point for this controller. It is assumed
+	 * that the message type is appropriate for this controller.
 	 * 
-	 * @param state - The ClientState of the requesting client
-	 * @param request - An XML request
+	 * @param state
+	 *            - The ClientState of the requesting client
+	 * @param request
+	 *            - An XML request
 	 * @return A properly formatted XML response or null if one cannot be formed
 	 */
 	@Override
-	public synchronized Message process(ClientState state, Message request) {
-		String xmlString;
+	public synchronized Message process(ClientState state, Message request)
+	{
+		String xmlString = "";
 		Message response = null;
+		// get Model instance
 		Model model = Model.getInstance();
-		Node child = request.contents.getChildNodes().item(1).getChildNodes().item(1);
-		
-		//get ID of event and the dle
-		String eventID = new String(child.getAttributes().getNamedItem("name").getNodeValue());
-		int left = new Integer(child.getAttributes().getNamedItem("left").getNodeValue());
-		int right = new Integer(child.getAttributes().getNamedItem("right").getNodeValue());
-		int height = new Integer(child.getAttributes().getNamedItem("height").getNodeValue());
+		Node child = request.contents.getFirstChild();
+
+		// get clientId of User
+		String clientId = new String(request.contents.getAttributes()
+				.getNamedItem("id").getNodeValue());
+		// get ID of event and the DLE
+		String eventID = new String(child.getAttributes().getNamedItem("id")
+				.getNodeValue());
 		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+		// get User
+		User user = dle.getUserFromClientId(clientId);
+		// get leftChoice of the Edge
+		int left = new Integer(child.getAttributes().getNamedItem("left")
+				.getNodeValue());
+		// get rightChoice of the Edge
+		int right = new Integer(child.getAttributes().getNamedItem("right")
+				.getNodeValue());
+		// get height of the Edge
+		int height = new Integer(child.getAttributes().getNamedItem("height")
+				.getNodeValue());
+		// get the left and right Choices from DLE
 		Choice leftChoice = dle.getChoice(left);
 		Choice rightChoice = dle.getChoice(right);
-		Edge edge = new Edge(leftChoice,rightChoice,height);
-		
-		/* 
-		 * check 1) can edge be added (height), 
-		 * 2) can the user add the edge (RR or Asynch), 
-		 * 3) is the DLE in a closed state?, 
-		 * 4) is the left choice really to the left of the right
-		 * some of these are done in the add edge function
-		 * include some sort of a writeFailureMessage or similar functionality that automates the failure XML response
+		// create the new Edge
+		Edge edge = new Edge(leftChoice, rightChoice, height);
+
+		/*
+		 * check 1) whether the height of Edge is valid 2) can the user add the
+		 * edge (RR or Asynch), 3) whether the DLE is in finished state 4)
+		 * whether the left Choice is really to the left of the right Choice
 		 */
-		if(dle.addEdge(edge) && leftChoice != null && rightChoice != null)
+		int re = dle.addEdge(edge);
+		if (dle.getBehavior().equals(Behavior.ROUNDROBIN) && !dle.getCurrentTurn().equals(user))
 		{
+			// generate failure message since it is not the Turn of the User
+			xmlString = new String(Message.responseHeader(request.id(),
+					"It is not your Turn now")
+					+ "<addEdgeResponse id='"
+					+ eventID
+					+ "' left='"
+					+ left
+					+ "' right='"
+					+ right
+					+ "' height=" + height + "/></response>");
+		}
+		else if (re == 1)
+		{
+			// determine the next user's turn under RR
+			if(dle.getBehavior().equals(Behavior.ROUNDROBIN))
+			{
+				dle.setCurrentTurn(dle.getUsers().get((user.getPosition() + 1) % dle.getUsers().size()));
+			}
+			// generate success message
 			xmlString = new String(Message.responseHeader(request.id())
-					+ "<addEdgeResponse id='" + eventID + "' left='" + left + "' right='" + right + "' /><height="
-					+ "<id=" + eventID + "/><left=" + left + "/><right=" + right + "/><height="
-					+ height + "/></response>");
-		}else
+					+ "<addEdgeResponse id='" + eventID + "' left='" + left
+					+ "' right='" + right + "' height=" + height
+					+ "/></response>");
+		}
+		else if (re == 2)
 		{
-			xmlString = new String(Message.responseHeader(request.id(),"Vaild Edge")
-					+ "<id=" + eventID + "/><left=" + left + "/><right=" + right + "/><height="
+			// generate failure message since the status of DLE is finished
+			xmlString = new String(Message.responseHeader(request.id(),
+					"The Event has been finished")
+					+ "<addEdgeResponse id='"
+					+ eventID
+					+ "' left='"
+					+ left
+					+ "' right='"
+					+ right
+					+ "' height=" + height + "/></response>");
+		}
+		else if (re == 3)
+		{
+			// generate failure message since the height is invalid
+			xmlString = new String(Message.responseHeader(request.id(),
+					"The Edge is too close to others")
+					+ "<addEdgeResponse id='"
+					+ eventID
+					+ "' left='"
+					+ left
+					+ "' right='"
+					+ right
+					+ "' height="
+					+ height
+					+ "/></response>");
+		}
+		else if (re == 3)
+		{
+			// generate failure message since left Choice is not to the left of
+			// the right Choice
+			xmlString = new String(Message.responseHeader(request.id(),
+					"Invalid Edge")
+					+ "<addEdgeResponse id='"
+					+ eventID
+					+ "' left='"
+					+ left
+					+ "' right='"
+					+ right
+					+ "' height="
 					+ height + "/></response>");
 		}
-		
-		//TODO Needs to be broadcasted to all users of the dle
-		
-		//determine the next user's turn
+
+		// TODO Needs to be broadcasted to all users of the dle
 		/*
-		 * under round robin - broadcast out the edge and broadcast to the next user that it is their turn (turnResponse)
-		 * under asynchronous - broadcast to everyone if no more turns remain for everyone, otherwise just return the 
-		 * current turn status to the requesting user
+		 * under round robin - broadcast out the edge and broadcast to the next
+		 * user that it is their turn (turnResponse) under asynchronous -
+		 * broadcast to everyone if no more turns remain for everyone, otherwise
+		 * just return the current turn status to the requesting user
 		 */
-		
+
 		response = new Message(xmlString);
-		
-		//dle.getNumberOfChoice() * dle.getNumberOfEdge();
-		//check to see if all edges have been played, if so then calculate the final order of choices
-		if((dle.getUsers().size() * dle.getNumberOfEdge()) <= dle.getEdges().size())
+		// write out to database
+		DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
+
+		// check to see if all edges have been played, if so then calculate the
+		// final order of choices
+		if ((dle.getNumberOfChoice() * dle.getNumberOfEdge()) <= dle.getEdges()
+				.size())
 		{
 			dle.getFinalOrder();
-			//write final order out to database
+			// write final order out to database
 			DatabaseSubsystem.writeDecisionLineEvent(dle);
 		}
-		//Model.getInstance().getDecisionLineEvents().add(dle);
-		
-		//write out to database
-		DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
-		
+
 		return response;
 	}
 

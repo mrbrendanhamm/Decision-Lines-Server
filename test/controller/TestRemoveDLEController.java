@@ -2,6 +2,8 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import boundary.DatabaseSubsystem;
+
 import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
@@ -110,7 +112,7 @@ public void testProcessByCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000);
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
@@ -118,10 +120,19 @@ public void testProcessByCompleted(){
 		dleFinish1.setDate(oldDate);
 		dleFinish2.setDate(oldDate);
 		
+		//add to database
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
+		
+		
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='true' daysOld='0'>" +
+				"<removeRequest key='"+myKey+"' completed='true' daysOld='300'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);
@@ -159,7 +170,7 @@ public void testProcessByNotCompleted(){
 		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question4",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question5",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question6",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
-		
+				
 		//and add them
 		myModel.getDecisionLineEvents().add(dleOpen1);
 		myModel.getDecisionLineEvents().add(dleOpen2);
@@ -170,7 +181,7 @@ public void testProcessByNotCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000);
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
@@ -179,10 +190,18 @@ public void testProcessByNotCompleted(){
 		dleFinish2.setDate(oldDate);
 		System.out.println(oldDate.toString());
 		
+		//add to system
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
+		
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='false' daysOld='0'>" +
+				"<removeRequest key='"+myKey+"' completed='false' daysOld='300'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);

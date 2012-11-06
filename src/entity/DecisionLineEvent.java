@@ -329,14 +329,54 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to check whether new Edge can be added
 	 * 
-	 * @return True if new edge can be added, false otherwise
+	 * @return 
+	 * 1 - Valid Edge
+	 * 2 - The DLE is in finished status
+	 * 3 - The height of new Edge is invalid
+	 * 4 - The left Choice is not really to the left of the right Choice
 	 */
-	private boolean canAddEdge(Edge edge)
+	private int canAddEdge(Edge edge)
 	{
 		int height = edge.getHeight();
+		//check the status
+		if(this.myType.equals(EventType.FINISHED))
+		{
+			return 2;
+		}
+		//check the height
 		for(Edge edgeT: this.edges)
 		{
 			if(Math.abs(edgeT.getHeight() - height) < 7)	
+			{
+				return 3;
+			}
+		}
+		//check the position of right Choice
+		for(int i = 0; i < this.choices.size(); i++)
+		{
+			if(this.choices.get(i).equals(edge.getLeftChoice()))
+			{
+				if(!this.choices.get(i+1).equals(edge.getRightChoice()))
+				{
+					return 4;
+				}
+				break;
+			}
+		}
+		return 1;
+	}
+	
+	/**
+	 * This method is to check whether the choice with certain order exists in this DLE
+	 * 
+	 * @param int order - the Order of the Choice
+	 * @return True if the choice doesn't exist, false otherwise
+	 */
+	private boolean NotChoiceWithOrder(int order)
+	{
+		for(Choice choice : this.choices)
+		{
+			if(choice.getOrder() == order)
 			{
 				return false;
 			}
@@ -347,26 +387,33 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to check whether new choice can be added
 	 * 
+	 * @param int order - the Order of the Choice
 	 * @return True if new choice can be added, false otherwise
 	 */
-	public boolean canAddChoice()
+	boolean canAddChoice(int order)
 	{
-		return (this.choices.size() <  this.numberOfChoice);
+		return ((this.choices.size() <  this.numberOfChoice) && this.myType.equals(EventType.OPEN) && NotChoiceWithOrder(order));
 	}
 	
 	/**
 	 * This method is to add a new Edge into the ArrayList of Edge of the DLE
 	 * 
 	 * @param Edge edge - the Edge added into the DLE
+	 * @return 
+	 * 1 - Success
+	 * 2 - The DLE is in finished status
+	 * 3 - The height of new Edge is invalid
+	 * 4 - The left Choice is not really to the left of the right Choice
 	 */
-	public boolean addEdge(Edge edge)
+	public int addEdge(Edge edge)
 	{
-		if(canAddEdge(edge))
+		int re = canAddEdge(edge);
+		if(re == 1)
 		{
 			this.edges.add(edge);
-			return true;
+			
 		}
-		return false;
+		return re;
 	}
 
 	
@@ -377,7 +424,7 @@ public class DecisionLineEvent {
 	 */
 	public boolean addChoice(entity.Choice choice)
 	{
-		if(this.canAddChoice())
+		if(this.canAddChoice(choice.getOrder()))
 		{
 			this.choices.add(choice);
 			return true;
