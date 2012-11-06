@@ -132,7 +132,7 @@ public void testProcessByCompleted(){
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='true' daysOld='0'>" +
+				"<removeRequest key='"+myKey+"' completed='true' daysOld='300'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);
@@ -201,7 +201,7 @@ public void testProcessByNotCompleted(){
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='false' daysOld='0'>" +
+				"<removeRequest key='"+myKey+"' completed='false' daysOld='300'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);
