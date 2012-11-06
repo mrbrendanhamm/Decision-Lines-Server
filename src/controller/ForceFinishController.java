@@ -41,7 +41,7 @@ public class ForceFinishController implements IProtocolHandler
 		if (!model.checkKey(myKey))
 		{
 			xmlString = new String(Message.responseHeader(request.id(),
-					"Invalid key") + "numberAffected=0/></response>");
+					"Invalid key") + "<forceResponse numberAffected='0'/></response>");
 		}
 		else if (child.getAttributes().getNamedItem("id") != null)
 		{

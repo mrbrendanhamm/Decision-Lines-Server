@@ -12,23 +12,21 @@ public class DecisionLineEventTest extends TestCase
 	private Choice choice2 = new Choice("When to Meet", 2);
 	protected void setUp() throws Exception
 	{
-		DLE = new DecisionLineEvent();
+		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.OPEN,Behavior.ASYNCHRONOUS);
 	}
 
 	public void testDecisionLineEventString()
 	{
-		DLE = new DecisionLineEvent("A");
 		assert(DLE.getUniqueId().equals("A"));
 	}
 	
 	public void testDecisionLineEventStringStringIntIntEventTypeBehavior()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
 		assert(DLE.getUniqueId().equals("A"));
 		assert(DLE.getQuestion().equals("When to Meet"));
 		assert(DLE.getNumberOfChoice() == 4);
 		assert(DLE.getNumberOfEdge() == 4);
-		assert(DLE.getEventType() == DecisionLineEvent.EventType.CLOSED);
+		assert(DLE.getEventType() == DecisionLineEvent.EventType.OPEN);
 		assert(DLE.getBehavior() == Behavior.ASYNCHRONOUS);
 	}
 
@@ -71,8 +69,8 @@ public class DecisionLineEventTest extends TestCase
 
 	public void testGetEventType()
 	{
-		DLE.setType(DecisionLineEvent.EventType.CLOSED);
-		assert(DLE.getEventType() == DecisionLineEvent.EventType.CLOSED);
+		DLE.setType(DecisionLineEvent.EventType.OPEN);
+		assert(DLE.getEventType() == DecisionLineEvent.EventType.OPEN);
 	}
 
 	public void testGetChoices()
@@ -91,7 +89,6 @@ public class DecisionLineEventTest extends TestCase
 
 	public void testCanAddChoice()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",1,1,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
 		assert(DLE.canAddChoice(1));
 		DLE.addChoice(choice);
 		assert(!DLE.canAddChoice(1));
@@ -99,19 +96,16 @@ public class DecisionLineEventTest extends TestCase
 	
 	public void testGetQuestion()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
 		assert(DLE.getQuestion().equals("When to Meet"));
 	}
 	
 	public void testGetNumberOfChoice()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
 		assert(DLE.getNumberOfChoice() == 4);
 	}
 	
 	public void testGetNumberOfEdge()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
 		assert(DLE.getNumberOfEdge() == 4);
 	}
 	
@@ -151,8 +145,7 @@ public class DecisionLineEventTest extends TestCase
 
 	public void testEqualsObject()
 	{
-		DLE = new DecisionLineEvent("A","When to Meet",1,1,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
-		DecisionLineEvent DLE2 = new DecisionLineEvent("A","When to Meet",1,1,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
+		DecisionLineEvent DLE2 = new DecisionLineEvent("A","When to Meet",1,1,DecisionLineEvent.EventType.OPEN,Behavior.ASYNCHRONOUS);
 		assert(DLE.equals(DLE2));
 	}
 

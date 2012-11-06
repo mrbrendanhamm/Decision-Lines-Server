@@ -457,10 +457,12 @@ public class DecisionLineEvent {
 	 * @param int height - the height limit
 	 * @return the other side of the closest Edge
 	 */
-	private int getClosestEdge(int order, int height)
-	{
+	private int[] getClosestEdge(int order, int height)
+	{		
 		int min = Integer.MAX_VALUE;
-		int result = order;
+		//result[0] = new Order of Choice result[1] = new Height
+		int result[] = new int[2];
+		result[0] = -1;
 		// Go through the each Edge
 		for(Edge edge : this.edges)
 		{
@@ -474,11 +476,12 @@ public class DecisionLineEvent {
 					// Update the min diff and return order of the Choice
 					if(edge.getLeftChoice().getOrder() != order)
 					{
-						result = edge.getLeftChoice().getOrder();
+						result[0] = edge.getLeftChoice().getOrder();
 					}else
 					{
-						result = edge.getRightChoice().getOrder();
+						result[0] = edge.getRightChoice().getOrder();
 					}
+					result[1] = edge.getHeight();
 					min = diff;					
 				}
 			}
@@ -495,19 +498,24 @@ public class DecisionLineEvent {
 	{
 		int preOrder = -1;
 		int curOrder = -1;
+		int CurandHeight[] = new int[2];
 		int curHeight = 0;
 		// Calculate each Choice
 		for(Choice choice : this.choices)
 		{
 			preOrder = choice.getOrder();
-			curOrder = this.getClosestEdge(preOrder, curHeight);
+			CurandHeight = this.getClosestEdge(preOrder, curHeight);
+			curOrder = CurandHeight[0];
+			curHeight = CurandHeight[1];
 			// Go through the path
-			while(preOrder != curOrder)
+			while(curOrder > 0)
 			{
 				preOrder = curOrder;
-				curOrder = this.getClosestEdge(preOrder, curHeight);
+				CurandHeight = this.getClosestEdge(preOrder, curHeight);
+				curOrder = CurandHeight[0];
+				curHeight = CurandHeight[1];
 			}
-			choice.setFinalDecisionOrder(curOrder);
+			choice.setFinalDecisionOrder(preOrder);
 		}
 	}
 	

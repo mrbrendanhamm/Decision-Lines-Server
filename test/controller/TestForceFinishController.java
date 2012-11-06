@@ -1,13 +1,8 @@
 package controller;
 
-import java.util.UUID;
-
-import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
 import xml.Message;
-import boundary.DatabaseSubsystem;
-import boundary.DefaultProtocolHandler;
 import entity.Choice;
 import entity.ClearModelInstance;
 import entity.DecisionLineEvent;
@@ -18,67 +13,107 @@ import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 import junit.framework.TestCase;
 
-public class TestForceFinishController extends TestCase {
-	MockClient client1, client2, client3;
-	
-	protected void setUp () {
-		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
+public class TestForceFinishController extends TestCase
+{
+	private ForceFinishController ffc;
+	private User user1;
+	private User user2;
+	private User user3;
+	private DecisionLineEvent dle;
+	private Model model;
+	private MockClient client1;
+	private MockClient client2;
+	private MockClient client3;
+	private Choice choice1;
+	private Choice choice2;
+	private Choice choice3;
+	private Edge edge1;
+	private Edge edge2;
+	private Edge edge3;
+	protected void setUp() throws Exception
+	{
+		if (!Message.configure("draw2choose.xsd")) {
 			fail ("unable to configure protocol");
 		}
-		
-		if (!DatabaseSubsystem.connect()) {
-			System.out.println("Error, cannot connect to the database");
-			System.exit(0);
-		}
-		
-		// make server think there are two connected clients...
+		java.util.Date currentDate = new java.util.Date();
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*4);
 		client1 = new MockClient("c1");
 		client2 = new MockClient("c2");
 		client3 = new MockClient("c3");
-		
 		Server.register("c1", client1);
 		Server.register("c2", client2);
 		Server.register("c3", client3);
-		
 		ClearModelInstance.clearInstance();
+		ffc = new ForceFinishController();
+		model = Model.getInstance();
+		dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ASYNCHRONOUS);
+		user1 = new User("A","B",1);
+		user1.setClientStateId("c1");
+		user2 = new User("C","D",2);
+		user2.setClientStateId("c2");
+		user3 = new User("E","F",3);
+		user3.setClientStateId("c3");
+		dle.addUser(user1);
+		dle.addUser(user2);
+		dle.addUser(user3);
+		choice1 = new Choice("When to meet",1);
+		choice2 = new Choice("When to eat",2);
+		choice3 = new Choice("When to play",3);
+		edge1 = new Edge(choice1,choice2,1);
+		edge2 = new Edge(choice2,choice3,10);
+		edge3 = new Edge(choice1,choice2,20);
+		dle.addChoice(choice1);
+		dle.addChoice(choice2);
+		dle.addChoice(choice3);
+		dle.setCurrentTurn(user1);
+		dle.addEdge(edge1);
+		dle.addEdge(edge2);
+		dle.addEdge(edge3);
+		dle.setDate(oldDate);
+		model.getDecisionLineEvents().add(dle);
 	}
 
-	protected void tearDown() {
-		Server.unregister("c1");
-		Server.unregister("c2");
-		Server.unregister("c3");
-	}
-	
-	
-
-	public void testProcess() {
-		// Initialize testing environment
-		Model myModel = Model.getInstance();
-		DefaultProtocolHandler myHandler = new DefaultProtocolHandler();
-
-		String uniqueId = UUID.randomUUID().toString();
-		int numOfChoices = 1;
-		int numOfEdges = 1;
-		DecisionLineEvent loadedEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
-		loadedEvent.setDate(new java.util.Date());
-		User newUser1 = new User("andrew1", "", 0);
-		loadedEvent.getUsers().add(newUser1);
-		loadedEvent.setModerator(newUser1.getUser());
-		Choice newChoice1 = new Choice("Choice 1", 1, -1);
-		loadedEvent.getChoices().add(newChoice1);
-		myModel.getDecisionLineEvents().add(loadedEvent);
-		DatabaseSubsystem.writeDecisionLineEvent(loadedEvent);
+	public void testProcess()
+	{
+		// a sample failure XML message since wrong key
+		String xmlString = "<request version='1.0' id='"
+				+ client2.id().toString() + "'>" + "<forceRequest key='0' id='testID'/>"
+				+ "</request>";
+		System.out.println(xmlString);
+		Message request = new Message(xmlString);
+		Message response = ffc.process(client1, request);
+		System.out.println(response.toString());
 		
-		//Build the request string
-		String testMessageSuccess = "<request version='1.0' id='" + client1.id().toString() + "'>" +
-				"  <forceRequest key='" + myModel.getKey() + "' id='" + loadedEvent.getUniqueId() + "'/>" +
-				"</request>";
-		Message msg = new Message(testMessageSuccess);
-		Message retVal = myHandler.process(client1, msg);
-		assertTrue(retVal != null);
-		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
-		assertTrue(loadedEvent.getEventType() == EventType.FINISHED);
-
+		// a sample failure XML message since DLE doesn't exist
+		xmlString = "<request version='1.0' id='"
+				+ client2.id().toString() + "'>" + "<forceRequest key='"
+				+ model.getKey() + "' id='test'/>"
+				+ "</request>";
+		System.out.println(xmlString);
+		request = new Message(xmlString);
+		response = ffc.process(client1, request);
+		System.out.println(response.toString());
+		
+		// a sample success XML message
+		xmlString = "<request version='1.0' id='"
+				+ client2.id().toString() + "'>" + "<forceRequest key='"
+				+ model.getKey() + "' id='testID'/>"
+				+ "</request>";
+		System.out.println(xmlString);
+		request = new Message(xmlString);
+		response = ffc.process(client1, request);
+		System.out.println(response.toString());
+		
+		model.getDecisionLineEvents().add(dle);
+		// a sample success XML message
+		xmlString = "<request version='1.0' id='"
+				+ client2.id().toString() + "'>" + "<forceRequest key='"
+				+ model.getKey() + "' daysOld='10'/>"
+				+ "</request>";
+		System.out.println(xmlString);
+		request = new Message(xmlString);
+		response = ffc.process(client1, request);
+		System.out.println(response.toString());
 	}
 
 }
