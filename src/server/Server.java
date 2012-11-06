@@ -58,8 +58,9 @@ public class Server {
 
 	/**
 	 * Register thread in server.
-	 * @param id
-	 * @param thread
+	 * @param id - the uniquely identifying string for the client state
+	 * @param state - the client state
+	 * @return true if the id is already registered, false otherwise
 	 */
 	public static boolean register (String id, ClientState state) {
 		if (ids.containsKey(id)) { return false; }

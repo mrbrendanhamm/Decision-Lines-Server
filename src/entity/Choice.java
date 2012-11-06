@@ -20,8 +20,8 @@ public class Choice {
 	/**
 	 * This constructor is used when initializing the name and order
 	 * 
-	 * @param String name - the name of Choice
-	 * @param int order - the order of Choice
+	 * @param name - the name of Choice
+	 * @param order - the order of Choice
 	 * Set finalDesicisonOrder as -1
 	 */
 	public Choice(String name, int order)
@@ -34,9 +34,9 @@ public class Choice {
 	/**
 	 * This constructor is used when initializing the name, order and finalDecisionOrder
 	 * 
-	 * @param String name - the name of Choice
-	 * @param int order - the order of Choice
-	 * @param int finalDecisionOrder - the final decision order of Choice when the DLE is finished
+	 * @param name - the name of Choice
+	 * @param order - the order of Choice
+	 * @param finalDecisionOrder - the final decision order of Choice when the DLE is finished
 	 */
 	public Choice(String name, int order, int finalDecisionOrder)
 	{
@@ -58,7 +58,7 @@ public class Choice {
 	/**
 	 * This method is to set the private attribute order of Choice
 	 * 
-	 * @param int order - the order of Choice
+	 * @param order - the order of Choice
 	 */
 	public void setOrder(int order)
 	{
@@ -78,7 +78,7 @@ public class Choice {
 	/**
 	 * This method is to set the private attribute name of Choice
 	 * 
-	 * @param String name - the name of Choice
+	 * @param name - the name of Choice
 	 */
 	public void setName(String name)
 	{
@@ -97,7 +97,7 @@ public class Choice {
 	/**
 	 * This method is to set the private attribute finalDecisionOrder of Choice
 	 * 
-	 * @param int finalDecisionOrder - the finalDecisionOrder of Choice
+	 * @param finalDecisionOrder - the finalDecisionOrder of Choice
 	 */
 	public void setFinalDecisionOrder(int finalDecisionOrder) {
 		this.finalDecisionOrder = finalDecisionOrder;
@@ -106,7 +106,7 @@ public class Choice {
 	/**
 	 * This method is to check whether two Choices are the same
 	 * 
-	 * @param Object o - the object compared to this Choice
+	 * @param o - the object compared to this Choice
 	 * @return True if they are the same Choice
 	 * 		   False otherwise
 	 */

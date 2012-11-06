@@ -59,7 +59,7 @@ public class AdminLogInController implements IProtocolHandler {
 	
 	/**
 	 * This method will return the response with the key if id/password match.
-	 * @return
+	 * @return a properly formatted success message
 	 */
 	public Message writeSuccess(){
 		String xmlString = Message.responseHeader(userID) + 
@@ -70,7 +70,7 @@ public class AdminLogInController implements IProtocolHandler {
 	}
 	/** This method returns a failure response for invalid credentials
 	 * 
-	 * @return
+	 * @return a properly formatted failure message
 	 */
 	public Message writeFailure(){
 		String xmlString = Message.responseHeader(userID, "Invalid Credentials") +

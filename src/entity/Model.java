@@ -51,7 +51,7 @@ public class Model {
 	/**
 	 * This method is to remove the certain DecisionLineEvent from the Model
 	 * 
-	 * @param DecisionLineEvent delDLE - the DecisionLineEvent need to be removed
+	 * @param delDLE - the DecisionLineEvent need to be removed
 	 * @return True if success, false if the certain DLE is not in this Model
 	 */
 	public boolean removeDecisionLineEvent(DecisionLineEvent delDLE) {
@@ -70,8 +70,8 @@ public class Model {
 	/**
 	 * This method is to get the certain DecisionLineEvent by uniqueId in the Model
 	 * 
-	 * @param String uniqueId - the uniqueId of the DecisionLineEvent requiring
-	 * @return The DecisionLineEvent with the certaion uniqueId
+	 * @param uniqueId - the uniqueId of the DecisionLineEvent requiring
+	 * @return The DecisionLineEvent with the specified uniqueId
 	 */
 	public DecisionLineEvent getDecisionLineEvent(String uniqueId)
 	{
@@ -85,9 +85,11 @@ public class Model {
 		return null;
 	}
 
-	/** This method checks if the passed key is the key stored in model
-	 *	 * @param testKey
-	 * @return
+	/** 
+	 * This method checks if the passed key is the key stored in model
+	 *	
+	 * @param testKey - the administrator key that is being checked
+	 * @return true if the key matches, false otherwise
 	 */
 	public boolean checkKey(String testKey) {
 		if(testKey.equals(key)){

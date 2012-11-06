@@ -22,9 +22,9 @@ public class User {
 	/**
 	 * This constructor is used when initializing the userid, password and position
 	 * 
-	 * @param String userid - the User_Id of the User
-	 * @param String password - the Password of the User
-	 * @param int position - the Position of the User
+	 * @param userid - the User_Id of the User
+	 * @param password - the Password of the User
+	 * @param position - the Position of the User
 	 */
 	public User(String userid, String password, int position)
 	{
@@ -47,7 +47,7 @@ public class User {
 	/**
 	 * This method is to set the private attribute User_ID of User
 	 * 
-	 * @param String User_ID - the User_ID of User
+	 * @param userid - the User_ID of User
 	 */
 	public void setUser(String userid)
 	{
@@ -67,7 +67,7 @@ public class User {
 	/**
 	 * This method is to set the private attribute Password of User
 	 * 
-	 * @param String password - the Password of User
+	 * @param password - the Password of User
 	 */
 	public void setPassword(String password)
 	{
@@ -99,7 +99,7 @@ public class User {
 	/**
 	 * This method is to set the private attribute Position of User
 	 * 
-	 * @param int position - the Position of User
+	 * @param position - the Position of User
 	 */
 	public void setPosition(int position) { this.position = position; }
 	
@@ -117,7 +117,7 @@ public class User {
 	/**
 	 * This method is to check whether two Users are the same
 	 * 
-	 * @param Object o - the object compared to this User
+	 * @param o - the object compared to this User
 	 * @return True if they are the same User
 	 * 		   False otherwise
 	 */

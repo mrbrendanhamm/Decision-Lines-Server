@@ -69,12 +69,12 @@ public class DecisionLineEvent {
 	/**
 	 * This constructor is used when initializing the uniqueId, question, numberOfChoice, numberOfEdge, EventType and Behavior
 	 * 
-	 * @param String uniqueId - the uniqueId of the DLE
-	 * @param String question - the question of the DLE
-	 * @param int numberOfChoice - the number of the Choices of the DLE
-	 * @param int numberofEdge - the number of the Edges of the DLE
-	 * @param EventType newType - the EventType of the DLE
-	 * @param Behavior newBehavior - the Behavior of the DLE
+	 * @param uniqueId - the uniqueId of the DLE
+	 * @param question - the question of the DLE
+	 * @param numberOfChoice - the number of the Choices of the DLE
+	 * @param numberOfEdge - the number of the Edges of the DLE
+	 * @param newType - the EventType of the DLE
+	 * @param newBehavior - the Behavior of the DLE
 	 */
 	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
 	{
@@ -93,7 +93,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to set the private attribute moderator of the DLE
 	 * 
-	 * @param String moderator - the User_ID of moderator added into the DLE
+	 * @param moderator - the User_ID of moderator added into the DLE
 	 */
 	public void setModerator(String moderator)
 	{
@@ -103,7 +103,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to set the private attribute currentTurn of the DLE
 	 * 
-	 * @param User currentTurn - the current Turn of the DLE
+	 * @param currentTurn - the current Turn of the DLE
 	 */
 	public void setCurrentTurn(User currentTurn)
 	{
@@ -113,7 +113,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to set the private attribute MyType of the DLE
 	 * 
-	 * @param EventType type - the Type of the DLE
+	 * @param type - the Type of the DLE
 	 */
 	public void setType(EventType type){
 		this.myType = type;
@@ -141,7 +141,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to set the private attribute createDate of the DLE
 	 * 
-	 * @param Date newDate - the created Date of the DLE
+	 * @param newDate - the created Date of the DLE
 	 */
 	public void setDate(Date newDate) {
 		createDate = newDate;
@@ -149,7 +149,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to add a new User into the ArrayList of Users of the DLE
 	 * 
-	 * @param User user - the User added into the DLE
+	 * @param user - the User added into the DLE
 	 */
 	public void addUser(User user)
 	{
@@ -405,7 +405,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to add a new Edge into the ArrayList of Edge of the DLE
 	 * 
-	 * @param Edge edge - the Edge added into the DLE
+	 * @param edge - the Edge added into the DLE
 	 * @return 
 	 * 1 - Success
 	 * 2 - The DLE is in finished status
@@ -427,7 +427,8 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to add a new Choice into the ArrayList of Choice of the DLE
 	 * 
-	 * @param Choice choice - the choice added into the DLE
+	 * @param choice - the choice added into the DLE
+	 * @return true if the choice was added, false otherwise
 	 */
 	public boolean addChoice(entity.Choice choice)
 	{
@@ -442,7 +443,7 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to get the Choice by the order
 	 * 
-	 * @param int order - the order of the searching Choice
+	 * @param order - the order of the searching Choice
 	 * @return the Choice with the order
 	 */
 	public Choice getChoice(int order)
@@ -460,8 +461,8 @@ public class DecisionLineEvent {
 	/**
 	 * This method is to get the closest Edge related to the certain Choice and below the certain height
 	 * 
-	 * @param int order -  the order of the certain Choice
-	 * @param int height - the height limit
+	 * @param order -  the order of the certain Choice
+	 * @param height - the height limit
 	 * @return the other side of the closest Edge
 	 */
 	private int[] getClosestEdge(int order, int height)

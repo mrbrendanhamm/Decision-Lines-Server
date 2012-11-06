@@ -93,8 +93,8 @@ public class CloseOpenDLEController implements IProtocolHandler{
 	
 	/** This method generates a success response for the given clientStateID
 	 * 
-	 * @param xmlEnd
-	 * @return
+	 * @param ID - the id fo the client state
+	 * @return a properly formatted success message
 	 */
 	public Message GenerateSuccessMessage(String ID){
 		String xmlString="<response id='"+ID+"' version='1.0' success='true'>"+ 
@@ -106,8 +106,8 @@ public class CloseOpenDLEController implements IProtocolHandler{
 	
 	/** This method generates a failure response for the given clientStateID
 	 * 
-	 * @param xmlEnd
-	 * @return
+	 * @param ID - the ID of the client state
+	 * @return a properly formatted failure message
 	 */
 	public Message GenerateFailureMessage(String ID){
 		String xmlString="<response id='"+ID+"' version='1.0' success='false' reason='"+reason+"'>"+ 

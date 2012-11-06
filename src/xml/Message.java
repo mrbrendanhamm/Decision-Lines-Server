@@ -103,8 +103,8 @@ public class Message {
 	/**  
 	 * Custom function to remove stray characters that throw off the building of the node structure
 	 * 
-	 * @param input
-	 * @return
+	 * @param input - the string to be normalized from valid characters that disrupt the XML Message architecture
+	 * @return a normalized string with formatting closer to the desired XML Message architecture
 	 */
 	public static String normalizeInput(String input) {
 		ArrayList<XMLSegment> mySegments = new ArrayList<XMLSegment>();

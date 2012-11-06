@@ -15,8 +15,10 @@ public class XMLSegment {
 	}
 	
 	/**
+	 * This method reads and parses individual XML segments
 	 * 
-	 * @param inSR
+	 * @param inString - the message to be read in
+	 * @param index - the character that has been read up until
 	 * @return false if end of file is reached.  True otherwise.
 	 */
 	public int readSegment(String inString, int index) {

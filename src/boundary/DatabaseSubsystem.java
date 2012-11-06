@@ -171,7 +171,6 @@ public class DatabaseSubsystem {
 	 * 
 	 * @param writeEdge - The edge to be written
 	 * @param decisionLineId - the id of the parent event
-	 * @param byUser - the User that played the edge
 	 * @return -1 if an error was encountered, the number of records affected otherwise
 	 */
 	public static int writeEdge(Edge writeEdge, String decisionLineId) {

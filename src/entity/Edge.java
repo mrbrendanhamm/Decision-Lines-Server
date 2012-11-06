@@ -18,22 +18,22 @@ public class Edge {
 	/**
 	 * This constructor is used when initializing the leftChoice, rightChoice and height
 	 * 
-	 * @param Choice leftChoice - the left Choice of the Edge
-	 * @param Choice rightChoice - the right Choice of the Edge
-	 * @param int height - the height of Edge
+	 * @param leftChoice - the left Choice of the Edge
+	 * @param rightChoice - the right Choice of the Edge
+	 * @param height - the height of Edge
 	 */
-	public Edge(Choice leftChoice, Choice rigthChoice, int height)
+	public Edge(Choice leftChoice, Choice rightChoice, int height)
 	{
 		this.leftChoice = leftChoice;
-		this.rightChoice = rigthChoice;
+		this.rightChoice = rightChoice;
 		this.height = height;
 	}
 	
 	/**
 	 * This method is to set the private attribute leftChoice and rightChoice of Edge
 	 * 
-	 * @param Choice leftChoice - the left choice of the Edge
-	 * @param Choice rightChoice - the right choice of the Edge
+	 * @param leftChoice - the left choice of the Edge
+	 * @param rightChoice - the right choice of the Edge
 	 */
 	public void setChoices(Choice leftChoice, Choice rightChoice)
 	{
@@ -64,7 +64,7 @@ public class Edge {
 	/**
 	 * This method is to set the private attribute height of Edge
 	 * 
-	 * @param int height - the height of the Edge
+	 * @param height - the height of the Edge
 	 */
 	public void setHeight(int height)
 	{
