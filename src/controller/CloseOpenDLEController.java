@@ -22,7 +22,7 @@ public class CloseOpenDLEController implements IProtocolHandler{
 	String reason; //used in case of failure null otherwise
 	String moderator; //in case we want to check the moderator sent the message
 	ArrayList<User> userList; //we need to broadcast to all users of dle
-	String xmlString; //string to construct response message
+	Message response;
 	
 	public CloseOpenDLEController(){
 		
@@ -40,6 +40,8 @@ public class CloseOpenDLEController implements IProtocolHandler{
 	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
+		System.out.println("Request:"+request);
+		
 		Model model = Model.getInstance(); //get the singleton model
 		Node child = request.contents.getFirstChild(); //first child in message tree
 		
@@ -69,37 +71,50 @@ public class CloseOpenDLEController implements IProtocolHandler{
 			isSuccess=false;
 			reason = "Event already finished";
 		}
-		//generate response
-		//xmlString = Message.responseHeader(request.id()) + "<closeResponse/></response>";	
 		
-		if (isSuccess) { // you have an error here, the reason string can only be used during failures
-			xmlString=	"<?xml version='1.0' encoding='UTF-8'?>"+
-					"<response id='"+request.id()+"' version='1.0' success='true'>"+ 
-					"<closeResponse/>"+
-					"</response>";
-		}
-		else {
-			xmlString=	"<?xml version='1.0' encoding='UTF-8'?>"+
-					"<response id='"+request.id()+"' version='1.0' success='false' reason='"+this.reason+"'>"+ 
-					"<closeResponse/>"+
-					"</response>";
-		}
-		
-		System.out.println("Response:" + xmlString);
-		//convert string xmlString to a Message
-		Message response = new Message(xmlString); 
 		// broadcast to all connected clients except self
 		for (User user: userList) {
 			if (!user.getUser().equals(moderator)) {
+				if(isSuccess) response = GenerateSuccessMessage(user.getClientStateId());
+				else response = GenerateFailureMessage(user.getClientStateId());
 				Server.getState(user.getClientStateId()).sendMessage(response);
+				System.out.println("Response:"+response);
 			}
 		}
 		// <turnResponse> needs to be generated and sent to various clients depending on Round Robin/Asynchronous 
 		// could be an opportunity to have the turnResponse creation be controlled by a devoted controller or within the DLE instance
+		if(isSuccess) response = GenerateSuccessMessage(request.id());
+		else response = GenerateFailureMessage(request.id());
 		
-		
+		System.out.println("Response:"+response);
 			return response;
 	
+	}
+	
+	/** This method generates a success response for the given clientStateID
+	 * 
+	 * @param xmlEnd
+	 * @return
+	 */
+	public Message GenerateSuccessMessage(String ID){
+		String xmlString="<response id='"+ID+"' version='1.0' success='true'>"+ 
+		"<closeResponse/>"+
+		"</response>";
+		Message retVal = new Message(xmlString);
+		return(retVal);
+	}
+	
+	/** This method generates a failure response for the given clientStateID
+	 * 
+	 * @param xmlEnd
+	 * @return
+	 */
+	public Message GenerateFailureMessage(String ID){
+		String xmlString="<response id='"+ID+"' version='1.0' success='false' reason='"+reason+"'>"+ 
+				"<closeResponse/>"+
+				"</response>";
+		Message retVal = new Message(xmlString);
+		return(retVal);
 	}
 	
 }

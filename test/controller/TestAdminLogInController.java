@@ -2,6 +2,8 @@ package controller;
 
 import java.util.UUID;
 
+import org.w3c.dom.Node;
+
 import server.MockClient;
 import server.Server;
 import entity.ClearModelInstance;
@@ -54,7 +56,9 @@ public class TestAdminLogInController extends TestCase {
 		Message msg = new Message(testMessageSuccess);
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
-		//TODO: Need to have this test that the key is received 
+		Node child = retVal.contents.getFirstChild();
+		String keyString=child.getAttributes().getNamedItem("key").getNodeValue();
+		assert(keyString.equals(myModel.getKey()));
 	}
 	
 	
@@ -81,7 +85,10 @@ public class TestAdminLogInController extends TestCase {
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
 		
-		//TODO : Need to ensure that this has correct failure response
+		//check that key is not handed back
+		Node child = retVal.contents.getFirstChild();
+		String keyString=child.getAttributes().getNamedItem("key").getNodeValue();
+		assert(keyString.equals(""));
 	}
 
 
