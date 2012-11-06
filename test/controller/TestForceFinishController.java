@@ -104,11 +104,12 @@ public class TestForceFinishController extends TestCase
 		response = ffc.process(client1, request);
 		System.out.println(response.toString());
 		
+		dle.setType(EventType.CLOSED);
 		model.getDecisionLineEvents().add(dle);
 		// a sample success XML message
 		xmlString = "<request version='1.0' id='"
 				+ client2.id().toString() + "'>" + "<forceRequest key='"
-				+ model.getKey() + "' daysOld='10'/>"
+				+ model.getKey() + "' daysOld='1'/>"
 				+ "</request>";
 		System.out.println(xmlString);
 		request = new Message(xmlString);
