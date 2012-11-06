@@ -1,7 +1,5 @@
 package controller;
 
-import java.util.UUID;
-
 import org.w3c.dom.Node;
 
 import server.MockClient;
@@ -32,6 +30,11 @@ public class TestAdminLogInController extends TestCase {
 		
 		// clear the singleton
 		ClearModelInstance.clearInstance();
+	}
+	
+	protected void tearDown() {
+		Server.unregister("c1");
+		Server.unregister("c2");
 	}
 	/** test the Process message for the AdminLogInController
 	 *  Takes client1 and signs him in as the admin.  AdminLoginController should
@@ -67,7 +70,7 @@ public class TestAdminLogInController extends TestCase {
 	 */
 
 	public void testProcessInvalidCredentials(){
-		Model myModel = Model.getInstance();
+		Model.getInstance();
 		AdminLogInController myController = new AdminLogInController();
 
 		//A valid adminRequest message with bad credentials
