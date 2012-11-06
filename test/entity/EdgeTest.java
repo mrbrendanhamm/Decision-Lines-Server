@@ -37,5 +37,12 @@ public class EdgeTest extends TestCase
 		edge.setHeight(1);
 		assert(edge.getHeight() == 1);
 	}
+	
+	public void testHasChoice(){
+		edge.setChoices(leftChoice, rightChoice);
+		assertTrue(edge.hasChoice(1));
+		assertTrue(edge.hasChoice(2));
+		assertTrue(!(edge.hasChoice(3)));
+	}
 
 }
