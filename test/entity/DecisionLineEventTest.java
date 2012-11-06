@@ -12,6 +12,7 @@ public class DecisionLineEventTest extends TestCase
 	private Choice choice2 = new Choice("When to Meet", 2);
 	protected void setUp() throws Exception
 	{
+		DLE = new DecisionLineEvent();
 		DLE = new DecisionLineEvent("A","When to Meet",4,4,DecisionLineEvent.EventType.OPEN,Behavior.ASYNCHRONOUS);
 	}
 
