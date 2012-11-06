@@ -92,9 +92,9 @@ public class DecisionLineEventTest extends TestCase
 	public void testCanAddChoice()
 	{
 		DLE = new DecisionLineEvent("A","When to Meet",1,1,DecisionLineEvent.EventType.CLOSED,Behavior.ASYNCHRONOUS);
-		assert(DLE.canAddChoice());
+		assert(DLE.canAddChoice(1));
 		DLE.addChoice(choice);
-		assert(!DLE.canAddChoice());
+		assert(!DLE.canAddChoice(1));
 	}
 	
 	public void testGetQuestion()
