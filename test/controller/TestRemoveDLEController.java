@@ -63,8 +63,8 @@ public class TestRemoveDLEController extends TestCase {
 		myModel.getDecisionLineEvents().add(dle);
 		java.util.Date currentDate = new java.util.Date();
 		System.out.println("currdate:"+currentDate);
-		long daysOld = 24*3600*1000*250;
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 		dle.setDate(oldDate);
 		System.out.println("Should be 250 days ago:"+oldDate);
 		DatabaseSubsystem.writeDecisionLineEvent(dle);
@@ -119,8 +119,8 @@ public void testProcessByCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		long daysOld = 24*3600*1000*250;
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
@@ -198,8 +198,8 @@ public void testProcessByNotCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		long daysOld = 24*3600*1000*250;
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 		System.out.println("This should be 250 days old:"+ oldDate);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
@@ -258,8 +258,8 @@ public void testProcessOneDLEInvalidKey(){
 	DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 	myModel.getDecisionLineEvents().add(dle);
 	java.util.Date currentDate = new java.util.Date();
-	long daysOld = 24*3600*1000*250;
-	java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
+	long daysOld = 250;
+	java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 	dle.setDate(oldDate);
 	System.out.println("Should be oldDate"+oldDate);
 	DatabaseSubsystem.writeDecisionLineEvent(dle);
