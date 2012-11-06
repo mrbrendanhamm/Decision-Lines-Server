@@ -13,6 +13,7 @@ import server.IProtocolHandler;
 import xml.Message;
 
 public class ProduceReportController implements IProtocolHandler {
+	String xmlString;
 
 	
 	/**
@@ -25,19 +26,29 @@ public class ProduceReportController implements IProtocolHandler {
 	 */
 	@Override
 	public synchronized Message process(ClientState state, Message request) {
-		// TODO Auto-generated method stub
+		System.out.println("Request:"+request);
 		
 		Node child = request.contents.getFirstChild();
 		String eventType = child.getAttributes().getNamedItem("type").getNodeValue();
+		
 
+		
 		//translate from string to eventType
 		EventType myType = EventType.ERROR;
 		if (eventType.equals("open"))
 			myType = EventType.OPEN;
+		else if (eventType.equals("closed"))
+			myType = EventType.OPEN;
+		else if (eventType.equals("finished"))
+			myType = EventType.FINISHED;
 			
 		
 		//this one probably needs more definition from the professor, but a first shot would look like this:
 		
+		//create header for the XML response string
+		xmlString = "<response id='"+request.id()+"'+version='1.0'>"+ 
+				"<reportResponse>";
+
 		//read from database
 		ArrayList<String> reportResults = DatabaseSubsystem.produceReport(myType);
 
@@ -45,9 +56,15 @@ public class ProduceReportController implements IProtocolHandler {
 		for (int i = 0; i < reportResults.size(); i++) {
 			//iterate through the returned ArrayList, adding entries to the XML response for each element
 			String value = reportResults.get(i);
+			xmlString = xmlString+"<entry='"+value+"'/>";
 		}
 		
-		return null;
+		
+		xmlString = xmlString + "</reportResponse><response>";
+		System.out.println(xmlString);
+		Message response = new Message(xmlString);
+		System.out.println("Response:"+response);
+		return response;
 	}
 
 }

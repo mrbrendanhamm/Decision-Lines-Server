@@ -61,6 +61,10 @@ public class TestRemoveDLEController extends TestCase {
 		//Create a new dle
 		DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		myModel.getDecisionLineEvents().add(dle);
+		java.util.Date currentDate = new java.util.Date();
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		dle.setDate(oldDate);
+		DatabaseSubsystem.writeDecisionLineEvent(dle);
 		
 		//construct the message
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
@@ -214,5 +218,40 @@ public void testProcessByNotCompleted(){
 		assertTrue(myModel.getDecisionLineEvent("dleFinish1")!=null);
 		assertTrue(myModel.getDecisionLineEvent("dleFinish2")!=null);
 	}
+
+public void testProcessOneDLEInvalidKey(){
+	Model myModel = Model.getInstance();
+	//need to have client1 sign in as admin.  So we send request and get the key
+	String testAdmin = 	"<request version='1.0' id='c1'>" +
+			"<adminRequest>" +
+		  		"<user name='andrew' password='andrew'/>" +
+		  	"</adminRequest>" +
+		"</request>";
+	Message adminLogMessage = new Message(testAdmin);
+	AdminLogInController myAdminLogIn = new AdminLogInController();
+	myAdminLogIn.process(client1, adminLogMessage);
+
+	//Create a new dle
+	DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
+	myModel.getDecisionLineEvents().add(dle);
+	java.util.Date currentDate = new java.util.Date();
+	java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+	dle.setDate(oldDate);
+	DatabaseSubsystem.writeDecisionLineEvent(dle);
+	
+	//construct the message
+	String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
+				"<removeRequest key='falseKey' id='dleID'>" +
+				"</removeRequest>" +
+			"</request>";
+	Message request = new Message(testMessage);
+	RemoveDLEController removeController = new RemoveDLEController();
+	
+	//send the message
+	removeController.process(client1, request);
+	
+	//assert that the dle has been removed.
+	assertTrue(myModel.getDecisionLineEvent("dleID")!=null);
+}
 	
 }

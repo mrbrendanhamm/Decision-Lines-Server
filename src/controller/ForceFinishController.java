@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.w3c.dom.Node;
 
 import boundary.DatabaseSubsystem;
@@ -37,8 +40,8 @@ public class ForceFinishController implements IProtocolHandler
 		// check the key and if it is wrong we need a failure
 		if (!model.checkKey(myKey))
 		{
-			xmlString = new String(Message.responseHeader(request.id(), "Invalid key")
-					+ "numberAffected=0/></response>");
+			xmlString = new String(Message.responseHeader(request.id(),
+					"Invalid key") + "numberAffected=0/></response>");
 		}
 		else if (child.getAttributes().getNamedItem("id") != null)
 		{
@@ -57,10 +60,11 @@ public class ForceFinishController implements IProtocolHandler
 				// generate the success message
 				xmlString = new String(Message.responseHeader(request.id())
 						+ "numberAffected=1/></response>");
-			}else
+			}
+			else
 			{
-				xmlString = new String(Message.responseHeader(request.id(), "Invalid Event Id")
-						+ "numberAffected=0/></response>");
+				xmlString = new String(Message.responseHeader(request.id(),
+						"Invalid Event Id") + "numberAffected=0/></response>");
 			}
 
 			// TODO Needs to be broadcasted to all users of the dle
@@ -69,19 +73,34 @@ public class ForceFinishController implements IProtocolHandler
 		{
 			int daysOld = new Integer(child.getAttributes()
 					.getNamedItem("daysOld").getNodeValue());
-
-			// step 1) iterate through each DLE in memory
-			// 1a) is it older than daysOld, then finish the DLE
-			// 1b) notify any connected clients that the dle has been finished
-			// 1c) write DLE to database
-			// 2) run the function DatabaseSubsystem.finishDLEBasedOnDate() to
-			// finish any DLEs not in memory
-
 			int count = 0;
-			/*
-			 * The count should be the number of DLEs that were closed and not
-			 * the number of connected clients
-			 */
+			Date currentDate = new java.util.Date();
+			Date deleteByDate = new java.util.Date(
+					currentDate.getTime() - 1000 * 3600 * 24 * daysOld);
+
+			// get the DLE list from Model
+			ArrayList<DecisionLineEvent> dles = model.getDecisionLineEvents();
+			// iterate through each DLE in memory
+			for (DecisionLineEvent dle : dles)
+			{
+				// check whether it is older than daysOld
+				if (dle.getDate().before(deleteByDate))
+				{
+					// check whether it has been finished
+					if (!dle.getEventType().equals(EventType.FINISHED))
+					{
+						// finish the DLE
+						dle.setType(EventType.FINISHED);
+						dle.getFinalOrder();
+						// write to database
+						DatabaseSubsystem.writeDecisionLineEvent(dle);
+						count++;
+					}
+				}
+
+			}
+			// finish any DLEs not in memory
+			DatabaseSubsystem.finishDLEBasedOnDate(deleteByDate);
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<numberAffected=" + count + "/></response>");
 		}

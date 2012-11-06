@@ -24,7 +24,7 @@ public class RemoveDLEController implements IProtocolHandler {
 	ArrayList<DecisionLineEvent> dles;
     int numberRemoved=0;
     String xmlString;
-    ArrayList<DecisionLineEvent> deleteList = null;
+    ArrayList<DecisionLineEvent> deleteList = new ArrayList<DecisionLineEvent>();
 	/** constructor for RemoveDLEController
 	 * 
 	 */
@@ -64,7 +64,7 @@ public class RemoveDLEController implements IProtocolHandler {
 			//check id attribute and remove one or several dles
 			//this requires checking if the first node name is "id" or "completed"
 			String firstNodeName = child.getAttributes().item(0).getNodeName();
-			System.out.println(firstNodeName);
+			
 			if(firstNodeName.equals("id")){
 				//remove the one dle by id
 				String dleID = child.getAttributes().getNamedItem("id").getNodeValue();
@@ -79,9 +79,7 @@ public class RemoveDLEController implements IProtocolHandler {
 			else {
 				//remove dles which correspond to isCompleted and dayOld from database
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
-				System.out.println(isCompleted);
 				int daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
-				System.out.println("DaysOld:"+daysOld);
 				java.util.Date currentDate = new java.util.Date();
 				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*24*daysOld);
 				numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate, isCompleted);
@@ -90,21 +88,25 @@ public class RemoveDLEController implements IProtocolHandler {
 				
 				//remove dles which correspond to isCompleted from Model
 				ArrayList<DecisionLineEvent> dleList = myModel.getDecisionLineEvents();
-				//cycle through dles in model
+				//cycle through dles in model and see if they meet delete criteria
+				//if so add them to the deleteList
 					for (DecisionLineEvent DLE: dleList){
 						EventType type = DLE.getEventType();
 						Date dleDate = DLE.getDate();
+						
 						// is the dle older than deleteByDate if so add to the deleteList
 						if(dleDate.before(deleteByDate)){
 							if((type.equals(EventType.OPEN) || type.equals(EventType.CLOSED)) && isCompleted==false){
 								deleteList.add(DLE);
 							}
-							else if(type.equals(EventType.CLOSED) && isCompleted==true){
+							else if(type.equals(EventType.FINISHED) && isCompleted==true){
 								deleteList.add(DLE);
 							}
 						}
 						
 					}
+					
+					//cycle through delete list and delete everything
 					for (DecisionLineEvent DLE : deleteList){
 						myModel.removeDecisionLineEvent(DLE);
 					}
@@ -112,13 +114,15 @@ public class RemoveDLEController implements IProtocolHandler {
 				}
 		}
 		
+		//create response messages
 		if (isSuccess) 
 			xmlString = Message.responseHeader(state.id()) + 
 			"<removeResponse numberAffected='"+numberRemoved+"'/></response>";
 		else
 			xmlString = Message.responseHeader(state.id(), reason) +
 			 "<removeResponse numberAffected='"+numberRemoved+"'/></response>";
-
+		
+		//ship the message
 		Message response = new Message(xmlString);
 		System.out.println("Response:"+response);
 		return response;

@@ -46,13 +46,13 @@ public class AddEdgeController implements IProtocolHandler
 		// get User
 		User user = dle.getUserFromClientId(clientId);
 		// get leftChoice of the Edge
-		int left = new Integer(child.getAttributes().getNamedItem("left")
+		int left = Integer.valueOf(child.getAttributes().getNamedItem("left")
 				.getNodeValue());
 		// get rightChoice of the Edge
-		int right = new Integer(child.getAttributes().getNamedItem("right")
+		int right = Integer.valueOf(child.getAttributes().getNamedItem("right")
 				.getNodeValue());
 		// get height of the Edge
-		int height = new Integer(child.getAttributes().getNamedItem("height")
+		int height = Integer.valueOf(child.getAttributes().getNamedItem("height")
 				.getNodeValue());
 		// get the left and right Choices from DLE
 		Choice leftChoice = dle.getChoice(left);
@@ -65,7 +65,6 @@ public class AddEdgeController implements IProtocolHandler
 		 * edge (RR or Asynch), 3) whether the DLE is in finished state 4)
 		 * whether the left Choice is really to the left of the right Choice
 		 */
-		int re = dle.addEdge(edge);
 		if (dle.getBehavior().equals(Behavior.ROUNDROBIN) && !dle.getCurrentTurn().equals(user))
 		{
 			// generate failure message since it is not the Turn of the User
@@ -77,65 +76,79 @@ public class AddEdgeController implements IProtocolHandler
 					+ left
 					+ "' right='"
 					+ right
-					+ "' height=" + height + "/></response>");
+					+ "' height='" + height + "'/></response>");
 		}
-		else if (re == 1)
+		else 
 		{
-			// determine the next user's turn under RR
-			if(dle.getBehavior().equals(Behavior.ROUNDROBIN))
+			int re = dle.addEdge(edge);
+			if (re == 1)
 			{
-				dle.setCurrentTurn(dle.getUsers().get((user.getPosition() + 1) % dle.getUsers().size()));
+				// determine the next user's turn under RR
+				if(dle.getBehavior().equals(Behavior.ROUNDROBIN))
+				{
+					int newTurn = (user.getPosition() + 1) % dle.getUsers().size();
+					for(User userT: dle.getUsers())
+					{
+						if(userT.getPosition() == newTurn)
+						{
+							dle.setCurrentTurn(userT);
+							break;
+						}
+					}
+				}
+				// generate success message
+				xmlString = new String(Message.responseHeader(request.id())
+						+ "<addEdgeResponse id='" + eventID + "' left='" + left
+						+ "' right='" + right + "' height='" + height
+						+ "'/></response>");
+				// write out to database
+				DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
 			}
-			// generate success message
-			xmlString = new String(Message.responseHeader(request.id())
-					+ "<addEdgeResponse id='" + eventID + "' left='" + left
-					+ "' right='" + right + "' height=" + height
-					+ "/></response>");
+			else if (re == 2)
+			{
+				// generate failure message since the status of DLE is finished
+				xmlString = new String(Message.responseHeader(request.id(),
+						"The Event has been finished")
+						+ "<addEdgeResponse id='"
+						+ eventID
+						+ "' left='"
+						+ left
+						+ "' right='"
+						+ right
+						+ "' height='" + height + "'/></response>");
+			}
+			else if (re == 3)
+			{
+				// generate failure message since the height is invalid
+				xmlString = new String(Message.responseHeader(request.id(),
+						"The Edge is too close to others")
+						+ "<addEdgeResponse id='"
+						+ eventID
+						+ "' left='"
+						+ left
+						+ "' right='"
+						+ right
+						+ "' height='"
+						+ height
+						+ "'/></response>");
+			}
+			else if (re == 4)
+			{
+				// generate failure message since left Choice is not to the left of
+				// the right Choice
+				xmlString = new String(Message.responseHeader(request.id(),
+						"Invalid Edge")
+						+ "<addEdgeResponse id='"
+						+ eventID
+						+ "' left='"
+						+ left
+						+ "' right='"
+						+ right
+						+ "' height='"
+						+ height
+						+ "'/></response>");
+			}
 		}
-		else if (re == 2)
-		{
-			// generate failure message since the status of DLE is finished
-			xmlString = new String(Message.responseHeader(request.id(),
-					"The Event has been finished")
-					+ "<addEdgeResponse id='"
-					+ eventID
-					+ "' left='"
-					+ left
-					+ "' right='"
-					+ right
-					+ "' height=" + height + "/></response>");
-		}
-		else if (re == 3)
-		{
-			// generate failure message since the height is invalid
-			xmlString = new String(Message.responseHeader(request.id(),
-					"The Edge is too close to others")
-					+ "<addEdgeResponse id='"
-					+ eventID
-					+ "' left='"
-					+ left
-					+ "' right='"
-					+ right
-					+ "' height="
-					+ height
-					+ "/></response>");
-		}
-		else if (re == 3)
-		{
-			// generate failure message since left Choice is not to the left of
-			// the right Choice
-			xmlString = new String(Message.responseHeader(request.id(),
-					"Invalid Edge")
-					+ "<addEdgeResponse id='"
-					+ eventID
-					+ "' left='"
-					+ left
-					+ "' right='"
-					+ right
-					+ "' height="
-					+ height + "/></response>");
-		}
-
 		// TODO Needs to be broadcasted to all users of the dle
 		/*
 		 * under round robin - broadcast out the edge and broadcast to the next
@@ -145,8 +158,7 @@ public class AddEdgeController implements IProtocolHandler
 		 */
 
 		response = new Message(xmlString);
-		// write out to database
-		DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
+
 
 		// check to see if all edges have been played, if so then calculate the
 		// final order of choices
