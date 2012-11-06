@@ -1,6 +1,5 @@
 package xml;
 
-import java.io.StringReader;
 
 public class XMLSegment {
 	static enum SegmentType { UNKNOWN, NODEDECLARATION, NODEINLINECLOSE, NODECLOSE, ATTRIBUTE; } 

@@ -62,7 +62,8 @@ public class AddChoiceController implements IProtocolHandler
 		/*
 		 * First check whether User's position is equal to Choice's order Then
 		 * addChoice() method checks 1) whether the DLE is open 2) whether the
-		 * order is a valid order number(no Choice with the same order exists)
+		 * order is a valid order number(no Choice with the same order exists 
+		 * and the order number equal to User's position)
 		 */
 		if (user.getPosition() != order)
 		{
@@ -72,16 +73,18 @@ public class AddChoiceController implements IProtocolHandler
 					"Cannot add Choice for other Users")
 					+ "<addChoiceResponse id='"
 					+ eventID
-					+ "' number="
+					+ "' number='"
 					+ order
-					+ " choice='" + choiceString + "'/></response>");
+					+ "' choice='" + choiceString + "'/></response>");
 		}
 		else if (dle.addChoice(choice))
 		{
 			// generate success message
 			xmlString = new String(Message.responseHeader(request.id())
-					+ "<addChoiceResponse id='" + eventID + "' number=" + order
-					+ " choice='" + choiceString + "'/></response>");
+					+ "<addChoiceResponse id='" + eventID + "' number='" + order
+					+ "' choice='" + choiceString + "'/></response>");
+			// write to database
+			DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
 		}
 		else
 		{
@@ -90,9 +93,9 @@ public class AddChoiceController implements IProtocolHandler
 					"Cannot add Choice anymore")
 					+ "<addChoiceResponse id='"
 					+ eventID
-					+ "' number="
+					+ "' number='"
 					+ order
-					+ " choice='"
+					+ "' choice='"
 					+ choiceString + "'/></response>");
 		}
 
@@ -102,8 +105,7 @@ public class AddChoiceController implements IProtocolHandler
 		// should this dle be converted to closed? If so, how do we notify users
 		// of this? How do we notify users of the current turn?
 
-		// write to database
-		DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
+
 
 		response = new Message(xmlString);
 		return response;
