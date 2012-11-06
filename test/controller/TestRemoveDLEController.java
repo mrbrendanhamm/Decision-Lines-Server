@@ -2,6 +2,8 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import boundary.DatabaseSubsystem;
+
 import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
@@ -107,10 +109,16 @@ public void testProcessByCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000);
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
@@ -167,10 +175,16 @@ public void testProcessByNotCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000);
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
