@@ -64,6 +64,7 @@ public class AddChoiceController implements IProtocolHandler {
 		DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
 		
 		response = new Message(xmlString);
+		Model.getInstance().getDecisionLineEvents().add(dle);
 		return response;
 	}
 }
