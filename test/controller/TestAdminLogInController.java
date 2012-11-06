@@ -1,6 +1,6 @@
 package controller;
 
-import java.util.UUID;
+import org.w3c.dom.Node;
 
 
 import server.MockClient;
@@ -32,6 +32,11 @@ public class TestAdminLogInController extends TestCase {
 		// clear the singleton
 		ClearModelInstance.clearInstance();
 	}
+	
+	protected void tearDown() {
+		Server.unregister("c1");
+		Server.unregister("c2");
+	}
 	/** test the Process message for the AdminLogInController
 	 *  Takes client1 and signs him in as the admin.  AdminLoginController should
 	 *	response should contain the key used for further transmissions
@@ -55,7 +60,9 @@ public class TestAdminLogInController extends TestCase {
 		Message msg = new Message(testMessageSuccess);
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
-		//TODO: Need to have this test that the key is received 
+		Node child = retVal.contents.getFirstChild();
+		String keyString=child.getAttributes().getNamedItem("key").getNodeValue();
+		assert(keyString.equals(myModel.getKey()));
 	}
 	
 	
@@ -64,7 +71,7 @@ public class TestAdminLogInController extends TestCase {
 	 */
 
 	public void testProcessInvalidCredentials(){
-		Model myModel = Model.getInstance();
+		Model.getInstance();
 		AdminLogInController myController = new AdminLogInController();
 
 		//A valid adminRequest message with bad credentials
@@ -82,7 +89,10 @@ public class TestAdminLogInController extends TestCase {
 		Message retVal = myController.process(client1, msg);
 		assert(retVal != null);
 		
-		//TODO : Need to ensure that this has correct failure response
+		//check that key is not handed back
+		Node child = retVal.contents.getFirstChild();
+		String keyString=child.getAttributes().getNamedItem("key").getNodeValue();
+		assert(keyString.equals(""));
 	}
 
 
