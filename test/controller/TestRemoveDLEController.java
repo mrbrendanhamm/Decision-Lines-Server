@@ -63,10 +63,10 @@ public class TestRemoveDLEController extends TestCase {
 		myModel.getDecisionLineEvents().add(dle);
 		java.util.Date currentDate = new java.util.Date();
 		System.out.println("currdate:"+currentDate);
-		long daysOld = 24*3600*1000*1000*1000*250;
+		long daysOld = 24*3600*1000*250;
 		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
 		dle.setDate(oldDate);
-		System.out.println("Should be old:"+oldDate);
+		System.out.println("Should be 250 days ago:"+oldDate);
 		DatabaseSubsystem.writeDecisionLineEvent(dle);
 		
 		//construct the message
@@ -200,7 +200,7 @@ public void testProcessByNotCompleted(){
 		java.util.Date currentDate = new java.util.Date();
 		long daysOld = 24*3600*1000*250;
 		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - daysOld);
-		System.out.println("This should be 250 days old:"+oldDate);
+		System.out.println("This should be 250 days old:"+ oldDate);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
