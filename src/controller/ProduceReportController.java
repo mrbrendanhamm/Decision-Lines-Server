@@ -64,7 +64,7 @@ public class ProduceReportController implements IProtocolHandler {
 			xmlString = xmlString+"<entry id='"+idString+
 					"' type='"+typeString+
 					"' behavior='"+behaviorString+
-					"' quesion='"+questionString+
+					"' question='"+questionString+
 					"' numChoices='"+numChoicesString+
 					"' numRounds='"+numRoundsString+
 					"' created='"+createdString+

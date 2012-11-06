@@ -480,17 +480,43 @@ public class DatabaseSubsystem {
 			
 			PreparedStatement pstmt = getConnection().prepareStatement(qry);
 			ResultSet myRS = pstmt.executeQuery();
-
-			String field;
+			
+			String uniqueId, eventType, behavior, question, created, completedStr;
+			String tempValueStr;
+			int tempValueInt;
+			int numberOfChoices, numberOfRounds;
+			java.util.Date tempDate;
 			while (myRS.next()) {
-				field = new String(myRS.getString("id"));
-				retVal.add(field);
-
-				field = new String(myRS.getString("question"));
-				retVal.add(field);
-
-				//field = new String(myRS.getString("moderator"));
-				//retVal.add(field);
+				uniqueId = new String(myRS.getString("id"));
+				tempValueInt = myRS.getInt("playStatus");
+				if (tempValueInt == 0)
+					eventType = "open";
+				else
+					eventType = "closed";
+				if (tempValueInt == 2)
+					completedStr = "true";
+				else
+					completedStr = "false";
+				tempValueInt = myRS.getInt("isAsynchronous");
+				if (tempValueInt == 1)
+					behavior = "asynchronous";
+				else
+					behavior = "roundRobin";
+				numberOfChoices = myRS.getInt("numberOfChoices");
+				numberOfRounds = myRS.getInt("numberOfEdges");
+				tempDate = myRS.getDate("createdDate");
+				created = tempDate.toString();
+				question = new String(myRS.getString("question"));
+				
+				retVal.add(uniqueId);
+				retVal.add(eventType);
+				retVal.add(behavior);
+				retVal.add(question);
+				retVal.add(String.valueOf(numberOfChoices));
+				retVal.add(String.valueOf(numberOfRounds));
+				retVal.add(created);
+				retVal.add(completedStr);
+				
 			}
 			
 			return retVal;

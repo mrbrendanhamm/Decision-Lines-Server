@@ -25,21 +25,6 @@ public class DatabaseSubsystemTest extends TestCase {
 			System.exit(0);
 		}
 	}
-	/*
-	public void testRandom() {
-
-		if (!Message.configure(ApplicationMain.getMessageXSD())) { 
-			fail ("unable to configure protocol");
-		}
-
-		String testMessageSuccess = "<request version='1.0' id='clientid'><addEdgeRequest id='0' left='0' right='1' height='0'/></request>";
-		Message request = new Message(testMessageSuccess);
-		String clientId = request.contents.getAttributes().getNamedItem("id").getNodeValue();
-		String eventId = request.contents.getFirstChild().getAttributes().getNamedItem("id").getNodeValue();
-		System.out.println(eventId + " " + clientId);
-		
-	}
-	*/
 	
 	public void testReadEdges() {
 		System.out.println("Testing read edges");
@@ -191,14 +176,42 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testProduceReport() {
+		System.out.println("Testing produce report");
+		String outString = "";
 		ArrayList<String> myAL = DatabaseSubsystem.produceReport(EventType.CLOSED);
 		assert(myAL.size() > 0);
+		for (int i = 0; i < myAL.size(); i++) {
+			outString += ";" + myAL.get(i);
+			
+			if ((i % 7) == 6)  {
+				System.out.println(outString);
+				outString = "";
+			}
+		}
 		
+		outString = "";
 		myAL = DatabaseSubsystem.produceReport(EventType.OPEN);
 		assert(myAL.size() >= 0);
+		for (int i = 0; i < myAL.size(); i++) {
+			outString += ";" + myAL.get(i);
+			
+			if ((i % 7) == 6)  {
+				System.out.println(outString);
+				outString = "";
+			}
+		}
 		
+		outString = "";
 		myAL = DatabaseSubsystem.produceReport(EventType.FINISHED);
 		assert(myAL.size() >= 0);
+		for (int i = 0; i < myAL.size(); i++) {
+			outString += ";" + myAL.get(i);
+			
+			if ((i % 7) == 6)  {
+				System.out.println(outString);
+				outString = "";
+			}
+		}
 		
 	}
 	
