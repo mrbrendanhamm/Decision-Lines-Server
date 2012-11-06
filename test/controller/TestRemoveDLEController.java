@@ -109,12 +109,6 @@ public void testProcessByCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
@@ -125,6 +119,15 @@ public void testProcessByCompleted(){
 		dleClosed2.setDate(oldDate);
 		dleFinish1.setDate(oldDate);
 		dleFinish2.setDate(oldDate);
+		
+		//add to database
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
+		
 		
 		
 		//message to close finished dles 0 days old
@@ -167,7 +170,7 @@ public void testProcessByNotCompleted(){
 		DecisionLineEvent dleClosed2 = new DecisionLineEvent("dleClosed2","question4",3, 3, EventType.CLOSED, Behavior.ASYNCHRONOUS);
 		DecisionLineEvent dleFinish1 = new DecisionLineEvent("dleFinish1","question5",3, 3, EventType.FINISHED, Behavior.ROUNDROBIN);
 		DecisionLineEvent dleFinish2 = new DecisionLineEvent("dleFinish2","question6",3, 3, EventType.FINISHED, Behavior.ASYNCHRONOUS);
-		
+				
 		//and add them
 		myModel.getDecisionLineEvents().add(dleOpen1);
 		myModel.getDecisionLineEvents().add(dleOpen2);
@@ -175,12 +178,6 @@ public void testProcessByNotCompleted(){
 		myModel.getDecisionLineEvents().add(dleClosed2);
 		myModel.getDecisionLineEvents().add(dleFinish1);
 		myModel.getDecisionLineEvents().add(dleFinish2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
-		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
-		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
@@ -192,6 +189,14 @@ public void testProcessByNotCompleted(){
 		dleFinish1.setDate(oldDate);
 		dleFinish2.setDate(oldDate);
 		System.out.println(oldDate.toString());
+		
+		//add to system
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleOpen2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleClosed2);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish1);
+		DatabaseSubsystem.writeDecisionLineEvent(dleFinish2);
 		
 		
 		//message to close finished dles 0 days old
