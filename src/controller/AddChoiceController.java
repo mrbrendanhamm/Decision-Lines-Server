@@ -54,7 +54,7 @@ public class AddChoiceController implements IProtocolHandler
 		String choiceString = new String(child.getAttributes()
 				.getNamedItem("choice").getNodeValue());
 		// get Order of Choice
-		int order = new Integer(child.getAttributes().getNamedItem("number")
+		int order = Integer.valueOf(child.getAttributes().getNamedItem("number")
 				.getNodeValue());
 		// create a Choice
 		Choice choice = new Choice(choiceString, order);

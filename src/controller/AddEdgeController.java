@@ -46,13 +46,13 @@ public class AddEdgeController implements IProtocolHandler
 		// get User
 		User user = dle.getUserFromClientId(clientId);
 		// get leftChoice of the Edge
-		int left = new Integer(child.getAttributes().getNamedItem("left")
+		int left = Integer.valueOf(child.getAttributes().getNamedItem("left")
 				.getNodeValue());
 		// get rightChoice of the Edge
-		int right = new Integer(child.getAttributes().getNamedItem("right")
+		int right = Integer.valueOf(child.getAttributes().getNamedItem("right")
 				.getNodeValue());
 		// get height of the Edge
-		int height = new Integer(child.getAttributes().getNamedItem("height")
+		int height = Integer.valueOf(child.getAttributes().getNamedItem("height")
 				.getNodeValue());
 		// get the left and right Choices from DLE
 		Choice leftChoice = dle.getChoice(left);
