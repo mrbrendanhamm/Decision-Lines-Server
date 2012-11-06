@@ -79,7 +79,7 @@ public class RemoveDLEController implements IProtocolHandler {
 			else {
 				//remove dles which correspond to isCompleted and dayOld from database
 				boolean isCompleted = Boolean.valueOf(child.getAttributes().getNamedItem("completed").getNodeValue());
-				long daysOld = Integer.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
+				long daysOld = Long.valueOf(child.getAttributes().getNamedItem("daysOld").getNodeValue());
 				java.util.Date currentDate = new java.util.Date();
 				java.util.Date deleteByDate = new java.util.Date(currentDate.getTime() - 1000*3600*24*daysOld);
 				numberRemoved=DatabaseSubsystem.deleteEventsByAge(deleteByDate, isCompleted);
@@ -93,7 +93,8 @@ public class RemoveDLEController implements IProtocolHandler {
 					for (DecisionLineEvent DLE: dleList){
 						EventType type = DLE.getEventType();
 						Date dleDate = DLE.getDate();
-						
+						System.out.println("DleDate:"+dleDate);
+						System.out.println("DeleteByDate:"+deleteByDate);
 						// is the dle older than deleteByDate if so add to the deleteList
 						if(dleDate.before(deleteByDate)){
 							if((type.equals(EventType.OPEN) || type.equals(EventType.CLOSED)) && isCompleted==false){

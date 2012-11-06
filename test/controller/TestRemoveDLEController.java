@@ -62,8 +62,11 @@ public class TestRemoveDLEController extends TestCase {
 		DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 		myModel.getDecisionLineEvents().add(dle);
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		System.out.println("currdate:"+currentDate);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 		dle.setDate(oldDate);
+		System.out.println("Should be 250 days ago:"+oldDate);
 		DatabaseSubsystem.writeDecisionLineEvent(dle);
 		
 		//construct the message
@@ -116,7 +119,8 @@ public void testProcessByCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
@@ -136,7 +140,7 @@ public void testProcessByCompleted(){
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='true' daysOld='300'>" +
+				"<removeRequest key='"+myKey+"' completed='true' daysOld='200'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);
@@ -148,6 +152,15 @@ public void testProcessByCompleted(){
 		assertTrue(myModel.getDecisionLineEvent("dleClosed2")!=null);
 		assertTrue(myModel.getDecisionLineEvent("dleFinish1")==null);
 		assertTrue(myModel.getDecisionLineEvent("dleFinish2")==null);
+		
+		//clean up
+		myModel.removeDecisionLineEvent(dleOpen1);
+		myModel.removeDecisionLineEvent(dleOpen2);
+		myModel.removeDecisionLineEvent(dleClosed1);
+		myModel.removeDecisionLineEvent(dleClosed2);
+		myModel.removeDecisionLineEvent(dleFinish1);
+		myModel.removeDecisionLineEvent(dleFinish2);
+		
 	}
 	
 	/** This will test that only unFinished events 0 days old are deleted
@@ -185,14 +198,15 @@ public void testProcessByNotCompleted(){
 		
 		//set dates to be older than 0 days
 		java.util.Date currentDate = new java.util.Date();
-		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+		long daysOld = 250;
+		java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
+		System.out.println("This should be 250 days old:"+ oldDate);
 		dleOpen1.setDate(oldDate);
 		dleOpen2.setDate(oldDate);
 		dleClosed1.setDate(oldDate);
 		dleClosed2.setDate(oldDate);
 		dleFinish1.setDate(oldDate);
 		dleFinish2.setDate(oldDate);
-		System.out.println(oldDate.toString());
 		
 		//add to system
 		DatabaseSubsystem.writeDecisionLineEvent(dleOpen1);
@@ -205,7 +219,7 @@ public void testProcessByNotCompleted(){
 		
 		//message to close finished dles 0 days old
 		String testMessage = "<request version='1.0' id='"+ client1.id() +"'>" +
-				"<removeRequest key='"+myKey+"' completed='false' daysOld='300'>" +
+				"<removeRequest key='"+myKey+"' completed='false' daysOld='200'>" +
 				"</removeRequest>" +
 			"</request>";
 		Message request = new Message(testMessage);
@@ -217,6 +231,15 @@ public void testProcessByNotCompleted(){
 		assertTrue(myModel.getDecisionLineEvent("dleClosed2")==null);
 		assertTrue(myModel.getDecisionLineEvent("dleFinish1")!=null);
 		assertTrue(myModel.getDecisionLineEvent("dleFinish2")!=null);
+		
+		//clean up
+		myModel.removeDecisionLineEvent(dleOpen1);
+		myModel.removeDecisionLineEvent(dleOpen2);
+		myModel.removeDecisionLineEvent(dleClosed1);
+		myModel.removeDecisionLineEvent(dleClosed2);
+		myModel.removeDecisionLineEvent(dleFinish1);
+		myModel.removeDecisionLineEvent(dleFinish2);
+		
 	}
 
 public void testProcessOneDLEInvalidKey(){
@@ -235,8 +258,10 @@ public void testProcessOneDLEInvalidKey(){
 	DecisionLineEvent dle = new DecisionLineEvent("dleID","question",3, 3, EventType.OPEN, Behavior.ROUNDROBIN);
 	myModel.getDecisionLineEvents().add(dle);
 	java.util.Date currentDate = new java.util.Date();
-	java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*365);
+	long daysOld = 250;
+	java.util.Date oldDate = new java.util.Date(currentDate.getTime() - 24*3600*1000*daysOld);
 	dle.setDate(oldDate);
+	System.out.println("Should be oldDate"+oldDate);
 	DatabaseSubsystem.writeDecisionLineEvent(dle);
 	
 	//construct the message
@@ -252,6 +277,10 @@ public void testProcessOneDLEInvalidKey(){
 	
 	//assert that the dle has been removed.
 	assertTrue(myModel.getDecisionLineEvent("dleID")!=null);
+	//clean up
+	myModel.removeDecisionLineEvent(dle);
+
+	
 }
 	
 }
