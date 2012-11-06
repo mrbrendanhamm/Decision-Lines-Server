@@ -101,7 +101,7 @@ public class TestProduceReportController extends TestCase {
 		myController = new ProduceReportController();
 		Message response = myController.process(client1, request);
 		
-		//TODO : Assert that we only have info from the open events
+
 		
 		assert(response!=null);
 		
