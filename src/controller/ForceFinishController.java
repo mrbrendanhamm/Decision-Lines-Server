@@ -59,12 +59,12 @@ public class ForceFinishController implements IProtocolHandler
 				DatabaseSubsystem.writeDecisionLineEvent(dle);
 				// generate the success message
 				xmlString = new String(Message.responseHeader(request.id())
-						+ "numberAffected=1/></response>");
+						+ "<forceResponse numberAffected='1'/></response>");
 			}
 			else
 			{
 				xmlString = new String(Message.responseHeader(request.id(),
-						"Invalid Event Id") + "numberAffected=0/></response>");
+						"Invalid Event Id") + "<forceResponse numberAffected='0'/></response>");
 			}
 
 			// TODO Needs to be broadcasted to all users of the dle
@@ -102,7 +102,7 @@ public class ForceFinishController implements IProtocolHandler
 			// finish any DLEs not in memory
 			DatabaseSubsystem.finishDLEBasedOnDate(deleteByDate);
 			xmlString = new String(Message.responseHeader(request.id())
-					+ "<numberAffected=" + count + "/></response>");
+					+ "<forceResponse numberAffected='" + count + "'/></response>");
 		}
 
 		response = new Message(xmlString);
