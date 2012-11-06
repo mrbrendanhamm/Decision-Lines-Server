@@ -45,6 +45,9 @@ public class DecisionLineEvent {
 		createDate = new Date();
 		myType = EventType.ERROR;
 		myBehavior = Behavior.ERROR;
+		createDate = new java.util.Date();
+		question = "";
+		moderator = "undefined";
 	}
 	
 	/**
@@ -56,8 +59,11 @@ public class DecisionLineEvent {
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
+		createDate = new java.util.Date();
 		myType = EventType.ERROR;
 		myBehavior = Behavior.ERROR;
+		question = "";
+		moderator = "undefined";
 	}
 	
 	/**
@@ -81,6 +87,7 @@ public class DecisionLineEvent {
 		this.numberOfEdge = numberOfEdge;
 		this.myType = newType;
 		this.myBehavior = newBehavior;
+		createDate = new java.util.Date();
 	}
 	
 	/**

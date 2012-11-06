@@ -35,6 +35,8 @@ public class TestClientDisconnect extends TestCase {
 		Server.register("c2", client2);
 		Server.register("c3", client3);
 		
+		
+		
 		ClearModelInstance.clearInstance();
 	}
 

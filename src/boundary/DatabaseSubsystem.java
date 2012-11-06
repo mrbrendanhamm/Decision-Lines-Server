@@ -9,7 +9,6 @@ package boundary;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-//import java.util.Date;
 
 import entity.*;
 import entity.DecisionLineEvent.Behavior;
@@ -360,7 +359,7 @@ public class DatabaseSubsystem {
 			if (newDLE.getEventType() == EventType.FINISHED) {
 				boolean decisionMissing = false;
 				for(int i = 0; i < newDLE.getChoices().size(); i++) {
-					if (newDLE.getChoice(i).getFinalDecisionOrder() == -1)
+					if (newDLE.getChoices().get(i).getFinalDecisionOrder() == -1)
 						decisionMissing = true;
 				}
 				if (decisionMissing) { 

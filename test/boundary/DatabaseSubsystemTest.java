@@ -26,6 +26,24 @@ public class DatabaseSubsystemTest extends TestCase {
 		}
 	}
 	
+	public void testConnection() {
+		DatabaseSubsystem.disconnect();
+		try {
+			assert(DatabaseSubsystem.con.isClosed());
+		} catch (Exception e) {
+			fail("Error while disconnecting");
+		}
+		DatabaseSubsystem.connect();
+		try {
+			assert(DatabaseSubsystem.con.isClosed() == false);
+		} catch (Exception e) {
+			fail("Error while connecting");
+		}
+		java.sql.Connection con = DatabaseSubsystem.getConnection();
+		assert(con != null);
+		assert(DatabaseSubsystem.isConnected());
+	}
+	
 	public void testReadEdges() {
 		System.out.println("Testing read edges");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
