@@ -19,12 +19,24 @@ import entity.DecisionLineEvent.EventType;
  */
 public class DatabaseSubsystem {
 	/** Hard-coded database access information */
+	
+	/* Development Edition
 	private static final String SERVER   = "mysql.wpi.edu";
 	private static final String USER     = "azafty";
 	private static final String PASSWORD = "UjnyxY";
 	private static final String DATABASE = "decisionsserver";
+	*/
 	/* full connection string from SSH 
 	 * mysql -hmysql.wpi.edu -uazafty -pUjnyxY decisionsserver
+	 */
+	
+	/* Production Edition */
+	private static final String SERVER   = "mysql.wpi.edu";
+	private static final String USER     = "azafty2";
+	private static final String PASSWORD = "HzXfP6";
+	private static final String DATABASE = "decisionsserverproduction";
+	/* full connection string from SSH 
+	 * mysql -hmysql.wpi.edu -uazafty2 -pHzXfP6 decisionsserverproduction
 	 */
 
 
