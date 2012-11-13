@@ -108,7 +108,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 
 		//TODO This will result in the turn announcement arriving prior to the sign into success notice.  This is a reoccuring problem
 		// Let TurnAnnouncementController handle the turn responses 
-		new TurnAnnouncementController(myDLE).userSignIn(newUser);
+		//new TurnAnnouncementController(myDLE).userSignIn(newUser);
 		
 		return writeSuccessResponse();
 	}
