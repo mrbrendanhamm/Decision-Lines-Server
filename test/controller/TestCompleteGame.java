@@ -49,8 +49,8 @@ public class TestCompleteGame extends TestCase {
 		// Create open DLE from Client 1
 		String testMessageSuccess = "<request version='1.0' id='" + client1.id() + "'>" +
 				"  <createRequest type='open' question='Test Question' numChoices='3' numRounds='2' behavior='roundRobin'>" +
-				"    <choice value='Choice1' index='0'/>" +
-				"    <user name='User1' />" +
+				"    <choice value='Choice0' index='0'/>" +
+				"    <user name='User0' />" +
 				"  </createRequest>" +
 				"</request>";
 		Message myMessage = new Message(testMessageSuccess);
@@ -60,31 +60,31 @@ public class TestCompleteGame extends TestCase {
 		
 		/** Game is Open **/
 		// Log in Request from Client 2
-		testMessageSuccess = "<request version='1.0' id='" + client2.id().toString() + "'>" +
-					"<signInRequest id='" + dleId + "'><user name='User2'/></signInRequest></request>";
+		testMessageSuccess = "<request version='1.0' id='" + client2.id() + "'>" +
+					"<signInRequest id='" + dleId + "'><user name='User1'/></signInRequest></request>";
 		myMessage = new Message(testMessageSuccess);
 		retVal = myHandler.process(client2, myMessage);
 		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
 		// Broadcasted signInReponse to Client 1
 		retVal = client1.getAndRemoveMessage();
-		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
+		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("joinResponse"));
 		
 		// Log in client 3
-		testMessageSuccess = "<request version='1.0' id='" + client3.id().toString() + "'>" +
-				"<signInRequest id='" + dleId + "'><user name='User3'/></signInRequest></request>";
+		testMessageSuccess = "<request version='1.0' id='" + client3.id() + "'>" +
+				"<signInRequest id='" + dleId + "'><user name='User2'/></signInRequest></request>";
 		myMessage = new Message(testMessageSuccess);
 		retVal = myHandler.process(client3, myMessage);
 		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
 		// Broadcasted signInReponse to Client 1
 		retVal = client1.getAndRemoveMessage();
-		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("signInResponse"));
+		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("joinResponse"));
 		// Broadcasted signInReponse to Client 2
 		retVal = client2.getAndRemoveMessage();
-		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("signInResponse"));
+		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("joinResponse"));
 		
 		// Create Choice 2
-		testMessageSuccess =  "<request version='1.0' id='"+client2.id().toString()+"'>"+
-				  "<addChoiceRequest id='" + dleId + "' number='1' choice='Choice2'/></request>";
+		testMessageSuccess =  "<request version='1.0' id='" + client2.id() + "'>"+
+				  "<addChoiceRequest id='" + dleId + "' number='1' choice='Choice1'/></request>";
 		myMessage = new Message(testMessageSuccess);
 		retVal = myHandler.process(client2, myMessage);
 		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
@@ -96,8 +96,8 @@ public class TestCompleteGame extends TestCase {
 		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("addChoiceResponse"));
 		
 		// Create Choice 3
-		testMessageSuccess =  "<request version='1.0' id='"+client3.id().toString()+"'>"+
-				  "<addChoiceRequest id='" + dleId + "' number='2' choice='Choice3'/></request>";
+		testMessageSuccess =  "<request version='1.0' id='" + client3.id() + "'>"+
+				  "<addChoiceRequest id='" + dleId + "' number='2' choice='Choice2'/></request>";
 		myMessage = new Message(testMessageSuccess);
 		retVal = myHandler.process(client3, myMessage);
 		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("true"));
@@ -110,8 +110,8 @@ public class TestCompleteGame extends TestCase {
 		
 		/** Game is Closed **/
 		// Check for proper turnResponse
-		retVal = client1.getAndRemoveMessage();
-		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("turnResponse"));
+		//retVal = client1.getAndRemoveMessage();
+		//assertTrue(retVal.contents.getFirstChild().getLocalName().equals("turnResponse"));
 		
 		// Client 1 Play Edge 1
 		testMessageSuccess = "<request version='1.0' id='" + client1.id() + "'>"+
@@ -208,15 +208,15 @@ public class TestCompleteGame extends TestCase {
 		// Verify Client 1 receives turnResponse with completed=true
 		retVal = client1.getAndRemoveMessage();
 		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("turnResponse"));
-		assertTrue(retVal.contents.getFirstChild().getNextSibling().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
+		assertTrue(retVal.contents.getFirstChild().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
 		// Verify Client 2 receives turnResponse with completed=true
 		retVal = client2.getAndRemoveMessage();
 		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("turnResponse"));
-		assertTrue(retVal.contents.getFirstChild().getNextSibling().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
+		assertTrue(retVal.contents.getFirstChild().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
 		// Verify Client 3 receives turnResponse with completed=true
 		retVal = client3.getAndRemoveMessage();
 		assertTrue(retVal.contents.getFirstChild().getLocalName().equals("turnResponse"));
-		assertTrue(retVal.contents.getFirstChild().getNextSibling().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
+		assertTrue(retVal.contents.getFirstChild().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
 		
 		/** Game is Finished **/
 		// do what here?

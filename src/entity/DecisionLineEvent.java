@@ -3,6 +3,8 @@ package entity;
 import java.util.ArrayList;
 import java.util.Date;
 
+import boundary.DatabaseSubsystem;
+
 
 public class DecisionLineEvent {
 	// EventType enum class
@@ -14,9 +16,9 @@ public class DecisionLineEvent {
 	// The question of the DLE
 	private String question;
 	// The number of Choices of the DLE.  Also corresponds to the maximum number of users that can be connected
-	private int numberOfChoice;
+	private int numberOfChoices;
 	// The number of Edges of the DLE
-	private int numberOfEdge;
+	private int numberOfEdges;
 	// The ArrayList of all exist edges of the DLE
 	private ArrayList<Edge> edges = null;
 	// The ArrayList of all exist Users of the DLE
@@ -76,15 +78,15 @@ public class DecisionLineEvent {
 	 * @param newType - the EventType of the DLE
 	 * @param newBehavior - the Behavior of the DLE
 	 */
-	public DecisionLineEvent(String uniqueId,String question,int numberOfChoice, int numberOfEdge, EventType newType, Behavior newBehavior)
+	public DecisionLineEvent(String uniqueId,String question,int numberOfChoices, int numberOfEdges, EventType newType, Behavior newBehavior)
 	{
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();
 		this.choices = new ArrayList<Choice>();
 		this.question = question;
 		this.uniqueId = uniqueId;
-		this.numberOfChoice = numberOfChoice;
-		this.numberOfEdge = numberOfEdge;
+		this.numberOfChoices = numberOfChoices;
+		this.numberOfEdges = numberOfEdges;
 		this.myType = newType;
 		this.myBehavior = newBehavior;
 		createDate = new java.util.Date();
@@ -188,9 +190,9 @@ public class DecisionLineEvent {
 	 * 
 	 * @return the number of Choices of the DLE
 	 */
-	public int getNumberOfChoice()
+	public int getNumberOfChoices()
 	{
-		return this.numberOfChoice;
+		return this.numberOfChoices;
 	}
 	
 	/**
@@ -198,9 +200,9 @@ public class DecisionLineEvent {
 	 * 
 	 * @return the number of Edges of the DLE
 	 */
-	public int getNumberOfEdge()
+	public int getNumberOfEdges()
 	{
-		return this.numberOfEdge;
+		return this.numberOfEdges;
 	}
 	/**
 	 * This method returns the total number of users that have a client application connected to the DLE.  This is used
@@ -399,7 +401,7 @@ public class DecisionLineEvent {
 	 */
 	boolean canAddChoice(int order)
 	{
-		return ((this.choices.size() <  this.numberOfChoice) && this.myType.equals(EventType.OPEN) && NotChoiceWithOrder(order));
+		return ((this.choices.size() <  this.numberOfChoices) && this.myType.equals(EventType.OPEN) && NotChoiceWithOrder(order));
 	}
 	
 	/**
@@ -425,7 +427,8 @@ public class DecisionLineEvent {
 
 	
 	/**
-	 * This method is to add a new Choice into the ArrayList of Choice of the DLE
+	 * This method is to add a new Choice into the ArrayList of Choice of the DLE.  If all choices are made then the event
+	 * is changed from Open to Closed
 	 * 
 	 * @param choice - the choice added into the DLE
 	 * @return true if the choice was added, false otherwise
@@ -435,6 +438,16 @@ public class DecisionLineEvent {
 		if(this.canAddChoice(choice.getOrder()))
 		{
 			this.choices.add(choice);
+			
+
+			if (choices.size() == numberOfChoices) {
+				// change game from Open to Closed, and set the current player
+				myType = EventType.CLOSED;
+				for (int i = 0; i < users.size(); i++)
+					if (users.get(i).getPosition() == 0)
+						setCurrentTurn(users.get(i));
+			}
+			
 			return true;
 		}
 		return false;

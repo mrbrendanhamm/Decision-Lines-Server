@@ -380,6 +380,8 @@ public class DatabaseSubsystem {
 				}
 			}
 			
+			//TODO determine current user's turn
+			
 			return newDLE;
 		} catch (SQLException e) {
 			System.out.println("error executing SQL statement!");
@@ -400,8 +402,8 @@ public class DatabaseSubsystem {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEvent(?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, writeEvent.getUniqueId());
 			pstmt.setString(2, writeEvent.getQuestion());
-			pstmt.setInt(3, writeEvent.getNumberOfChoice());
-			pstmt.setInt(4, writeEvent.getNumberOfEdge());
+			pstmt.setInt(3, writeEvent.getNumberOfChoices());
+			pstmt.setInt(4, writeEvent.getNumberOfEdges());
 			if (writeEvent.getBehavior() == Behavior.ASYNCHRONOUS)
 				pstmt.setBoolean(5, true);
 			else

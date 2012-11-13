@@ -84,7 +84,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 		
 		
 		if (!userAlreadyExists) { //Create the user if they are new
-			if (userList.size() >= myDLE.getNumberOfChoice()) {
+			if (userList.size() >= myDLE.getNumberOfChoices()) {
 				return writeFailureResponse("Error, maximum number of users exceeded!");
 			}
 			
@@ -182,7 +182,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 			xmlString = xmlString + "behavior='asynchronous' ";
 
 		xmlString = xmlString + "question='" + myDLE.getQuestion() + "' " +
-				" numChoices='" + myDLE.getNumberOfChoice() + "' numRounds='" + myDLE.getNumberOfEdge() + "' " +
+				" numChoices='" + myDLE.getNumberOfChoices() + "' numRounds='" + myDLE.getNumberOfEdges() + "' " +
 				"position='" + newUser.getPosition() + "'>"; 
 		
 		for (int i = 0; i < myDLE.getChoices().size(); i++) {
@@ -224,7 +224,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 			xmlString = xmlString + "behavior='asynchronous' ";
 
 		xmlString = xmlString + "question='" + myDLE.getQuestion() + "' " +
-				" numChoices='" + myDLE.getNumberOfChoice() + "' numRounds='" + myDLE.getNumberOfEdge() + "' " +
+				" numChoices='" + myDLE.getNumberOfChoices() + "' numRounds='" + myDLE.getNumberOfEdges() + "' " +
 				"position='" + newUser.getPosition() + "'>"; 
 		
 		for (int i = 0; i < myDLE.getChoices().size(); i++) {

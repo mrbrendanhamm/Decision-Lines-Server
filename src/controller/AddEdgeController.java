@@ -8,6 +8,7 @@ import boundary.DatabaseSubsystem;
 import entity.Choice;
 import entity.DecisionLineEvent;
 import entity.DecisionLineEvent.Behavior;
+import entity.DecisionLineEvent.EventType;
 import entity.Edge;
 import entity.Model;
 import entity.User;
@@ -97,13 +98,27 @@ public class AddEdgeController implements IProtocolHandler
 						}
 					}
 				}
+				else
+					; //TODO implement for ASYNCHRONOUS
+
 				// generate success message
 				xmlString = new String(Message.responseHeader(request.id())
 						+ "<addEdgeResponse id='" + eventID + "' left='" + left
 						+ "' right='" + right + "' height='" + height
 						+ "'/></response>");
-				// write out to database
-				DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
+
+				// check to see if all edges have been played, if so then calculate the
+				// final order of choices
+				if ((dle.getNumberOfChoices() * dle.getNumberOfEdges()) <= dle.getEdges()
+						.size())
+				{
+					dle.getFinalOrder();
+					dle.setType(EventType.FINISHED);
+					// write final order out to database
+					DatabaseSubsystem.writeDecisionLineEvent(dle);
+				}
+				else
+					DatabaseSubsystem.writeEdge(edge, dle.getUniqueId());
 			}
 			else if (re == 2)
 			{
@@ -150,7 +165,6 @@ public class AddEdgeController implements IProtocolHandler
 						+ "'/></response>"));
 			}
 		}
-		// TODO Successful add needs to be broadcasted to all users of the dle
 		/*
 		 * under round robin - broadcast out the edge and broadcast to the next
 		 * user that it is their turn (turnResponse) under asynchronous -
@@ -158,38 +172,42 @@ public class AddEdgeController implements IProtocolHandler
 		 * just return the current turn status to the requesting user
 		 */
 
-		response = new Message(xmlString);
-
-
-		// check to see if all edges have been played, if so then calculate the
-		// final order of choices
-		if ((dle.getNumberOfChoice() * dle.getNumberOfEdge()) <= dle.getEdges()
-				.size())
-		{
-			dle.getFinalOrder();
-			// write final order out to database
-			DatabaseSubsystem.writeDecisionLineEvent(dle);
-			notifyConnectedUsersOfCompletion();
-		}
-
-		return response;
-	}
-
-	
-	/**
-	 * This method notifies all connected users that the game is now complete
-	 * TODO this needs to also send the final edges added in the case of an asynchronous event
-	 */
-	void notifyConnectedUsersOfCompletion() {
-		String xmlMessage;
+		//response = new Message(xmlString);
+		Message broadcastEdgeResponse = new Message(xmlString);
+		
+		// broadcast
 		for(int i = 0; i < dle.getUsers().size(); i++) {
-			
 			if (!dle.getUsers().get(i).getClientStateId().equals("")) {
-				xmlMessage = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
-						"<turnResponse completed='true'/>" + 
-						"</response>";
-				Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(xmlMessage));
+				//TODO verify if the turnResponse is sent before or after the addEdgeResponse 
+				//Which ever one is sent last has to be returned to the client
+				
+				// send to all but the requesting client
+				if (!dle.getUsers().get(i).getClientStateId().equals(state.id())) {
+					System.out.println("Broadcast: " + xmlString);
+					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(broadcastEdgeResponse);
+				}
+
+				if (dle.getEventType() == EventType.FINISHED) {
+					// Event finished, send to everyone
+					String turnBroadcast = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
+							"<turnResponse completed='true'/>" + 
+							"</response>";
+					System.out.println("Broadcast: " + turnBroadcast);
+					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(turnBroadcast));
+				}
+				else if (dle.getUsers().get(i).equals(dle.getCurrentTurn()) && dle.getBehavior() == Behavior.ROUNDROBIN) {
+					// not finished, notify next player
+					String turnIndividual  = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
+							"<turnResponse completed='false'/>" + 
+							"</response>";
+					System.out.println("Out of Sync message: " + turnIndividual);
+					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(turnIndividual));
+				}
 			}
 		}
+
+		// this will change to whatever message is last send to the originating client.
+		response = broadcastEdgeResponse;
+		return response;
 	}
 }

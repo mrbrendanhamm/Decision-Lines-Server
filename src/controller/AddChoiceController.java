@@ -6,11 +6,13 @@ import boundary.DatabaseSubsystem;
 
 import server.ClientState;
 import server.IProtocolHandler;
+import server.Server;
 import xml.Message;
 import entity.Choice;
 import entity.DecisionLineEvent;
 import entity.Model;
 import entity.User;
+import entity.DecisionLineEvent.EventType;
 
 public class AddChoiceController implements IProtocolHandler
 {
@@ -69,13 +71,13 @@ public class AddChoiceController implements IProtocolHandler
 		{
 			// generate failure message since User's position is not equal to
 			// Choice's order
-			xmlString = new String(Message.responseHeader(request.id(),
+			return new Message(new String(Message.responseHeader(request.id(),
 					"Cannot add Choice for other Users")
 					+ "<addChoiceResponse id='"
 					+ eventID
 					+ "' number='"
 					+ order
-					+ "' choice='" + choiceString + "'/></response>");
+					+ "' choice='" + choiceString + "'/></response>"));
 		}
 		else if (dle.addChoice(choice))
 		{
@@ -83,30 +85,41 @@ public class AddChoiceController implements IProtocolHandler
 			xmlString = new String(Message.responseHeader(request.id())
 					+ "<addChoiceResponse id='" + eventID + "' number='" + order
 					+ "' choice='" + choiceString + "'/></response>");
-			// write to database
-			DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
+
+			// write to database.  If the state has changed then rewrite the whole thing, otherwise just write the choice
+			if (dle.getEventType() == EventType.CLOSED)
+				DatabaseSubsystem.writeDecisionLineEvent(dle);
+			else
+				DatabaseSubsystem.writeChoice(choice, dle.getUniqueId());
 		}
 		else
 		{
 			// generate failure message
-			xmlString = new String(Message.responseHeader(request.id(),
+			return new Message(new String(Message.responseHeader(request.id(),
 					"Cannot add Choice anymore")
 					+ "<addChoiceResponse id='"
 					+ eventID
 					+ "' number='"
 					+ order
 					+ "' choice='"
-					+ choiceString + "'/></response>");
+					+ choiceString + "'/></response>"));
 		}
 
-		// TODO Successful add needs to be broadcasted to all users of the DLE
 		// how do we determine when all choices have been created? what is the
 		// mechanism (turnResponse?)?
 		// should this dle be converted to closed? If so, how do we notify users
 		// of this? How do we notify users of the current turn?
 
-
+		System.out.print("Broadcast to all clients: " + xmlString);
 		response = new Message(xmlString);
+		// Broadcast to all connected clients except the originating client
+		for(int i = 0; i < dle.getUsers().size(); i++) {
+			String processing = dle.getUsers().get(i).getClientStateId();
+			if (!processing.equals(state.id()) && !processing.equals("")) {
+				Server.getState(processing).sendMessage(response);
+			}
+		}
+		
 		return response;
 	}
 }

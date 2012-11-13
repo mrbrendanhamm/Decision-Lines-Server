@@ -25,8 +25,8 @@ public class DecisionLineEventTest extends TestCase
 	{
 		assert(DLE.getUniqueId().equals("A"));
 		assert(DLE.getQuestion().equals("When to Meet"));
-		assert(DLE.getNumberOfChoice() == 4);
-		assert(DLE.getNumberOfEdge() == 4);
+		assert(DLE.getNumberOfChoices() == 4);
+		assert(DLE.getNumberOfEdges() == 4);
 		assert(DLE.getEventType() == DecisionLineEvent.EventType.OPEN);
 		assert(DLE.getBehavior() == Behavior.ASYNCHRONOUS);
 	}
@@ -102,12 +102,12 @@ public class DecisionLineEventTest extends TestCase
 	
 	public void testGetNumberOfChoice()
 	{
-		assert(DLE.getNumberOfChoice() == 4);
+		assert(DLE.getNumberOfChoices() == 4);
 	}
 	
 	public void testGetNumberOfEdge()
 	{
-		assert(DLE.getNumberOfEdge() == 4);
+		assert(DLE.getNumberOfEdges() == 4);
 	}
 	
 	public void testConnectedClientCount()
