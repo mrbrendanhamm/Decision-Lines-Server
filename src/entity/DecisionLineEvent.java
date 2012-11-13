@@ -37,7 +37,7 @@ public class DecisionLineEvent {
 	/**
 	 * Default constructor
 	 */
-	public DecisionLineEvent()
+	DecisionLineEvent()
 	{
 		this.edges = new ArrayList<Edge>();
 		this.users = new ArrayList<User>();

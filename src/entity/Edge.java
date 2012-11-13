@@ -11,7 +11,7 @@ public class Edge {
 	/**
 	 * Default constructor
 	 */
-	public Edge()
+	Edge()
 	{
 	}
 	

@@ -99,12 +99,11 @@ public class AddChoiceController implements IProtocolHandler
 					+ choiceString + "'/></response>");
 		}
 
-		// TODO Needs to be broadcasted to all users of the DLE
+		// TODO Successful add needs to be broadcasted to all users of the DLE
 		// how do we determine when all choices have been created? what is the
 		// mechanism (turnResponse?)?
 		// should this dle be converted to closed? If so, how do we notify users
 		// of this? How do we notify users of the current turn?
-
 
 
 		response = new Message(xmlString);

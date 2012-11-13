@@ -16,6 +16,7 @@ import xml.Message;
 
 public class AddEdgeController implements IProtocolHandler
 {
+	DecisionLineEvent dle;
 
 	/**
 	 * This method is the calling entry point for this controller. It is assumed
@@ -42,7 +43,7 @@ public class AddEdgeController implements IProtocolHandler
 		// get ID of event and the DLE
 		String eventID = new String(child.getAttributes().getNamedItem("id")
 				.getNodeValue());
-		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+		dle = model.getDecisionLineEvent(eventID);
 		// get User
 		User user = dle.getUserFromClientId(clientId);
 		// get leftChoice of the Edge
@@ -68,7 +69,7 @@ public class AddEdgeController implements IProtocolHandler
 		if (dle.getBehavior().equals(Behavior.ROUNDROBIN) && !dle.getCurrentTurn().equals(user))
 		{
 			// generate failure message since it is not the Turn of the User
-			xmlString = new String(Message.responseHeader(request.id(),
+			return new Message(new String(Message.responseHeader(request.id(),
 					"It is not your Turn now")
 					+ "<addEdgeResponse id='"
 					+ eventID
@@ -76,7 +77,7 @@ public class AddEdgeController implements IProtocolHandler
 					+ left
 					+ "' right='"
 					+ right
-					+ "' height='" + height + "'/></response>");
+					+ "' height='" + height + "'/></response>"));
 		}
 		else 
 		{
@@ -107,20 +108,20 @@ public class AddEdgeController implements IProtocolHandler
 			else if (re == 2)
 			{
 				// generate failure message since the status of DLE is finished
-				xmlString = new String(Message.responseHeader(request.id(),
-						"The Event has been finished")
+				return new Message(new String(Message.responseHeader(request.id(),
+						"The Event is already finished")
 						+ "<addEdgeResponse id='"
 						+ eventID
 						+ "' left='"
 						+ left
 						+ "' right='"
 						+ right
-						+ "' height='" + height + "'/></response>");
+						+ "' height='" + height + "'/></response>"));
 			}
 			else if (re == 3)
 			{
 				// generate failure message since the height is invalid
-				xmlString = new String(Message.responseHeader(request.id(),
+				return new Message(new String(Message.responseHeader(request.id(),
 						"The Edge is too close to others")
 						+ "<addEdgeResponse id='"
 						+ eventID
@@ -130,14 +131,14 @@ public class AddEdgeController implements IProtocolHandler
 						+ right
 						+ "' height='"
 						+ height
-						+ "'/></response>");
+						+ "'/></response>"));
 			}
 			else if (re == 4)
 			{
 				// generate failure message since left Choice is not to the left of
 				// the right Choice
-				xmlString = new String(Message.responseHeader(request.id(),
-						"Invalid Edge")
+				return new Message(new String(Message.responseHeader(request.id(),
+						"Designated left and right choices are not adjacent")
 						+ "<addEdgeResponse id='"
 						+ eventID
 						+ "' left='"
@@ -146,10 +147,10 @@ public class AddEdgeController implements IProtocolHandler
 						+ right
 						+ "' height='"
 						+ height
-						+ "'/></response>");
+						+ "'/></response>"));
 			}
 		}
-		// TODO Needs to be broadcasted to all users of the dle
+		// TODO Successful add needs to be broadcasted to all users of the dle
 		/*
 		 * under round robin - broadcast out the edge and broadcast to the next
 		 * user that it is their turn (turnResponse) under asynchronous -
@@ -168,9 +169,27 @@ public class AddEdgeController implements IProtocolHandler
 			dle.getFinalOrder();
 			// write final order out to database
 			DatabaseSubsystem.writeDecisionLineEvent(dle);
+			notifyConnectedUsersOfCompletion();
 		}
 
 		return response;
 	}
 
+	
+	/**
+	 * This method notifies all connected users that the game is now complete
+	 * TODO this needs to also send the final edges added in the case of an asynchronous event
+	 */
+	void notifyConnectedUsersOfCompletion() {
+		String xmlMessage;
+		for(int i = 0; i < dle.getUsers().size(); i++) {
+			
+			if (!dle.getUsers().get(i).getClientStateId().equals("")) {
+				xmlMessage = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
+						"<turnResponse completed='true'/>" + 
+						"</response>";
+				Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(xmlMessage));
+			}
+		}
+	}
 }
