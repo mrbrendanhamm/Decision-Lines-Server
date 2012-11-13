@@ -91,10 +91,5 @@ public class TestSignIntoDLEController extends TestCase {
 		assert(retVal != null);
 		loadedEvent = myModel.getDecisionLineEvents().get(0);
 		assertTrue(loadedEvent.getUsers().contains(new User("supra", "", -1)));
-
-	
-		
-		//TODO what else to verify?
-
 	}
 }
