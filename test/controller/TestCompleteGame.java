@@ -346,12 +346,12 @@ public class TestCompleteGame extends TestCase {
 			asynch = client3.getAndRemoveMessage();
 			assertTrue(asynch.contents.getFirstChild().getLocalName().equals("addEdgeResponse"));
 		}
-
-		asynch = client1.getAndRemoveMessage();
+		
+		asynch = client2.getAndRemoveMessage();
 		assertTrue(asynch.contents.getFirstChild().getLocalName().equals("turnResponse"));
 		assertTrue(asynch.contents.getFirstChild().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
 		
-		asynch = client2.getAndRemoveMessage();
+		asynch = client3.getAndRemoveMessage();
 		assertTrue(asynch.contents.getFirstChild().getLocalName().equals("turnResponse"));
 		assertTrue(asynch.contents.getFirstChild().getAttributes().getNamedItem("completed").getNodeValue().equals("true"));
 		
