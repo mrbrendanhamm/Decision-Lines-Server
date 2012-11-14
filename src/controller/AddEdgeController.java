@@ -67,10 +67,10 @@ public class AddEdgeController implements IProtocolHandler
 		 * edge (RR or Asynch), 3) whether the DLE is in finished state 4)
 		 * whether the left Choice is really to the left of the right Choice
 		 */
-		if (dle.getBehavior().equals(Behavior.ROUNDROBIN) && !dle.getCurrentTurn().equals(user))
+		if ((dle.getBehavior() == Behavior.ROUNDROBIN) && !dle.getCurrentTurn().equals(user))
 		{
 			// generate failure message since it is not the Turn of the User
-			return new Message(new String(Message.responseHeader(request.id(),
+			Message retVal = new Message(new String(Message.responseHeader(request.id(),
 					"It is not your Turn now")
 					+ "<addEdgeResponse id='"
 					+ eventID
@@ -79,6 +79,22 @@ public class AddEdgeController implements IProtocolHandler
 					+ "' right='"
 					+ right
 					+ "' height='" + height + "'/></response>"));
+			System.out.println("Responding: " + retVal);
+			return retVal;
+		}
+		else if (dle.getBehavior() == Behavior.ASYNCHRONOUS && !user.canAddEdgeInAsynch()) {
+			// generate failure message since the user has played all their edges
+			Message retVal = new Message(new String(Message.responseHeader(request.id(),
+					"It is not your Turn now")
+					+ "<addEdgeResponse id='"
+					+ eventID
+					+ "' left='"
+					+ left
+					+ "' right='"
+					+ right
+					+ "' height='" + height + "'/></response>"));		
+			System.out.println("Responding: " + retVal);
+			return retVal;	
 		}
 		else 
 		{
@@ -98,8 +114,7 @@ public class AddEdgeController implements IProtocolHandler
 						}
 					}
 				}
-				else
-					; //TODO implement for ASYNCHRONOUS
+				user.decrementEdgesRemaining();
 
 				// generate success message
 				xmlString = new String(Message.responseHeader(request.id())
@@ -123,7 +138,7 @@ public class AddEdgeController implements IProtocolHandler
 			else if (re == 2)
 			{
 				// generate failure message since the status of DLE is finished
-				return new Message(new String(Message.responseHeader(request.id(),
+				Message retVal = new Message(new String(Message.responseHeader(request.id(),
 						"The Event is already finished")
 						+ "<addEdgeResponse id='"
 						+ eventID
@@ -132,11 +147,13 @@ public class AddEdgeController implements IProtocolHandler
 						+ "' right='"
 						+ right
 						+ "' height='" + height + "'/></response>"));
+				System.out.println("Responding: " + retVal);
+				return retVal;
 			}
 			else if (re == 3)
 			{
 				// generate failure message since the height is invalid
-				return new Message(new String(Message.responseHeader(request.id(),
+				Message retVal = new Message(new String(Message.responseHeader(request.id(),
 						"The Edge is too close to others")
 						+ "<addEdgeResponse id='"
 						+ eventID
@@ -147,12 +164,14 @@ public class AddEdgeController implements IProtocolHandler
 						+ "' height='"
 						+ height
 						+ "'/></response>"));
+				System.out.println("Responding: " + retVal);
+				return retVal;
 			}
 			else if (re == 4)
 			{
 				// generate failure message since left Choice is not to the left of
 				// the right Choice
-				return new Message(new String(Message.responseHeader(request.id(),
+				Message retVal = new Message(new String(Message.responseHeader(request.id(),
 						"Designated left and right choices are not adjacent")
 						+ "<addEdgeResponse id='"
 						+ eventID
@@ -163,6 +182,8 @@ public class AddEdgeController implements IProtocolHandler
 						+ "' height='"
 						+ height
 						+ "'/></response>"));
+				System.out.println("Responding: " + retVal);
+				return retVal;
 			}
 		}
 		/*
@@ -173,41 +194,96 @@ public class AddEdgeController implements IProtocolHandler
 		 */
 
 		//response = new Message(xmlString);
-		Message broadcastEdgeResponse = new Message(xmlString);
+		Message msgEdgeResponse = new Message(xmlString);
 		
-		// broadcast
-		for(int i = 0; i < dle.getUsers().size(); i++) {
-			if (!dle.getUsers().get(i).getClientStateId().equals("")) {
-				//TODO verify if the turnResponse is sent before or after the addEdgeResponse 
-				//Which ever one is sent last has to be returned to the client
+		if (dle.getBehavior() == Behavior.ROUNDROBIN) {
+			for(int i = 0; i < dle.getUsers().size(); i++) {
+				String localClientId = dle.getUsers().get(i).getClientStateId();
 				
-				// send to all but the requesting client
-				if (!dle.getUsers().get(i).getClientStateId().equals(state.id())) {
-					System.out.println("Broadcast: " + xmlString);
-					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(broadcastEdgeResponse);
+				if (localClientId.equals("")) {
+					; //ignore, no connected client
 				}
-
-				if (dle.getEventType() == EventType.FINISHED) {
-					// Event finished, send to everyone
-					String turnBroadcast = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
-							"<turnResponse completed='true'/>" + 
-							"</response>";
-					System.out.println("Broadcast: " + turnBroadcast);
-					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(turnBroadcast));
+				else if (dle.getEventType() == EventType.FINISHED) {
+					//Broadcast EdgeResponse to everyone 
+					System.out.println("Out of Sync: " + msgEdgeResponse);
+					Server.getState(localClientId).sendMessage(msgEdgeResponse);
+					
+					//But send the turn response to everyone except the requesting client
+					if (!localClientId.equals(state.id())) {
+						Message turnResponse = new Message(Message.responseHeader(localClientId) + 
+								"<turnResponse completed='true'/></response>");
+						System.out.println("Out of Sync: " + turnResponse);
+						Server.getState(localClientId).sendMessage(turnResponse);
+					}
 				}
-				else if (dle.getUsers().get(i).equals(dle.getCurrentTurn()) && dle.getBehavior() == Behavior.ROUNDROBIN) {
-					// not finished, notify next player
-					String turnIndividual  = Message.responseHeader(dle.getUsers().get(i).getClientStateId()) + 
-							"<turnResponse completed='false'/>" + 
-							"</response>";
-					System.out.println("Out of Sync message: " + turnIndividual);
-					Server.getState(dle.getUsers().get(i).getClientStateId()).sendMessage(new Message(turnIndividual));
+				else {
+					// Broadcast the EdgeResponse to everyone except the requesting client
+					if (!localClientId.equals(state.id())) {
+						System.out.println("Out of Sync: " + msgEdgeResponse);
+						Server.getState(localClientId).sendMessage(msgEdgeResponse);
+					}
+					
+					// send turn response to next player
+					 if (dle.getUsers().get(i).equals(dle.getCurrentTurn())) {
+						String turnIndividual  = Message.responseHeader(localClientId) + 
+								"<turnResponse completed='false'/>" + 
+								"</response>";
+						System.out.println("Out of Sync: " + turnIndividual);
+						Server.getState(localClientId).sendMessage(new Message(turnIndividual));
+					}
 				}
 			}
 		}
+		else { // Asynchronous
+			if (dle.getEventType() == EventType.FINISHED) 
+				asynchronousFinishWrapup(state.id());
+			// else do nothing
+		}
+		
+		// the final message returned back to the calling client
+		if (dle.getEventType() == EventType.FINISHED) 
+			response = new Message(Message.responseHeader(state.id()) + "<turnResponse completed='true'/></response>");
+		else // respond with the edge response
+			response = msgEdgeResponse;
 
-		// this will change to whatever message is last send to the originating client.
-		response = broadcastEdgeResponse;
+		System.out.println("Responding: " + response);
 		return response;
+	}
+	
+	private void asynchronousFinishWrapup(String requestingClientId) {
+		Edge tmpEdge;
+		String xmlString;
+		Message xmlMessage;
+		
+		// Flood out AddEdgeResponse messages
+		for (int a = 0; a < dle.getEdges().size(); a++) { // Iterate through each edge...
+			tmpEdge = dle.getEdges().get(a);
+			
+			for(int i = 0; i < dle.getUsers().size(); i++) { // ...and each client
+				String localClientId = dle.getUsers().get(i).getClientStateId();
+				
+				if (!localClientId.equals("")) {
+					xmlString = new String(Message.responseHeader(localClientId)
+							+ "<addEdgeResponse id='" + dle.getUniqueId() + "' left='" + tmpEdge.getLeftChoice().getOrder()
+							+ "' right='" + tmpEdge.getRightChoice().getOrder() + "' height='" + tmpEdge.getHeight()
+							+ "'/></response>");			
+					xmlMessage = new Message(xmlString);
+					System.out.println("Out of sync: " + xmlMessage);
+					Server.getState(localClientId).sendMessage(xmlMessage);
+				}
+			}
+		}
+			
+		// and send out turnResponse messages to all but the requesting client.
+		for(int i = 0; i < dle.getUsers().size(); i++) {
+			String localClientId = dle.getUsers().get(i).getClientStateId();
+
+			if (!localClientId.equals(requestingClientId) && !localClientId.equals("")) {
+				xmlString = Message.responseHeader(localClientId) + "<turnResponse completed='true'/></response>";
+				xmlMessage = new Message(xmlString);
+				System.out.println("Out of sync: " + xmlMessage);
+				Server.getState(localClientId).sendMessage(xmlMessage);
+			}
+		}
 	}
 }

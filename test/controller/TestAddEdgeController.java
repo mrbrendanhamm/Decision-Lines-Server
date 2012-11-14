@@ -41,11 +41,11 @@ public class TestAddEdgeController extends TestCase
 		aec = new AddEdgeController();
 		model = Model.getInstance();
 		dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
-		user1 = new User("A","B",1);
+		user1 = new User("A","B",1,3);
 		user1.setClientStateId("c1");
-		user2 = new User("C","D",2);
+		user2 = new User("C","D",2,3);
 		user2.setClientStateId("c2");
-		user3 = new User("E","F",3);
+		user3 = new User("E","F",3,3);
 		user3.setClientStateId("c3");
 		dle.addUser(user1);
 		dle.addUser(user2);

@@ -23,6 +23,8 @@ public class SignIntoDLEController implements IProtocolHandler {
 	String myEventId;
 	String clientIdToServer;
 	String myVersion;
+	String userName;
+	String userPassword;
 	DecisionLineEvent myDLE;
 	User newUser;
 	
@@ -66,6 +68,9 @@ public class SignIntoDLEController implements IProtocolHandler {
 		}
 		else
 			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
+		
+
+		newUser = new User(userName, userPassword, -1, myDLE.getNumberOfEdges());
 
 		boolean userAlreadyExists = false;
 		ArrayList<User> userList = myDLE.getUsers();
@@ -131,16 +136,13 @@ public class SignIntoDLEController implements IProtocolHandler {
 		myEventId = child.getAttributes().getNamedItem("id").getNodeValue();
 		
 		child = child.getFirstChild();
-		String userName = child.getAttributes().getNamedItem("name").getNodeValue();
-		String userPassword;
+		userName = child.getAttributes().getNamedItem("name").getNodeValue();
 		
 		if (child.getAttributes().getNamedItem("password") != null)
 			userPassword = child.getAttributes().getNamedItem("password").getNodeValue();
 		else
 			userPassword = new String("");
 		
-		newUser = new User(userName, userPassword, -1);
-
 		return true;
 	}	
 

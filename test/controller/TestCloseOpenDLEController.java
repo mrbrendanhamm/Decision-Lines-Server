@@ -58,9 +58,9 @@ public class TestCloseOpenDLEController extends TestCase {
 		dle.setDate(new java.util.Date());
 		
 		//create users
-		user1= new User("c1","pass1",0);
-		user2= new User("c2","pass1",1);
-		user3= new User("c3","pass1",2);
+		user1= new User("c1","pass1",0,3);
+		user2= new User("c2","pass1",1,3);
+		user3= new User("c3","pass1",2,3);
 		
 		//set user client state ids
 		user1.setClientStateId("c1");
@@ -100,9 +100,9 @@ public class TestCloseOpenDLEController extends TestCase {
 			dle.setDate(new java.util.Date());
 			
 			//create users
-			user1= new User("c1","pass1",0);
-			user2= new User("c2","pass1",1);
-			user3= new User("c3","pass1",2);
+			user1= new User("c1","pass1",0,3);
+			user2= new User("c2","pass1",1,3);
+			user3= new User("c3","pass1",2,3);
 			
 			//set user client state ids
 			user1.setClientStateId("c1");
@@ -142,9 +142,9 @@ public class TestCloseOpenDLEController extends TestCase {
 			dle.setDate(new java.util.Date());
 			
 			//create users
-			user1= new User("c1","pass1",0);
-			user2= new User("c2","pass1",1);
-			user3= new User("c3","pass1",2);
+			user1= new User("c1","pass1",0,3);
+			user2= new User("c2","pass1",1,3);
+			user3= new User("c3","pass1",2,3);
 			
 			//set user client state ids
 			user1.setClientStateId("c1");

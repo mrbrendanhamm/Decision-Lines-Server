@@ -80,7 +80,7 @@ public class CreateDLEController implements IProtocolHandler {
 		createdDLE = new DecisionLineEvent(myEventId, myQuestion, numOfChoices, numOfRounds, myType, myBehavior);
 		createdDLE.setModerator(moderator);
 		createdDLE.setDate(dleDate);
-		User newModerator = new User(moderator, moderatorPassword, 0);
+		User newModerator = new User(moderator, moderatorPassword, 0, numOfRounds);
 		createdDLE.setCurrentTurn(newModerator);
 		
 		//add the appropriate choices

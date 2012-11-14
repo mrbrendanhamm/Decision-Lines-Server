@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 public class DecisionLineEventTest extends TestCase
 {
 	private DecisionLineEvent DLE;
-	private User user = new User("A","B",1);
+	private User user = new User("A","B",1,3);
 	private Choice choice = new Choice("When to Eat", 1);
 	private Choice choice2 = new Choice("When to Meet", 2);
 	protected void setUp() throws Exception

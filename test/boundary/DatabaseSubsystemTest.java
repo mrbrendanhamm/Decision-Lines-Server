@@ -49,7 +49,7 @@ public class DatabaseSubsystemTest extends TestCase {
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		myDLE.getChoices().add(new Choice("Choice 1", 0, -1));
 		myDLE.getChoices().add(new Choice("Choice 2", 1, -1));
-		myDLE.getUsers().add(new User("azafty",  "", 0));
+		myDLE.getUsers().add(new User("azafty",  "", 0, 1));
 
 		boolean retval = DatabaseSubsystem.readEdges(myDLE);
 		
@@ -93,14 +93,14 @@ public class DatabaseSubsystemTest extends TestCase {
 		System.out.println("Testing read users");
 		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
 		
-		boolean retval = DatabaseSubsystem.readUsers(myDLE);
+		boolean retval = DatabaseSubsystem.readUsers(myDLE, 1);
 		
 		assertTrue(retval);
 	}
 	
 	public void testWriteUser() {
 		System.out.println("Testing write user");
-		User myUser = new User("azafty2", "", 0);
+		User myUser = new User("azafty2", "", 0, 1);
 		String myDLEId = new String("12345");
 		int retval = DatabaseSubsystem.writeUser(myUser, myDLEId);
 		assertTrue(retval > 0);
@@ -126,8 +126,8 @@ public class DatabaseSubsystemTest extends TestCase {
 		
 		DecisionLineEvent myEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
 		myEvent.setDate(new java.util.Date());
-		User newUser1 = new User("andrew1", "", 0);
-		User newUser2 = new User("andrew2", "", 1);
+		User newUser1 = new User("andrew1", "", 0, numOfEdges);
+		User newUser2 = new User("andrew2", "", 1, numOfEdges);
 		myEvent.getUsers().add(newUser1);
 		myEvent.getUsers().add(newUser2);
 		myEvent.setModerator(newUser1.getUser());

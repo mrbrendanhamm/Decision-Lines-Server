@@ -29,7 +29,7 @@ public class TestAddChoiceController extends TestCase
 		acc = new AddChoiceController();
 		model = Model.getInstance();
 		dle= new DecisionLineEvent("testID","testQuestion",3,3, EventType.OPEN, Behavior.ROUNDROBIN);
-		user = new User("A","B",1);
+		user = new User("A","B",1,3);
 		user.setClientStateId("c1");
 		dle.addUser(user);
 		model.getDecisionLineEvents().add(dle);

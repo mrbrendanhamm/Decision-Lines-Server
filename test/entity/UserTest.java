@@ -19,7 +19,7 @@ public class UserTest extends TestCase
 
 	public void testUserStringStringInt()
 	{
-		user = new User("A","123",1);
+		user = new User("A","123",1,3);
 		assert(user.getUser() == "A");
 		assert(user.getPassword() == "123");
 		assert(user.getPosition() == 1);
@@ -45,8 +45,8 @@ public class UserTest extends TestCase
 
 	public void testEqualsObject()
 	{
-		User user1 = new User("A","123",1);
-		User user2 = new User("B","123",1);
+		User user1 = new User("A","123",1,3);
+		User user2 = new User("B","123",1,3);
 		assert(user.equals(user1));
 		assert(!user.equals(user2));
 	}

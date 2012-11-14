@@ -8,6 +8,8 @@ public class User {
 	// The position of the player.  This value is used to determine the order of turns in RoundRobin
 	private int position;
 	
+	private int edgesRemaining; 
+	
 	// The id of the ClientState of a client who has connected to the DLE using a specific user name
 	private String clientStateId;
 	
@@ -26,11 +28,12 @@ public class User {
 	 * @param password - the Password of the User
 	 * @param position - the Position of the User
 	 */
-	public User(String userid, String password, int position)
+	public User(String userid, String password, int position, int edgesRemaining)
 	{
 		this.userid = userid;
 		this.password = password;
 		this.position = position;
+		this.edgesRemaining = edgesRemaining;
 		clientStateId = "";
 	}
 	
@@ -102,6 +105,17 @@ public class User {
 	 * @param position - the Position of User
 	 */
 	public void setPosition(int position) { this.position = position; }
+	
+	
+	public boolean canAddEdgeInAsynch() {
+		if (edgesRemaining <= 0) 
+			return false;
+		return true;
+	}
+	
+	public void decrementEdgesRemaining() {
+		edgesRemaining--;
+	}
 	
 	/**
 	 * This method sets the hash code used for hashing function.  May no longer be used as we have since moved away

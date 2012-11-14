@@ -263,7 +263,7 @@ public class DatabaseSubsystem {
 	 * @param readEvent - The event to have it's users read in
 	 * @return true if successful, false if any error is encountered
 	 */
-	public static boolean readUsers(DecisionLineEvent readEvent) { 
+	public static boolean readUsers(DecisionLineEvent readEvent, int playableEdges) { 
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT userName, userPassword, position from user where eventId=(?)");
 			pstmt.setString(1, readEvent.getUniqueId());
@@ -276,7 +276,7 @@ public class DatabaseSubsystem {
 				name = new String(myRS.getString("userName"));
 				password = new String(myRS.getString("userPassword"));
 				position = myRS.getInt("position");
-				newUser = new User(name, password, position);
+				newUser = new User(name, password, position, playableEdges);
 				readEvent.getUsers().add(newUser);
 			}
 
@@ -356,7 +356,7 @@ public class DatabaseSubsystem {
 			if (!readChoices(newDLE)) 
 				return null;
 
-			if (!readUsers(newDLE)) 
+			if (!readUsers(newDLE, newDLE.getNumberOfEdges())) 
 				return null;
 
 			if (!readEdges(newDLE)) 
