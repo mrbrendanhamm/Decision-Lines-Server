@@ -69,10 +69,10 @@ public class RemoveUserController implements IProtocolHandler{
 				String localClientId = dleID.getUsers().get(i).getClientStateId();
 
 				if (!localClientId.equals(clientId) && !localClientId.equals("")) {
-					xmlString = Message.responseHeader(localClientId) + xmlString;
-					xmlMessage = new Message(xmlString);
-					System.out.println("Broadcast: " + xmlMessage);
+					String xmlStringBroadcast = Message.responseHeader(localClientId) + xmlString;
+					xmlMessage = new Message(xmlStringBroadcast);
 					Server.getState(localClientId).sendMessage(xmlMessage);
+					System.out.println("Broadcast: " + xmlMessage);
 				}
 			}
 			
@@ -98,7 +98,6 @@ public class RemoveUserController implements IProtocolHandler{
 		//Check the userList for the one to kick and kick if exists
 		for (User user: userList){
 			if (user.getUser().equals(user2Kick)){
-				System.out.println("Kick:"+user.getUser());
 				success=dleID.removeUser(user);
 				break;
 			}
@@ -135,7 +134,7 @@ public class RemoveUserController implements IProtocolHandler{
 
 
 	private String createFailureString(String reason) {
-		String retVal = Message.responseHeader(clientId,reason)+"<kickResponse completed='false'/>/response>";
+		String retVal = Message.responseHeader(clientId,reason)+"<kickResponse completed='false'/></response>";
 		
 		return retVal;
 	}
