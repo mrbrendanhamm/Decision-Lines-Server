@@ -562,4 +562,16 @@ public class DecisionLineEvent {
 		
 		return false;
 	}
+
+	public Boolean removeUser(User user) {
+		Boolean retVal = false;
+		for (int i=0; i<=this.users.size();i++){
+			if(this.users.get(i).equals(user)){
+				this.users.remove(i);
+				retVal=true;
+			}
+		}
+		
+		return retVal;
+	}
 }

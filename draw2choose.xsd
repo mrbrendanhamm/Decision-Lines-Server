@@ -99,6 +99,7 @@
       <xs:element ref='connectRequest'/>
       <xs:element ref='createRequest'/>
       <xs:element ref='forceRequest'/>
+      <xs:element ref='kickRequest'/>
       <xs:element ref='removeRequest'/>
       <xs:element ref='reportRequest'/>
       <xs:element ref='signInRequest'/>
@@ -338,6 +339,29 @@
     <xs:attribute name='completed'  type='xs:boolean' use='optional'/>
   </xs:complexType>
 </xs:element>
+
+
+<!--  Kick User Request [must be round robin] -->
+<!-- _______________________ -->
+
+<xs:element name='kickRequest'> 
+  <xs:complexType>
+    <!-- remove a user from this event -->
+    <xs:attribute name='id'   type='xs:string' use='optional'/>
+
+    <!-- remove user from this event id. -->
+    <xs:attribute name='user'      type='xs:string' use='required'/>
+
+  </xs:complexType>
+</xs:element>
+
+<!-- client receives this [in fact everyone gets this] -->
+<xs:element name='kickResponse'>
+  <xs:complexType>
+    <xs:attribute name='completed'  type='xs:boolean' use='optional'/>
+  </xs:complexType>
+</xs:element>
+
 
 </xs:schema>
 
