@@ -74,6 +74,7 @@
       <xs:element ref='connectResponse'/>
       <xs:element ref='createResponse'/>
       <xs:element ref='forceResponse'/>
+      <xs:element ref='kickResponse'/>
       <xs:element ref='joinResponse'/>
       <xs:element ref='removeResponse'/>
       <xs:element ref='reportResponse'/>

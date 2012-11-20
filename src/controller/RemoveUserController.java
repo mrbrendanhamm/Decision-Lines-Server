@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 
 import entity.DecisionLineEvent;
 import entity.DecisionLineEvent.Behavior;
+import entity.DecisionLineEvent.EventType;
 import entity.Model;
 import entity.User;
 import server.ClientState;
@@ -48,12 +49,13 @@ public class RemoveUserController implements IProtocolHandler{
 		String user2Kick = child.getAttributes().getNamedItem("user").getNodeValue();
 		
 		//Get the DLE from model
-		DecisionLineEvent dleID = myModel.getDecisionLineEvent(dleString);
+		dleID = myModel.getDecisionLineEvent(dleString);
 		userList = dleID.getUsers();
+		
 		
 		//Check if DLE is Round Robin. Proceed if it is, generate failure otherwise
 		if (dleID.getBehavior().equals(Behavior.ROUNDROBIN)){
-			xmlString = kickUser(state,user2Kick);
+			xmlString = kickUser(user2Kick);
 		}
 		else {
 			reason = "Event is not RoundRobin";
@@ -86,16 +88,23 @@ public class RemoveUserController implements IProtocolHandler{
 		return response;
 	}
 
-
-	private String kickUser(ClientState state, String user2Kick) {
+/**
+ * This method will access the dle to kick the specified user
+ * @param user2Kick
+ * @return
+ */
+	private String kickUser(String user2Kick) {
 		String retVal;
 		//Check the userList for the one to kick and kick if exists
 		for (User user: userList){
 			if (user.getUser().equals(user2Kick)){
+				System.out.println("Kick:"+user.getUser());
 				success=dleID.removeUser(user);
 				break;
 			}
 		}
+		
+		isCompleted = checkCompleted();
 		
 		//Generate strings corresponding to success/failure
 		if (success==true){
@@ -106,8 +115,23 @@ public class RemoveUserController implements IProtocolHandler{
 			retVal = createFailureString(reason);
 		}
 		
+		
 		return retVal;
 	}
+
+/**This method will check if the event has been finished
+ * 
+ * @return
+ */
+	private Boolean checkCompleted() {
+		Boolean retVal = false;
+		
+		if (dleID.getEventType().equals(EventType.FINISHED))
+			retVal = true;
+		
+		return retVal;
+	}
+
 
 
 	private String createFailureString(String reason) {
