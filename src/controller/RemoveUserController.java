@@ -32,6 +32,13 @@ public class RemoveUserController implements IProtocolHandler{
 
 
 	@Override
+	/** 
+	 * This method takes a kickRequest, removes the user from the dle
+	 * if it is Round Robin and the user exists.  The success return
+	 * message is broadcasted to all users of the event.
+	 * Returns a failure response only to the moderator in the event
+	 * type is Asynchronous or if user is not in the specified DLE.
+	 */
 	public Message process(ClientState state, Message request) {
 		String xmlString=null;
 		//print the request
@@ -132,7 +139,11 @@ public class RemoveUserController implements IProtocolHandler{
 	}
 
 
-
+/** This method creates a failure response with the reason provided it
+ * 
+ * @param reason
+ * @return
+ */
 	private String createFailureString(String reason) {
 		String retVal = Message.responseHeader(clientId,reason)+"<kickResponse completed='false'/></response>";
 		
