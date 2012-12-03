@@ -17,6 +17,29 @@ public class ApplicationMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		int portNum;
+		
+		if (args.length < 1) {
+			System.out.println("Using default port:9371");
+			portNum = 9371;
+		}
+		else {
+			System.out.println("Configuring to use port: " + args[0]);
+			portNum = Integer.parseInt(args[0]);
+		}
+		
+		if (args.length < 2) {
+			System.out.println("Using default Test database connection");
+			DatabaseSubsystem.configurationTestDBAccess();
+		}
+		else if (args[1].equals("-p")) {
+			System.out.println("Using specified Production database connection");
+			DatabaseSubsystem.configurationProductionDBAccess();
+		}
+		else {
+			System.out.println("Using default Test database connection");
+			DatabaseSubsystem.configurationTestDBAccess();
+		}
 		
 		/**
 		 *  Code taken directly and nearly completely from Professor Heineman's Project: ClientServerEBC, 
@@ -34,7 +57,7 @@ public class ApplicationMain {
 		}
 		
 		// Start server and have ProtocolHandler be responsible for all XML messages.
-		Server server = new Server(new DefaultProtocolHandler(), 9371);
+		Server server = new Server(new DefaultProtocolHandler(), portNum);
 	
 		try {
 			server.bind();
