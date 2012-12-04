@@ -75,6 +75,8 @@ public class Model {
 	 */
 	public DecisionLineEvent getDecisionLineEvent(String uniqueId)
 	{
+		if (decisionLineEvents == null)
+			return null;
 		for(DecisionLineEvent DLE : this.decisionLineEvents)
 		{
 			if(DLE.getUniqueId().equals(uniqueId))

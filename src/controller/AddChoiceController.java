@@ -50,6 +50,17 @@ public class AddChoiceController implements IProtocolHandler
 		String eventID = new String(child.getAttributes().getNamedItem("id")
 				.getNodeValue());
 		DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+		
+		if (dle == null) {
+			dle = DatabaseSubsystem.readDecisionLineEvent(eventID);
+			if (dle == null) {
+				return new Message(new String(Message.responseHeader(request.id(),
+						"Decision Line Event does not exist")
+						+ "<addChoiceResponse id='" + eventID + "' number='0' choice=''/></response>"));
+			}
+			model.getDecisionLineEvents().add(dle);
+		}
+		
 		// get User
 		User user = dle.getUserFromClientId(clientId);
 		// get Choice of event

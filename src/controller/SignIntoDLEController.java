@@ -22,7 +22,7 @@ import xml.Message;
 public class SignIntoDLEController implements IProtocolHandler {
 	String myEventId;
 	String clientIdToServer;
-	String myVersion;
+	//String myVersion;
 	String userName;
 	String userPassword;
 	DecisionLineEvent myDLE;
@@ -33,7 +33,6 @@ public class SignIntoDLEController implements IProtocolHandler {
 	 */
 	public SignIntoDLEController() {
 		myEventId = new String("");
-		myVersion = new String("");
 	}
 
 	
@@ -128,7 +127,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 	 * @return true if successfully parsed
 	 */
 	boolean parseMessage(Message request) {
-		myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
+		//myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
 		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 		
 		Node child = request.contents.getFirstChild();
@@ -172,7 +171,7 @@ public class SignIntoDLEController implements IProtocolHandler {
 	 */
 	Message writeSuccessResponse() {
 		String xmlString = Message.responseHeader(clientIdToServer) +
-				"<signInResponse id='" + myDLE.getUniqueId() + "' ";
+				"<signInResponse id='" + myEventId + "' ";
 		if (myDLE.getEventType() == EventType.CLOSED || myDLE.getEventType() == EventType.FINISHED)
 			xmlString = xmlString + "type='closed' ";
 		else
@@ -213,27 +212,35 @@ public class SignIntoDLEController implements IProtocolHandler {
 	 * @return a properly formatted XML response
 	 */
 	Message writeFailureResponse(String reason) {
-		String xmlString = Message.responseHeader(clientIdToServer, reason) + 
-				"<signInResponse id='" + myDLE.getUniqueId() + "' ";
-		if (myDLE.getEventType() == EventType.CLOSED || myDLE.getEventType() == EventType.FINISHED)
-			xmlString = xmlString + "type='closed' ";
-		else
-			xmlString = xmlString + "type='open' ";
-
-		if (myDLE.getBehavior() == Behavior.ROUNDROBIN)
-			xmlString = xmlString + "behavior='roundRobin' ";
-		else
-			xmlString = xmlString + "behavior='asynchronous' ";
-
-		xmlString = xmlString + "question='" + myDLE.getQuestion() + "' " +
-				" numChoices='" + myDLE.getNumberOfChoices() + "' numRounds='" + myDLE.getNumberOfEdges() + "' " +
-				"position='" + newUser.getPosition() + "'>"; 
-		
-		for (int i = 0; i < myDLE.getChoices().size(); i++) {
-			Choice tmpChoice = myDLE.getChoices().get(i);
-			xmlString = xmlString + "<choice value='" + tmpChoice.getName() + "' index='" + tmpChoice.getOrder() + "'/>";
+		String xmlString;
+		if (myDLE == null) {
+			xmlString = Message.responseHeader(clientIdToServer, reason) + 
+					"<signInResponse id='" + myEventId + "' type='closed' behavior='roundRobin' question='question' " +
+					"numChoices='0' numRounds='1' position='0'/></response>";
 		}
-		xmlString = xmlString + "</signInResponse></response>";
+		else {
+			xmlString = Message.responseHeader(clientIdToServer, reason) + 
+					"<signInResponse id='" + myDLE.getUniqueId() + "' ";
+			if (myDLE.getEventType() == EventType.CLOSED || myDLE.getEventType() == EventType.FINISHED)
+				xmlString = xmlString + "type='closed' ";
+			else
+				xmlString = xmlString + "type='open' ";
+	
+			if (myDLE.getBehavior() == Behavior.ROUNDROBIN)
+				xmlString = xmlString + "behavior='roundRobin' ";
+			else
+				xmlString = xmlString + "behavior='asynchronous' ";
+	
+			xmlString = xmlString + "question='" + myDLE.getQuestion() + "' " +
+					" numChoices='" + myDLE.getNumberOfChoices() + "' numRounds='" + myDLE.getNumberOfEdges() + "' " +
+					"position='" + newUser.getPosition() + "'>"; 
+			
+			for (int i = 0; i < myDLE.getChoices().size(); i++) {
+				Choice tmpChoice = myDLE.getChoices().get(i);
+				xmlString = xmlString + "<choice value='" + tmpChoice.getName() + "' index='" + tmpChoice.getOrder() + "'/>";
+			}
+			xmlString = xmlString + "</signInResponse></response>";
+		}
 		System.out.println("Error Response: " + xmlString);
 		return new Message(xmlString);
 	}

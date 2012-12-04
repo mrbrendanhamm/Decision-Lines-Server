@@ -51,6 +51,8 @@ public class ServerThread extends Thread implements ClientState {
 		if (!child.getLocalName().equals (Parser.connectRequest)) {
 			return;
 		}
+		
+		System.out.println("Receiving: " + m);
 
 		// Return connect response with our (statistically) unique ID.
 		String xmlString = Message.responseHeader(m.id()) + "<connectResponse id='" + id + "'/></response>";
