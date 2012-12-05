@@ -30,7 +30,6 @@ public class CreateDLEController implements IProtocolHandler {
 	String moderator;
 	String moderatorPassword;
 	String myEventId;
-	String myVersion;
 	String clientIdToServer;
 	DecisionLineEvent createdDLE;
 	Date dleDate;
@@ -71,6 +70,8 @@ public class CreateDLEController implements IProtocolHandler {
 			return writeFailureResponse("Ensure that there can be at least 1 choice");
 		if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
 			return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
+		if (moderator == null) 
+			return writeFailureResponse("A Moderator must be included in the create request");
 		
 		//I generate the event Id and return it to the client.  probably something better than the massive UUID string
 		myEventId = UUID.randomUUID().toString();
@@ -100,7 +101,7 @@ public class CreateDLEController implements IProtocolHandler {
 		 * Register client so that future requests can use the clientIdServer to tie back to this user and determine when
 		 * there are no longer any users connected to a DLE 
 		 */
-		createdDLE.addClientConnection(newModerator.getUser(), clientIdToServer);
+		createdDLE.addClientConnection(newModerator.getUser(), state.id());
 		
 		return writeSuccessResponse(); //this specific message is sent back to the requesting client
 	}
@@ -116,7 +117,6 @@ public class CreateDLEController implements IProtocolHandler {
 	 * @return true if successfully parsed
 	 */
 	boolean parseMessage(Message request) {
-		myVersion = new String(request.contents.getAttributes().getNamedItem("version").getNodeValue());
 		clientIdToServer = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 
 		Node child = request.contents.getFirstChild();

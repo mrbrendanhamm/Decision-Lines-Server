@@ -22,7 +22,6 @@ import xml.Message;
 public class SignIntoDLEController implements IProtocolHandler {
 	String myEventId;
 	String clientIdToServer;
-	//String myVersion;
 	String userName;
 	String userPassword;
 	DecisionLineEvent myDLE;
@@ -48,7 +47,8 @@ public class SignIntoDLEController implements IProtocolHandler {
 	public synchronized Message process(ClientState state, Message request) {
 		// Initialize local variables
 		Model myModel = Model.getInstance();
-		
+
+		clientIdToServer = state.id();
 		// Read in the Request
 		if (!parseMessage(request)) {
 			//do error message
@@ -98,15 +98,18 @@ public class SignIntoDLEController implements IProtocolHandler {
 		}
 		
 		//associate ClientState with this event id
-		myDLE.addClientConnection(newUser.getUser(), clientIdToServer);
+		myDLE.addClientConnection(newUser.getUser(), state.id());
 		
 		//TODO what else do I have to verify?  Just that the user count isn't exceeded and the User/Password match?
 		
 		//notify all other connected clients that a new client is on board
 		for(int i = 0; i < userList.size(); i++) {
 			String processing = userList.get(i).getClientStateId();
-			if (!processing.equals(clientIdToServer) && !processing.equals("")) {
-				Server.getState(processing).sendMessage(writeJoinNotification(processing));
+			if (!processing.equals(state.id()) && !processing.equals("")) {
+				if (Server.getState(processing) == null)
+					System.out.println("Error, unrecognized client state id: " + processing);
+				else
+					Server.getState(processing).sendMessage(writeJoinNotification(processing));
 			}
 		}
 

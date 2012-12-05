@@ -16,6 +16,7 @@ public class ClientDisconnect {
 	 */
 	public synchronized boolean disconnectClient(String clientId) {
 		Model myModel = Model.getInstance();
+		System.out.println("Received: Client Disconnecting.  Id:" + clientId);
 		
 		for (int i = 0; i < myModel.getDecisionLineEvents().size(); ) {
 			//unregister the client from the decision line event
