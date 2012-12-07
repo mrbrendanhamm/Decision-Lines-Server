@@ -66,10 +66,10 @@ public class CreateDLEController implements IProtocolHandler {
 			return writeFailureResponse("Unrecognized event behavior");
 		if (numOfRounds < 0)
 			return writeFailureResponse("Set at least 0 rounds of edge selection");
-		if (numOfChoices < 1)
-			return writeFailureResponse("Ensure that there can be at least 1 choice");
-		if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
-			return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
+		//if (numOfChoices < 1)
+		//	return writeFailureResponse("Ensure that there can be at least 1 choice");
+		//if (myType == EventType.CLOSED && myChoices.size() != numOfChoices) 
+		//	return writeFailureResponse("Moderator must set every choice in a closed event prior to creating event");
 		if (moderator == null) 
 			return writeFailureResponse("A Moderator must be included in the create request");
 		
