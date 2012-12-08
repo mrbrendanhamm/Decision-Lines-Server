@@ -1,0 +1,8 @@
+user: groupramrod
+password: J7ww[P8q
+
+ssh 72.249.186.243 -l groupramrod
+
+
+
+scp azafty@ccc.wpi.edu:dls_server.jar 

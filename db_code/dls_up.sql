@@ -137,14 +137,3 @@ DELIMITER ;
 INSERT INTO administration (adminId, adminCredentials)
 VALUES ('andrew', MD5('andrew'));
 
-call procUpdateEvent('12345', 'hello world2', 6, 2, 1, 'andrew', 1, 
-'2012-11-02');
-call procUpdateEvent('23456', 'hello world2', 6, 2, 0, 'andrew', 1, 
-'2012-11-02');
-call procUpdateUser('12345', 'azafty', '', 0);
-call procUpdateChoice('12345', 0, 'Choice 1', -1);
-call procUpdateChoice('12345', 1, 'Choice 2', -1);
-call procUpdateEdge('12345', 10, 0);
-call procUpdateEvent('123456', 'hello world2', 6, 2, 1, 'andrew', 1, 
-'2012-10-02');
-
