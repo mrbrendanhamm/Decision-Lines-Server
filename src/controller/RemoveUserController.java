@@ -83,7 +83,10 @@ public class RemoveUserController implements IProtocolHandler{
 			// Update the turn if DLE is not completed and it was kicked user's turn
 			// and the user was successfully kicked
 			if (isCompleted == false  && wasKickUserTurn && success==true){
-				newTurn = userList.get(kickUserPos);
+				if (kickUserPos < userList.size()){
+					newTurn = userList.get(kickUserPos);
+				}
+				else newTurn = userList.get(0);
 				dleID.setCurrentTurn(newTurn);	
 				sendTurnResponse(newTurn);
 			}
