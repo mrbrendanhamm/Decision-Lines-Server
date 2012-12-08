@@ -401,7 +401,7 @@ public class DecisionLineEvent {
 	 */
 	boolean canAddChoice(int order)
 	{
-		return ((this.choices.size() <  this.numberOfChoices) && this.myType.equals(EventType.OPEN) && NotChoiceWithOrder(order));
+		return ((choices.size() < numberOfChoices) && NotChoiceWithOrder(order)); //myType.equals(EventType.OPEN) && 
 	}
 	
 	/**
@@ -425,6 +425,14 @@ public class DecisionLineEvent {
 		return re;
 	}
 
+	public void determineCurrentUsersTurn() {
+		if (getCurrentTurn() == null) {
+			int i = getEdges().size() % numberOfChoices;
+			User tmpU = getUsers().get(i);
+			setCurrentTurn(tmpU);
+		}
+	}
+	
 	
 	/**
 	 * This method is to add a new Choice into the ArrayList of Choice of the DLE.  If all choices are made then the event
@@ -435,10 +443,9 @@ public class DecisionLineEvent {
 	 */
 	public boolean addChoice(entity.Choice choice)
 	{
-		if(this.canAddChoice(choice.getOrder()))
+		if(canAddChoice(choice.getOrder()))
 		{
 			this.choices.add(choice);
-			
 
 			if (choices.size() == numberOfChoices) {
 				// change game from Open to Closed, and set the current player

@@ -401,7 +401,7 @@ public class DatabaseSubsystem {
 				}
 			}
 			
-			//TODO determine current user's turn
+			newDLE.determineCurrentUsersTurn();
 			
 			return newDLE;
 		} catch (SQLException e) {
@@ -459,6 +459,9 @@ public class DatabaseSubsystem {
 				if (writeUser(userList.get(i), writeEvent.getUniqueId()) < 0)
 					return -1; //errors while writing users
 			}
+			
+			if (writeEvent.getCurrentTurn() == null) 
+				writeEvent.determineCurrentUsersTurn();
 			
 			return retVal;
 		} catch (SQLException e) {

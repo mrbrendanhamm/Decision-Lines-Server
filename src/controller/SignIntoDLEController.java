@@ -67,7 +67,6 @@ public class SignIntoDLEController implements IProtocolHandler {
 		}
 		else
 			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
-		
 
 		newUser = new User(userName, userPassword, -1, myDLE.getNumberOfEdges());
 
@@ -86,7 +85,6 @@ public class SignIntoDLEController implements IProtocolHandler {
 			}
 		}
 		
-		
 		if (!userAlreadyExists) { //Create the user if they are new
 			if (userList.size() >= myDLE.getNumberOfChoices()) {
 				return writeFailureResponse("Error, maximum number of users exceeded!");
@@ -99,8 +97,6 @@ public class SignIntoDLEController implements IProtocolHandler {
 		
 		//associate ClientState with this event id
 		myDLE.addClientConnection(newUser.getUser(), state.id());
-		
-		//TODO what else do I have to verify?  Just that the user count isn't exceeded and the User/Password match?
 		
 		//notify all other connected clients that a new client is on board
 		for(int i = 0; i < userList.size(); i++) {
@@ -196,9 +192,9 @@ public class SignIntoDLEController implements IProtocolHandler {
 		
 		ArrayList<User> userList = myDLE.getUsers();
 		for (int i = 0; i < userList.size(); i++) {
-			if (!userList.get(i).equals(newUser)) {
+			//if (!userList.get(i).equals(newUser)) {
 				xmlString = xmlString + "<user name='" + userList.get(i).getUser() + "'/>";
-			}	
+			//}	
 		}
 				
 		xmlString = xmlString + "</signInResponse></response>";

@@ -38,15 +38,25 @@ public class AddEdgeController implements IProtocolHandler
 		Model model = Model.getInstance();
 		Node child = request.contents.getFirstChild();
 
-		// get clientId of User
-		String clientId = new String(request.contents.getAttributes()
-				.getNamedItem("id").getNodeValue());
 		// get ID of event and the DLE
 		String eventID = new String(child.getAttributes().getNamedItem("id")
 				.getNodeValue());
 		dle = model.getDecisionLineEvent(eventID);
+		
+		if (dle == null) {
+			dle = DatabaseSubsystem.readDecisionLineEvent(eventID);
+			if (dle == null) {
+				Message newMsg = new Message(new String(Message.responseHeader(request.id(),
+						"Decision Line Event does not exist")
+						+ "<addChoiceResponse id='" + eventID + "' number='0' choice=''/></response>")); 
+				System.out.println("Error: " + newMsg);
+				return newMsg;
+			}
+			model.getDecisionLineEvents().add(dle);
+		}
+		
 		// get User
-		User user = dle.getUserFromClientId(clientId);
+		User user = dle.getUserFromClientId(state.id());
 		// get leftChoice of the Edge
 		int left = Integer.valueOf(child.getAttributes().getNamedItem("left")
 				.getNodeValue());
@@ -59,6 +69,15 @@ public class AddEdgeController implements IProtocolHandler
 		// get the left and right Choices from DLE
 		Choice leftChoice = dle.getChoice(left);
 		Choice rightChoice = dle.getChoice(right);
+		
+		if (leftChoice == null || rightChoice == null) {
+			Message newMsg = new Message(new String(Message.responseHeader(request.id(),
+					"Invalid left or right edge")
+					+ "<addChoiceResponse id='" + eventID + "' number='0' choice=''/></response>")); 
+			System.out.println("Error: " + newMsg);
+			return newMsg;			
+		}
+		
 		// create the new Edge
 		Edge edge = new Edge(leftChoice, rightChoice, height);
 

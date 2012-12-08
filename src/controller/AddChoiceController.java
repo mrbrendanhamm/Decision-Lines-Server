@@ -54,15 +54,17 @@ public class AddChoiceController implements IProtocolHandler
 		if (dle == null) {
 			dle = DatabaseSubsystem.readDecisionLineEvent(eventID);
 			if (dle == null) {
-				return new Message(new String(Message.responseHeader(request.id(),
+				Message newMsg = new Message(new String(Message.responseHeader(request.id(),
 						"Decision Line Event does not exist")
-						+ "<addChoiceResponse id='" + eventID + "' number='0' choice=''/></response>"));
+						+ "<addChoiceResponse id='" + eventID + "' number='0' choice=''/></response>")); 
+				System.out.println("Error: " + newMsg);
+				return newMsg;
 			}
 			model.getDecisionLineEvents().add(dle);
 		}
 		
 		// get User
-		User user = dle.getUserFromClientId(clientId);
+		User user = dle.getUserFromClientId(state.id());
 		// get Choice of event
 		String choiceString = new String(child.getAttributes()
 				.getNamedItem("choice").getNodeValue());
@@ -78,17 +80,19 @@ public class AddChoiceController implements IProtocolHandler
 		 * order is a valid order number(no Choice with the same order exists 
 		 * and the order number equal to User's position)
 		 */
-		if (user.getPosition() != order)
+		if (user.getPosition() != order && user.getPosition() != 0)
 		{
-			// generate failure message since User's position is not equal to
-			// Choice's order
-			return new Message(new String(Message.responseHeader(request.id(),
+			Message newMsg = new Message(new String(Message.responseHeader(request.id(),
 					"Cannot add Choice for other Users")
 					+ "<addChoiceResponse id='"
 					+ eventID
 					+ "' number='"
 					+ order
 					+ "' choice='" + choiceString + "'/></response>"));
+			// generate failure message since User's position is not equal to
+			// Choice's order
+			System.out.println("Error: " + newMsg);
+			return  newMsg;
 		}
 		else if (dle.addChoice(choice))
 		{
@@ -105,8 +109,7 @@ public class AddChoiceController implements IProtocolHandler
 		}
 		else
 		{
-			// generate failure message
-			return new Message(new String(Message.responseHeader(request.id(),
+			Message newMsg = new Message(new String(Message.responseHeader(request.id(),
 					"Cannot add Choice anymore")
 					+ "<addChoiceResponse id='"
 					+ eventID
@@ -114,12 +117,9 @@ public class AddChoiceController implements IProtocolHandler
 					+ order
 					+ "' choice='"
 					+ choiceString + "'/></response>"));
+			System.out.println("Error: " + newMsg);
+			return newMsg;
 		}
-
-		// how do we determine when all choices have been created? what is the
-		// mechanism (turnResponse?)?
-		// should this dle be converted to closed? If so, how do we notify users
-		// of this? How do we notify users of the current turn?
 
 		System.out.print("Broadcast to all clients: " + xmlString);
 		response = new Message(xmlString);
@@ -130,6 +130,8 @@ public class AddChoiceController implements IProtocolHandler
 				Server.getState(processing).sendMessage(response);
 			}
 		}
+		
+		System.out.println(response);
 		
 		return response;
 	}
