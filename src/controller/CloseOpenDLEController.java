@@ -50,6 +50,17 @@ public class CloseOpenDLEController implements IProtocolHandler{
 		
 		//check that the DLE is currently loaded in memory, aka is this a valid identifier?
 		myDLE = model.getDecisionLineEvent(dleID);
+		if (myDLE == null){
+			myDLE = DatabaseSubsystem.readDecisionLineEvent(dleID);
+			if (myDLE == null){
+				reason = "DLE does not exist";
+				GenerateFailureMessage(request.id());
+			}
+			model.getDecisionLineEvents().add(myDLE);
+			
+		}
+		
+		
 		moderator = myDLE.getModerator();	
 		userList = myDLE.getUsers();
 		

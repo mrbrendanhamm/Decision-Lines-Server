@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
+import boundary.DatabaseSubsystem;
+
 import entity.DecisionLineEvent;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
@@ -79,6 +81,7 @@ public class RemoveUserController implements IProtocolHandler{
 			else wasKickUserTurn=false;
 			
 			xmlString = kickUser(user2Kick);
+			DatabaseSubsystem.writeDecisionLineEvent(dleID);
 			
 			// Update the turn if DLE is not completed and it was kicked user's turn
 			// and the user was successfully kicked

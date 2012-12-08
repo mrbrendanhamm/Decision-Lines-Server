@@ -49,6 +49,13 @@ public class ForceFinishController implements IProtocolHandler
 			String eventID = new String(child.getAttributes()
 					.getNamedItem("id").getNodeValue());
 			DecisionLineEvent dle = model.getDecisionLineEvent(eventID);
+			if (dle==null){
+				dle = DatabaseSubsystem.readDecisionLineEvent(eventID);
+				if (dle!=null){
+					model.getDecisionLineEvents().add(dle);
+				}
+			}
+			
 			// validate that this DLE exists
 			if (dle != null)
 			{
