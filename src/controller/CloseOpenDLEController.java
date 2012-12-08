@@ -89,7 +89,7 @@ public class CloseOpenDLEController implements IProtocolHandler{
 				if(isSuccess) response = GenerateSuccessMessage(user.getClientStateId());
 				else response = GenerateFailureMessage(user.getClientStateId());
 				Server.getState(user.getClientStateId()).sendMessage(response);
-				System.out.println("Response:"+response);
+				System.out.println("Broadcast :"+response);
 			}
 		}
 		// <turnResponse> needs to be generated and sent to various clients depending on Round Robin/Asynchronous 

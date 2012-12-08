@@ -1,5 +1,7 @@
 package controller;
 
+import org.w3c.dom.Node;
+
 import server.MockClient;
 import server.Server;
 import xml.Message;
@@ -83,7 +85,9 @@ public class TestCloseOpenDLEController extends TestCase {
 		Message request = new Message(xmlString);
 		
 		Message response = myController.process(client1, request);
-		assertTrue(!(response.toString()==null));
+		String success = response.contents.getAttributes().getNamedItem("success").getNodeValue();
+
+		assertTrue(success.equals("true"));
 	}
 	
 	//This will test whether we get a success closing a closed DLE
@@ -125,7 +129,11 @@ public class TestCloseOpenDLEController extends TestCase {
 			Message request = new Message(xmlString);
 			
 			Message response = myController.process(client1, request);
-			assertTrue(!(response.toString()==null));
+			
+			String reason = response.contents.getAttributes().getNamedItem("reason").getNodeValue();
+
+			assertTrue(reason.equals("Event already closed"));
+
 		}
 	
 		//This will test whether we get a success closing an open DLE
@@ -167,6 +175,8 @@ public class TestCloseOpenDLEController extends TestCase {
 			Message request = new Message(xmlString);
 			
 			Message response = myController.process(client1, request);
-			assertTrue(!(response.toString()==null));
+			String reason = response.contents.getAttributes().getNamedItem("reason").getNodeValue();
+
+			assertTrue(reason.equals("Event already finished"));
 		}
 }
