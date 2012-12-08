@@ -54,10 +54,13 @@ public class SignIntoDLEController implements IProtocolHandler {
 			//do error message
 			return null;
 		}
+		myEventId = myEventId.trim();
 		
 		//is it already in the model?
-		int indexOf = myModel.getDecisionLineEvents().indexOf(new DecisionLineEvent(myEventId));
-		if (indexOf < 0) { //doesn't exist in the model yet.  Read from DB
+		myDLE = myModel.getDecisionLineEvent(myEventId);
+		
+		
+		if (myDLE == null) { //doesn't exist in the model yet.  Read from DB
 			myDLE = DatabaseSubsystem.readDecisionLineEvent(myEventId);
 			
 			if (myDLE == null) //not found in DB, return failure
@@ -65,8 +68,6 @@ public class SignIntoDLEController implements IProtocolHandler {
 			
 			myModel.getDecisionLineEvents().add(myDLE);
 		}
-		else
-			myDLE = Model.getInstance().getDecisionLineEvents().get(indexOf);
 
 		newUser = new User(userName, userPassword, -1, myDLE.getNumberOfEdges());
 

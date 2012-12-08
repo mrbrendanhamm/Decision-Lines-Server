@@ -286,7 +286,7 @@ public class DatabaseSubsystem {
 	 */
 	public static boolean readUsers(DecisionLineEvent readEvent, int playableEdges) { 
 		try {
-			PreparedStatement pstmt = getConnection().prepareStatement("SELECT userName, userPassword, position from user where eventId=(?)");
+			PreparedStatement pstmt = getConnection().prepareStatement("SELECT userName, userPassword, position from user where eventId=(?) ORDER BY position ASC");
 			pstmt.setString(1, readEvent.getUniqueId());
 
 			ResultSet myRS = pstmt.executeQuery();

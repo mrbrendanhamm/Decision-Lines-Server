@@ -494,10 +494,10 @@ public class DecisionLineEvent {
 		// Go through the each Edge
 		for(Edge edge : this.edges)
 		{
-			// Check whethe the Edge is related to the Choice and below the height
+			// Check whether the Edge is related to the Choice and below the height
 			if(edge.hasChoice(order) && edge.getHeight() > height)
 			{
-				// Caulate the diff
+				// Calculate the diff
 				int diff = edge.getHeight() - height;
 				if(diff < min)
 				{
