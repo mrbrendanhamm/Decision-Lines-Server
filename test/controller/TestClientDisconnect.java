@@ -1,20 +1,26 @@
 package controller;
 
+import java.util.UUID;
+
 import server.ApplicationMain;
 import server.MockClient;
 import server.Server;
 import xml.Message;
 import boundary.DatabaseSubsystem;
 import boundary.DefaultProtocolHandler;
+import entity.Choice;
 import entity.ClearModelInstance;
 import entity.DecisionLineEvent;
+import entity.Edge;
 import entity.Model;
 import entity.User;
+import entity.DecisionLineEvent.Behavior;
+import entity.DecisionLineEvent.EventType;
 import junit.framework.TestCase;
 
 public class TestClientDisconnect extends TestCase {
 	MockClient client1, client2, client3;
-	//String dleId;
+	String parentDLEId;
 
 	
 	protected void setUp () {
@@ -36,7 +42,21 @@ public class TestClientDisconnect extends TestCase {
 		Server.register("c2", client2);
 		Server.register("c3", client3);
 		
-		//set DLE Id through creation of new DLE
+		parentDLEId = UUID.randomUUID().toString();
+		int numOfChoices = 4;
+		int numOfEdges = 3;
+		
+		DecisionLineEvent myEvent = new DecisionLineEvent(parentDLEId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
+		myEvent.setDate(new java.util.Date());
+		User newUser1 = new User("andrew1", "", 0, numOfEdges);
+		User newUser2 = new User("andrew2", "", 1, numOfEdges);
+		User newUser3 = new User("andrew3", "andrew", 2, numOfEdges);
+		myEvent.getUsers().add(newUser1);
+		myEvent.getUsers().add(newUser2);
+		myEvent.getUsers().add(newUser3);
+		myEvent.setModerator(newUser1.getUser());
+
+		DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		
 		ClearModelInstance.clearInstance();
 	}
@@ -45,6 +65,7 @@ public class TestClientDisconnect extends TestCase {
 		Server.unregister("c1");
 		Server.unregister("c2");
 		Server.unregister("c3");
+		DatabaseSubsystem.deleteEventById(parentDLEId);
 	}
 	
 	public void testDisconnectClient() {
@@ -57,8 +78,8 @@ public class TestClientDisconnect extends TestCase {
 		//use DLEId created above
 		
 		String testMessageSuccess = "<request version='1.0' id='" + client1.id().toString() + "'>" +
-				"  <signInRequest id='12345'>" +
-				"    <user name='azafty' password='' />" +
+				"  <signInRequest id='" + parentDLEId + "'>" +
+				"    <user name='andrew1' password='' />" +
 				"  </signInRequest>" +
 				"</request>";
 		Message msg = new Message(testMessageSuccess);
@@ -66,26 +87,21 @@ public class TestClientDisconnect extends TestCase {
 		tmpCont.process(client1,  msg);
 		
 		testMessageSuccess = "<request version='1.0' id='" + client2.id().toString() + "'>" +
-				"  <signInRequest id='12345'>" +
-				"    <user name='abra' password='andrew' />" +
+				"  <signInRequest id='" + parentDLEId + "'>" +
+				"    <user name='andrew2' password='' />" +
 				"  </signInRequest>" +
 				"</request>";
 		msg = new Message(testMessageSuccess);
 		myHandler.process(client1, msg);
 				
 		testMessageSuccess = "<request version='1.0' id='" + client3.id().toString() + "'>" +
-				"  <signInRequest id='12345'>" +
-				"    <user name='supra' password='' />" +
+				"  <signInRequest id='" + parentDLEId + "'>" +
+				"    <user name='andrew3' password='andrew' />" +
 				"  </signInRequest>" +
 				"</request>";
 		msg = new Message(testMessageSuccess);
 		myHandler.process(client1, msg);
 		
-		loadedEvent = myModel.getDecisionLineEvent("12345");
-		assertTrue(loadedEvent != null);
-		//TODO verify that the users are connected with the expected client states
-		
-		//delete DLEId
 		myHandler.logout(client1);
 		myHandler.logout(client2);
 		myHandler.logout(client3);

@@ -18,12 +18,16 @@ import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
 
 public class DatabaseSubsystemTest extends TestCase {
+	static String parentDLEId;
 
 	protected void setUp () {
 		if (!DatabaseSubsystem.connect()) {
 			System.out.println("Error, cannot connect to the database");
 			System.exit(0);
 		}
+		
+		if (parentDLEId == null) 
+			parentDLEId = UUID.randomUUID().toString();
 	}
 	
 	public void testConnection() {
@@ -44,87 +48,15 @@ public class DatabaseSubsystemTest extends TestCase {
 		assert(DatabaseSubsystem.isConnected());
 	}
 	
-	public void testReadEdges() {
-		System.out.println("Testing read edges");
-		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
-		myDLE.getChoices().add(new Choice("Choice 1", 0, -1));
-		myDLE.getChoices().add(new Choice("Choice 2", 1, -1));
-		myDLE.getUsers().add(new User("azafty",  "", 0, 1));
-
-		boolean retval = DatabaseSubsystem.readEdges(myDLE);
-		
-		assertTrue(retval);
-	}
-	
-	public void testWriteEdge() {
-		System.out.println("Testing write edges");
-		Choice myLeftChoice = new Choice("Choice 1", 0, -1);
-		Choice myRightChoice = new Choice("Choice 2", 1, -1);
-		int height = 16;
-		Edge myEdge = new Edge(myLeftChoice, myRightChoice, height);
-		String myDLEId = new String("12345");
-		
-		int retval = DatabaseSubsystem.writeEdge(myEdge, myDLEId);
-		
-		assertTrue(retval > 0);
-	}
-	
-	public void testReadChoices() {
-		System.out.println("Testing read choices");
-		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
-		
-		boolean retval = DatabaseSubsystem.readChoices(myDLE);
-		
-		assertTrue(retval);
-	}
-	
-	public void testWriteChoice() {
-		System.out.println("Testing write choices");
-		Choice myChoice = new Choice("Choice 3", 3, -1);
-		String myDLEId = new String("12345");
-		
-		int retval = DatabaseSubsystem.writeChoice(myChoice, myDLEId);
-		
-		assertTrue(retval > 0);
-	}
-	
-	public void testReadUsers() {
-		//minor change
-		System.out.println("Testing read users");
-		DecisionLineEvent myDLE = new DecisionLineEvent("12345");
-		
-		boolean retval = DatabaseSubsystem.readUsers(myDLE, 1);
-		
-		assertTrue(retval);
-	}
-	
-	public void testWriteUser() {
-		System.out.println("Testing write user");
-		User myUser = new User("azafty2", "", 0, 1);
-		String myDLEId = new String("12345");
-		int retval = DatabaseSubsystem.writeUser(myUser, myDLEId);
-		assertTrue(retval > 0);
-	}
-	
-	public void testReadDecisionLineEvent() {
-		//TODO how about sending it a badly formed finish event that needs to have the final order set?
-		//dont' forget to reset the unfinished status and unordered values when done
-		System.out.println("Testing read decisionlineevent");
-		String myDLEId = new String("12345");
-		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(myDLEId);
-		assertTrue(retval != null);
-		
-		retval = DatabaseSubsystem.readDecisionLineEvent("23456");
-		assertTrue(retval != null);
-	}
-	
 	public void testWriteDecisionLineEvent() {
 		System.out.println("Testing write decisionlineevent");
-		String uniqueId = UUID.randomUUID().toString();
 		int numOfChoices = 4;
 		int numOfEdges = 3;
 		
-		DecisionLineEvent myEvent = new DecisionLineEvent(uniqueId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
+		DatabaseSubsystem.configurationProductionDBAccess();
+		DatabaseSubsystem.configurationTestDBAccess();
+		
+		DecisionLineEvent myEvent = new DecisionLineEvent(parentDLEId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
 		myEvent.setDate(new java.util.Date());
 		User newUser1 = new User("andrew1", "", 0, numOfEdges);
 		User newUser2 = new User("andrew2", "", 1, numOfEdges);
@@ -132,10 +64,10 @@ public class DatabaseSubsystemTest extends TestCase {
 		myEvent.getUsers().add(newUser2);
 		myEvent.setModerator(newUser1.getUser());
 		
-		Choice newChoice1 = new Choice("Choice 1", 1, -1);
-		Choice newChoice2 = new Choice("Choice 2", 2, -1);
-		Choice newChoice3 = new Choice("Choice 3", 3, -1);
-		Choice newChoice4 = new Choice("Choice 4", 4, -1);
+		Choice newChoice1 = new Choice("Choice 1", 0, -1);
+		Choice newChoice2 = new Choice("Choice 2", 1, -1);
+		Choice newChoice3 = new Choice("Choice 3", 2, -1);
+		Choice newChoice4 = new Choice("Choice 4", 3, -1);
 		myEvent.getChoices().add(newChoice1);
 		myEvent.getChoices().add(newChoice2);
 		myEvent.getChoices().add(newChoice3);
@@ -154,12 +86,80 @@ public class DatabaseSubsystemTest extends TestCase {
 		int retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		
 		assertTrue(retval > 0);
+	}
+
+	public void testWriteEdge() {
+		System.out.println("Testing write edges");
+		Choice myLeftChoice = new Choice("Choice 1", 0, -1);
+		Choice myRightChoice = new Choice("Choice 2", 1, -1);
+		int height = 16;
+		Edge myEdge = new Edge(myLeftChoice, myRightChoice, height);
 		
-		//and while I'm at it, test delete an event
-		retval = DatabaseSubsystem.deleteEventById(uniqueId);
-		assertTrue(retval == 1);
+		int retval = DatabaseSubsystem.writeEdge(myEdge, parentDLEId);
+		
+		assertTrue(retval > 0);
 	}
 	
+	public void testWriteChoice() {
+		System.out.println("Testing write choices");
+		Choice myChoice = new Choice("Choice 3", 3, -1);
+		
+		int retval = DatabaseSubsystem.writeChoice(myChoice, parentDLEId);
+		
+		assertTrue(retval > 0);
+	}
+
+	public void testWriteUser() {
+		System.out.println("Testing write user");
+		User myUser = new User("azafty2", "", 0, 1);
+		int retval = DatabaseSubsystem.writeUser(myUser, parentDLEId);
+		assertTrue(retval > 0);
+	}
+	
+	public void testReadUsers() {
+		//minor change
+		System.out.println("Testing read users");
+		DecisionLineEvent myDLE = new DecisionLineEvent(parentDLEId);
+		
+		boolean retval = DatabaseSubsystem.readUsers(myDLE, 1);
+		
+		assertTrue(retval);
+	}
+	
+	public void testReadEdges() {
+		System.out.println("Testing read edges");
+		DecisionLineEvent myDLE = DatabaseSubsystem.readDecisionLineEvent(parentDLEId);
+
+		boolean retval = DatabaseSubsystem.readEdges(myDLE);
+		
+		assertTrue(retval);
+	}
+	
+	public void testReadChoices() {
+		System.out.println("Testing read choices");
+		DecisionLineEvent myDLE = new DecisionLineEvent(parentDLEId);
+		
+		boolean retval = DatabaseSubsystem.readChoices(myDLE);
+		
+		assertTrue(retval);
+	}
+	
+	public void testReadDecisionLineEvent() {
+		//TODO how about sending it a badly formed finish event that needs to have the final order set?
+		//dont' forget to reset the unfinished status and unordered values when done
+		System.out.println("Testing read decisionlineevent");
+		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(parentDLEId);
+		assertTrue(retval != null);
+		
+		retval = DatabaseSubsystem.readDecisionLineEvent(parentDLEId + "abc");
+		assertTrue(retval == null);
+		
+		//and while I'm at it, test delete an event
+		int deleteResult = DatabaseSubsystem.deleteEventById(parentDLEId);
+		assertTrue(deleteResult == 1);
+	}
+	
+
 	public void testDeleteEventByDate() {
 		System.out.println("Testing the delete by date function");
 		
