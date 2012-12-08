@@ -24,6 +24,11 @@ public class RemoveUserController implements IProtocolHandler{
 	Boolean isCompleted;
 	String clientId;
 	Message xmlMessage;
+	int excessEdges;
+	User currentTurn;
+	int kickUserPos; //stores the position in userList array of the user2Kick
+	boolean wasKickUserTurn;
+	User newTurn;
 	
 	RemoveUserController(){
 
@@ -47,7 +52,7 @@ public class RemoveUserController implements IProtocolHandler{
 		//get the model singleton
 		myModel = Model.getInstance();
 		
-
+		wasKickUserTurn=false;
 		
 		//Access the message tree
 		Node child = request.contents.getFirstChild();
@@ -58,11 +63,32 @@ public class RemoveUserController implements IProtocolHandler{
 		//Get the DLE from model
 		dleID = myModel.getDecisionLineEvent(dleString);
 		userList = dleID.getUsers();
+		if(dleID.getEventType().equals(EventType.CLOSED)){
+			currentTurn = dleID.getCurrentTurn();
+		}
+		else currentTurn=null;
+
 		
 		
 		//Check if DLE is Round Robin. Proceed if it is, generate failure otherwise
 		if (dleID.getBehavior().equals(Behavior.ROUNDROBIN)){
+			//is it the user2Kicks turn?
+			if (!(currentTurn==null) && currentTurn.getUser().equals(user2Kick) ){
+				wasKickUserTurn = true;
+			}
+			else wasKickUserTurn=false;
+			
 			xmlString = kickUser(user2Kick);
+			
+			// Update the turn if DLE is not completed and it was kicked user's turn
+			// and the user was successfully kicked
+			if (isCompleted == false  && wasKickUserTurn && success==true){
+				newTurn = userList.get(kickUserPos);
+				dleID.setCurrentTurn(newTurn);	
+				sendTurnResponse(newTurn);
+			}
+
+			
 		}
 		else {
 			reason = "Event is not RoundRobin";
@@ -89,32 +115,67 @@ public class RemoveUserController implements IProtocolHandler{
 		else {
 			response = new Message(xmlString);
 		}
-		
-		
+
 		System.out.println("Response:"+response);
 		return response;
+		
 	}
+
+private void sendTurnResponse(User newTurn) {
+		Message turnResponse = null;
+		String localClientID = newTurn.getClientStateId();
+		String stringTurnResponse = Message.responseHeader(localClientID) + 
+				"<turnResponse completed ='false'/></response>";
+		turnResponse = new Message(stringTurnResponse);
+		Server.getState(localClientID).sendMessage(turnResponse);
+		System.out.println("Turn Response: " + turnResponse);
+		
+	}
+
+
 
 /**
  * This method will access the dle to kick the specified user
+ * and update the number of edges for all other users on a success
  * @param user2Kick
  * @return
  */
 	private String kickUser(String user2Kick) {
 		String retVal;
+		int j=0; // used to find the position of kicked user
 		//Check the userList for the one to kick and kick if exists
 		for (User user: userList){
 			if (user.getUser().equals(user2Kick)){
+				excessEdges=user.getEdgesRemaining();
+				kickUserPos=j; 
 				success=dleID.removeUser(user);
 				break;
 			}
+			j++;
 		}
 		
 		isCompleted = checkCompleted();
 		
-		//Generate strings corresponding to success/failure
+		//Generate strings corresponding to success/failure and update edges
+		// remaining for other players
 		if (success==true){
 			retVal = createSucessString();
+			//Update the userList now that user has been kicked
+			userList = dleID.getUsers();
+			// determine the number to add per user
+			int numberToAdd = excessEdges/userList.size();
+			//determine the remainder of turns
+			int modularEdges = excessEdges % userList.size();
+			//call increment for each user numberToAdd times.
+			for (User user: userList){
+				for (int i=0; i<numberToAdd; i++){
+					user.incrementEdgesRemaining();
+				}
+			}
+			// increment only the first modularEdges users to attribute the leftover
+			for (int i=0; i<modularEdges; i++){
+				userList.get(i).incrementEdgesRemaining();
+			}
 		}
 		else {
 			reason = "User is not in User List";

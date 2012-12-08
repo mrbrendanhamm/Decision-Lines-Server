@@ -113,8 +113,26 @@ public class User {
 		return true;
 	}
 	
+	/**
+	 *  This method is to reduce by 1 the number of edges a User has left to add
+	 */
 	public void decrementEdgesRemaining() {
 		edgesRemaining--;
+	}
+	/**
+	 * This method is used to increase by 1 the number of edges a User has left to add.
+	 * This is used only in the event that a user is kicked from a RR event
+	 */
+	public void incrementEdgesRemaining(){
+		edgesRemaining++;
+	}
+	
+	/**
+	 * This method returns the number of edges a user has left to add
+	 * @return
+	 */
+	public int getEdgesRemaining(){
+		return edgesRemaining;
 	}
 	
 	/**
