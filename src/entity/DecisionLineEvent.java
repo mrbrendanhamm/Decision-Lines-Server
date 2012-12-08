@@ -426,7 +426,7 @@ public class DecisionLineEvent {
 	}
 
 	public void determineCurrentUsersTurn() {
-		if (getCurrentTurn() == null) {
+		if (getCurrentTurn() == null && getUsers().size() > 0) {
 			int i = getEdges().size() % numberOfChoices;
 			User tmpU = getUsers().get(i);
 			setCurrentTurn(tmpU);

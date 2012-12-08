@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 
 public class TestClientDisconnect extends TestCase {
 	MockClient client1, client2, client3;
+	//String dleId;
 
 	
 	protected void setUp () {
@@ -35,7 +36,7 @@ public class TestClientDisconnect extends TestCase {
 		Server.register("c2", client2);
 		Server.register("c3", client3);
 		
-		
+		//set DLE Id through creation of new DLE
 		
 		ClearModelInstance.clearInstance();
 	}
@@ -53,6 +54,7 @@ public class TestClientDisconnect extends TestCase {
 		DefaultProtocolHandler myHandler = new DefaultProtocolHandler();
 		SignIntoDLEController tmpCont = new SignIntoDLEController();
 		
+		//use DLEId created above
 		
 		String testMessageSuccess = "<request version='1.0' id='" + client1.id().toString() + "'>" +
 				"  <signInRequest id='12345'>" +
@@ -83,8 +85,10 @@ public class TestClientDisconnect extends TestCase {
 		assertTrue(loadedEvent != null);
 		//TODO verify that the users are connected with the expected client states
 		
+		//delete DLEId
 		myHandler.logout(client1);
 		myHandler.logout(client2);
 		myHandler.logout(client3);
+		
 	}
 }

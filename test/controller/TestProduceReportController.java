@@ -43,7 +43,7 @@ public class TestProduceReportController extends TestCase {
 	 */
 	public void testProduceReportControllValidCred(){
 		//get singleton
-		myModel=Model.getInstance(); 
+		myModel = Model.getInstance(); 
 		
 		//generate several dles and send them to the database
 		
