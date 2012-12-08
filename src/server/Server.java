@@ -40,6 +40,8 @@ public class Server {
 	public void process() throws IOException {
 		while (state == 1) {
 			Socket client = serverSocket.accept();
+			
+			System.out.println("Incoming request: " + client.getInetAddress().toString());
 
 			new ServerThread(this, client, protocolHandler).start();
 		} 
