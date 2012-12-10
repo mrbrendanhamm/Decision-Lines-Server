@@ -78,6 +78,10 @@ public class SignIntoDLEController implements IProtocolHandler {
 			if (newUser.getUser().equals(userList.get(i).getUser())) {
 				//User id already connected to DLE.  Check password
 				if (newUser.getPassword().equals(userList.get(i).getPassword())) {
+
+					if (!userList.get(i).getClientStateId().equals(state.id()) && !userList.get(i).getClientStateId().equals("")) 
+						return writeFailureResponse("Error, client already logged in!");
+
 					newUser = userList.get(i);
 					userAlreadyExists = true;
 				}
