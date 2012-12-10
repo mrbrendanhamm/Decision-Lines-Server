@@ -245,4 +245,35 @@ public class DatabaseSubsystemTest extends TestCase {
 		retval = DatabaseSubsystem.verifyAdminCredentials("andrew", "badpassword");
 		assert(!retval);
 	}
+	
+	public void testFinishedButUnorderedDLE() {
+		int numOfChoices = 2;
+		int numOfEdges = 1;
+		String newDLEId = UUID.randomUUID().toString();
+		
+		DecisionLineEvent myEvent = new DecisionLineEvent(newDLEId, "my test question", numOfChoices, numOfEdges, EventType.FINISHED, Behavior.ROUNDROBIN);
+		myEvent.setDate(new java.util.Date());
+		User newUser1 = new User("andrew1", "", 0, numOfEdges);
+		User newUser2 = new User("andrew2", "", 1, numOfEdges);
+		myEvent.getUsers().add(newUser1);
+		myEvent.getUsers().add(newUser2);
+		myEvent.setModerator(newUser1.getUser());
+		
+		Choice newChoice1 = new Choice("Choice 1", 0, -1);
+		Choice newChoice2 = new Choice("Choice 2", 1, -1);
+		myEvent.getChoices().add(newChoice1);
+		myEvent.getChoices().add(newChoice2);
+		
+		Edge newEdge1 = new Edge(newChoice1, newChoice2, 1);
+		Edge newEdge2 = new Edge(newChoice1, newChoice2, 10);
+		myEvent.getEdges().add(newEdge1);
+		myEvent.getEdges().add(newEdge2);
+		
+		DatabaseSubsystem.writeDecisionLineEvent(myEvent);
+		
+		DecisionLineEvent response = DatabaseSubsystem.readDecisionLineEvent(newDLEId);
+		assertTrue(response.getChoice(0).getFinalDecisionOrder() != -1);
+		DatabaseSubsystem.deleteEventById(newDLEId);
+		
+	}
 }
