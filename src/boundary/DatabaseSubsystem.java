@@ -163,6 +163,12 @@ public class DatabaseSubsystem {
 	 * @return - true if successfully read, false otherwise
 	 */
 	public static boolean readEdges(DecisionLineEvent readEvent) { 
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from edge where eventId=(?)");
 			pstmt.setString(1, readEvent.getUniqueId());
@@ -207,6 +213,12 @@ public class DatabaseSubsystem {
 	 * @return -1 if an error was encountered, the number of records affected otherwise
 	 */
 	public static int writeEdge(Edge writeEdge, String decisionLineId) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEdge(?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
@@ -229,6 +241,12 @@ public class DatabaseSubsystem {
 	 * @return true if successfully processed, false otherwise
 	 */
 	public static boolean readChoices(DecisionLineEvent readEvent) { 
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from choice where eventId=(?) ORDER BY orderValue asc");
 			pstmt.setString(1, readEvent.getUniqueId());
@@ -263,6 +281,12 @@ public class DatabaseSubsystem {
 	 * @return -1 if an error is encountered, the number of records affected otherwise
 	 */
 	public static int writeChoice(Choice writeChoice, String decisionLineId) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateChoice(?, ?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
@@ -285,6 +309,12 @@ public class DatabaseSubsystem {
 	 * @return true if successful, false if any error is encountered
 	 */
 	public static boolean readUsers(DecisionLineEvent readEvent, int playableEdges) { 
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT userName, userPassword, position from user where eventId=(?) ORDER BY position ASC");
 			pstmt.setString(1, readEvent.getUniqueId());
@@ -319,6 +349,12 @@ public class DatabaseSubsystem {
 	 * @return -1 if an error is reached, the number of affected records otherwise
 	 */
 	public static int writeUser(User writeUser, String decisionLineId) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateUser(?, ?, ?, ?)");
 			pstmt.setString(1, decisionLineId);
@@ -342,6 +378,12 @@ public class DatabaseSubsystem {
 	 * @return The fully formed decision line event or null if any error was encountered  
 	 */
 	public static DecisionLineEvent readDecisionLineEvent(String decisionLineId) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT * from event where id=(?)");
 			pstmt.setString(1, decisionLineId);
@@ -419,6 +461,12 @@ public class DatabaseSubsystem {
 	 * @return - -1 if a failure, otherwise the number of records affected is return
 	 */
 	public static int writeDecisionLineEvent(DecisionLineEvent writeEvent) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("CALL procUpdateEvent(?, ?, ?, ?, ?, ?, ?, ?)");
 			pstmt.setString(1, writeEvent.getUniqueId());
@@ -478,6 +526,12 @@ public class DatabaseSubsystem {
 	 * @return the number of records that were affected or -1 if there was an error
 	 */
 	public static int deleteEventById(String eventId) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			String qry = "DELETE FROM event where id='" + eventId + "'";
 			
@@ -500,6 +554,12 @@ public class DatabaseSubsystem {
 	 * @return - an Array of Strings containing the event id, question, and moderator that matches the event type
 	 */
 	public static ArrayList<String> produceReport(EventType myType) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		ArrayList<String> retVal = new ArrayList<String>();
 
 		try {
@@ -573,6 +633,12 @@ public class DatabaseSubsystem {
 	 * @return the number of records affected or -1 if there was an error
 	 */
 	public static int deleteEventsByAge(java.util.Date deleteByDate, boolean finished) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
 			String qry;
@@ -601,6 +667,12 @@ public class DatabaseSubsystem {
 	 * @return the number of records affected or -1 if there was an error
 	 */
 	public static int finishDLEBasedOnDate(java.util.Date finishByDate) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
 			String qry;
@@ -624,6 +696,12 @@ public class DatabaseSubsystem {
 	 * @return - true if the login-credentials match the database, false otherwise
 	 */
 	public static boolean verifyAdminCredentials(String adminId, String credentials) {
+		if (!isConnected())
+			if(!connect()) {
+				System.out.println("Error, database connection could not be created");
+				System.exit(0);
+			}
+		
 		try {
 			PreparedStatement pstmt = getConnection().prepareStatement("SELECT COUNT(*) as CountAmt FROM administration WHERE adminId=? and adminCredentials=MD5(?);");
 			pstmt.setString(1, adminId);
