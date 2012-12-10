@@ -81,9 +81,10 @@ public class TestRemoveDLEController extends TestCase {
 		
 		//assert that the dle has been removed.
 		assertTrue(myModel.getDecisionLineEvent("dleID")==null);
+		assertTrue(DatabaseSubsystem.readDecisionLineEvent("dleID")==null);
 	}
 	
-	/** This will test the deletion of all completed events 0 days old
+	/** This will test the deletion of all completed events 200 days old
 	 * 
 	 */
 public void testProcessByCompleted(){
@@ -273,7 +274,7 @@ public void testProcessOneDLEInvalidKey(){
 	//send the message
 	removeController.process(client1, request);
 	
-	//assert that the dle has been removed.
+	//assert that the dle has not been removed.
 	assertTrue(myModel.getDecisionLineEvent("dleID")!=null);
 	//clean up
 	myModel.removeDecisionLineEvent(dle);

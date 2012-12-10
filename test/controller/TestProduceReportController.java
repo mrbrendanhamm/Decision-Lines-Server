@@ -1,5 +1,6 @@
 package controller;
 
+
 import boundary.DatabaseSubsystem;
 import server.ApplicationMain;
 import server.MockClient;
@@ -101,7 +102,6 @@ public class TestProduceReportController extends TestCase {
 		myController = new ProduceReportController();
 		Message response = myController.process(client1, request);
 		
-
 		
 		assert(response!=null);
 		
