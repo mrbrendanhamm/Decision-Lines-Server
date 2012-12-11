@@ -578,7 +578,6 @@ public class DatabaseSubsystem {
 			ResultSet myRS = pstmt.executeQuery();
 			
 			String uniqueId, eventType, behavior, question, created, completedStr;
-			String tempValueStr;
 			int tempValueInt;
 			int numberOfChoices, numberOfRounds;
 			java.util.Date tempDate;

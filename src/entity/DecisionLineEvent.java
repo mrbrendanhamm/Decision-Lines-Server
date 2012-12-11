@@ -3,9 +3,6 @@ package entity;
 import java.util.ArrayList;
 import java.util.Date;
 
-import boundary.DatabaseSubsystem;
-
-
 public class DecisionLineEvent {
 	// EventType enum class
 	public static enum EventType { OPEN, CLOSED, FINISHED, ERROR }; 

@@ -4,11 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import server.ApplicationMain;
-import server.MockClient;
-import server.Server;
-import xml.Message;
-
 import boundary.DatabaseSubsystem;
 
 import junit.framework.TestCase;
@@ -145,7 +140,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
-		//TODO how about sending it a badly formed finish event that needs to have the final order set?
+		//How about sending it a badly formed finish event that needs to have the final order set?
 		//dont' forget to reset the unfinished status and unordered values when done
 		System.out.println("Testing read decisionlineevent");
 		DecisionLineEvent retval = DatabaseSubsystem.readDecisionLineEvent(parentDLEId);

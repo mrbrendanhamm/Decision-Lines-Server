@@ -8,11 +8,8 @@ import server.Server;
 import xml.Message;
 import boundary.DatabaseSubsystem;
 import boundary.DefaultProtocolHandler;
-import entity.Choice;
 import entity.ClearModelInstance;
 import entity.DecisionLineEvent;
-import entity.Edge;
-import entity.Model;
 import entity.User;
 import entity.DecisionLineEvent.Behavior;
 import entity.DecisionLineEvent.EventType;
@@ -70,8 +67,6 @@ public class TestClientDisconnect extends TestCase {
 	
 	public void testDisconnectClient() {
 		//a sample, fully formed SignInRequest message XML string
-		Model myModel = Model.getInstance();
-		DecisionLineEvent loadedEvent;
 		DefaultProtocolHandler myHandler = new DefaultProtocolHandler();
 		SignIntoDLEController tmpCont = new SignIntoDLEController();
 		
@@ -83,7 +78,6 @@ public class TestClientDisconnect extends TestCase {
 				"  </signInRequest>" +
 				"</request>";
 		Message msg = new Message(testMessageSuccess);
-		//myHandler.process(client1, msg);
 		tmpCont.process(client1,  msg);
 		
 		testMessageSuccess = "<request version='1.0' id='" + client2.id().toString() + "'>" +

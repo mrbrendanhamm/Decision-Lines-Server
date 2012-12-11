@@ -7,9 +7,6 @@ import xml.Message;
 import boundary.DatabaseSubsystem;
 import boundary.DefaultProtocolHandler;
 import entity.ClearModelInstance;
-import entity.DecisionLineEvent;
-import entity.Model;
-import entity.User;
 import junit.framework.TestCase;
 
 public class TestCompleteGame extends TestCase {

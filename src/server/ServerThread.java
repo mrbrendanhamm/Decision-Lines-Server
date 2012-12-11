@@ -11,8 +11,6 @@ import java.util.UUID;
 
 import org.w3c.dom.*;
 
-import controller.ClientDisconnect;
-
 import xml.*;
 
 /** Thread to handle individual requests from a client. */

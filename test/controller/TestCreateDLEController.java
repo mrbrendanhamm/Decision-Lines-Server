@@ -70,17 +70,5 @@ public class TestCreateDLEController extends TestCase {
 		assert(loadedEvent != null);
 		assertTrue(loadedEvent.getUniqueId().equals(dleId));
 
-		/*
-		String testMessageFailure = "<request version='1.0' id='" + client1.id() + "'>" +
-					"  <createRequest type='closed' question='Test Question' numChoices='3' numRounds='3' behavior='roundRobin'>" +
-					"    <choice value='Choice1' index='0'/>" +
-					"  </createRequest>" +
-					"</request>";
-		msg = new Message(testMessageFailure);
-		retVal = new DefaultProtocolHandler().process(client1, msg);
-		assertTrue(retVal != null);
-		assertTrue(retVal.contents.getAttributes().getNamedItem("success").getNodeValue().equals("false"));
-		//TODO other verifications here
-		 * */
 	}
 }

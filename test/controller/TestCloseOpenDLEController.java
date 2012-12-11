@@ -1,7 +1,5 @@
 package controller;
 
-import org.w3c.dom.Node;
-
 import server.MockClient;
 import server.Server;
 import xml.Message;

@@ -220,7 +220,6 @@ private void sendTurnResponse(User newTurn) {
 
 
 	private String createSucessString() {
-		// TODO Auto-generated method stub
 		String retVal="<kickResponse completed='"+isCompleted.toString()+"'/></response>";
 		
 		return retVal;

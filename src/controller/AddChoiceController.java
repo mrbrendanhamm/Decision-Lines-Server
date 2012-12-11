@@ -43,9 +43,8 @@ public class AddChoiceController implements IProtocolHandler
 		// Get Model instance
 		Model model = Model.getInstance();
 		Node child = request.contents.getFirstChild();
-		// get clientId of User
-		String clientId = new String(request.contents.getAttributes()
-				.getNamedItem("id").getNodeValue());
+		// get clientId of User -- not used
+		//String clientId = new String(request.contents.getAttributes().getNamedItem("id").getNodeValue());
 		// get ID of event and the DLE
 		String eventID = new String(child.getAttributes().getNamedItem("id")
 				.getNodeValue());
