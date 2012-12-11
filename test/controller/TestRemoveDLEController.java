@@ -3,6 +3,7 @@ package controller;
 import org.w3c.dom.Node;
 
 import boundary.DatabaseSubsystem;
+import boundary.DefaultProtocolHandler;
 
 import server.ApplicationMain;
 import server.MockClient;
@@ -74,7 +75,8 @@ public class TestRemoveDLEController extends TestCase {
 					"</removeRequest>" +
 				"</request>";
 		Message request = new Message(testMessage);
-		RemoveDLEController removeController = new RemoveDLEController();
+		//RemoveDLEController removeController = new RemoveDLEController();
+		DefaultProtocolHandler removeController = new DefaultProtocolHandler();
 		
 		//send the message
 		removeController.process(client1, request);

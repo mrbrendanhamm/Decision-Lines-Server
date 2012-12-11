@@ -2,6 +2,8 @@ package controller;
 
 import org.w3c.dom.Node;
 
+import boundary.DefaultProtocolHandler;
+
 
 import server.MockClient;
 import server.Server;
@@ -43,7 +45,8 @@ public class TestAdminLogInController extends TestCase {
 	 */
 	public void testProcessSuccess(){
 		Model myModel = Model.getInstance();
-		AdminLogInController myController = new AdminLogInController();
+		//AdminLogInController myController = new AdminLogInController();
+		DefaultProtocolHandler myController = new DefaultProtocolHandler();
 
 		//A valid adminRequest message
 		String testMessageSuccess = new String(

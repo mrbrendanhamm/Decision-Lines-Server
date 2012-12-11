@@ -48,8 +48,10 @@ public class DatabaseSubsystemTest extends TestCase {
 		int numOfChoices = 4;
 		int numOfEdges = 3;
 		
+		
 		DatabaseSubsystem.configurationProductionDBAccess();
 		DatabaseSubsystem.configurationTestDBAccess();
+		DatabaseSubsystem.disconnect();
 		
 		DecisionLineEvent myEvent = new DecisionLineEvent(parentDLEId, "my test question", numOfChoices, numOfEdges, EventType.CLOSED, Behavior.ROUNDROBIN);
 		myEvent.setDate(new java.util.Date());
@@ -77,13 +79,15 @@ public class DatabaseSubsystemTest extends TestCase {
 		myEvent.getEdges().add(newEdge3);
 		myEvent.getEdges().add(newEdge4);
 		myEvent.getEdges().add(newEdge5);
-		
+
 		int retval = DatabaseSubsystem.writeDecisionLineEvent(myEvent);
 		
 		assertTrue(retval > 0);
 	}
 
 	public void testWriteEdge() {
+		DatabaseSubsystem.disconnect();
+
 		System.out.println("Testing write edges");
 		Choice myLeftChoice = new Choice("Choice 1", 0, -1);
 		Choice myRightChoice = new Choice("Choice 2", 1, -1);
@@ -96,6 +100,8 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testWriteChoice() {
+		DatabaseSubsystem.disconnect();
+
 		System.out.println("Testing write choices");
 		Choice myChoice = new Choice("Choice 3", 3, -1);
 		
@@ -105,6 +111,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 
 	public void testWriteUser() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing write user");
 		User myUser = new User("azafty2", "", 0, 1);
 		int retval = DatabaseSubsystem.writeUser(myUser, parentDLEId);
@@ -112,7 +119,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadUsers() {
-		//minor change
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing read users");
 		DecisionLineEvent myDLE = new DecisionLineEvent(parentDLEId);
 		
@@ -122,6 +129,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadEdges() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing read edges");
 		DecisionLineEvent myDLE = DatabaseSubsystem.readDecisionLineEvent(parentDLEId);
 
@@ -131,6 +139,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadChoices() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing read choices");
 		DecisionLineEvent myDLE = new DecisionLineEvent(parentDLEId);
 		
@@ -140,6 +149,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testReadDecisionLineEvent() {
+		DatabaseSubsystem.disconnect();
 		//How about sending it a badly formed finish event that needs to have the final order set?
 		//dont' forget to reset the unfinished status and unordered values when done
 		System.out.println("Testing read decisionlineevent");
@@ -156,6 +166,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	
 
 	public void testDeleteEventByDate() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing the delete by date function");
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -174,6 +185,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testFinishEventByDate() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing the close by date function");
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -189,6 +201,7 @@ public class DatabaseSubsystemTest extends TestCase {
 	}
 	
 	public void testProduceReport() {
+		DatabaseSubsystem.disconnect();
 		System.out.println("Testing produce report");
 		String outString = "";
 		ArrayList<String> myAL = DatabaseSubsystem.produceReport(EventType.CLOSED);
